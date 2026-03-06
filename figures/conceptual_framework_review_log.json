@@ -1,0 +1,22 @@
+{
+  "user_prompt": "Conceptual framework for Safety-Aware Vehicle Routing in Quick Commerce. Flowchart showing three input layers: 'Platform Algorithms' (VRPTW, Multi-objective optimization), 'Environmental Data' (OpenStreetMap, iRAD accident data, real-time traffic), and 'Behavioral Factors' (Rider incentives, income targeting, fatigue). Arrows from these three layers point to a central box 'Safety-Aware Routing Engine'. The engine points to 'Optimized Safe Routes' at the bottom. Use professional colors (blue, green, orange) and clean lines.",
+  "doc_type": "thesis",
+  "quality_threshold": 8.0,
+  "iterations": [
+    {
+      "iteration": 1,
+      "success": false,
+      "error": "API request failed (HTTP 401): {'message': 'User not found.', 'code': 401}"
+    },
+    {
+      "iteration": 2,
+      "success": false,
+      "error": "API request failed (HTTP 401): {'message': 'User not found.', 'code': 401}"
+    }
+  ],
+  "final_image": null,
+  "final_score": 0.0,
+  "success": false,
+  "early_stop": false,
+  "early_stop_reason": null
+}

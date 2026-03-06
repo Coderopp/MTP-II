@@ -1,0 +1,737 @@
+{
+  "nodes": [
+    {
+      "id": "depot",
+      "label": "\ud83c\udfea Depot",
+      "title": "Dark Store<br>Lat: 22.319676<br>Lon: 87.30865",
+      "color": {
+        "background": "#00d4ff",
+        "border": "#0099bb"
+      },
+      "shape": "star",
+      "size": 28,
+      "font": {
+        "color": "#ffffff",
+        "size": 14,
+        "bold": true
+      },
+      "lat": 22.319676,
+      "lon": 87.30865
+    },
+    {
+      "id": "c0",
+      "label": "C1",
+      "title": "Customer 1<br>TW: [7\u201337 min]<br>Demand: 3 units<br>Travel from depot: 20.0 min<br>TW slack: 17.0 min",
+      "color": {
+        "background": "rgb(138,73,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.347416,
+      "lon": 87.288352,
+      "demand": 3,
+      "e_i": 7,
+      "l_i": 37,
+      "tt": 19.9786
+    },
+    {
+      "id": "c1",
+      "label": "C2",
+      "title": "Customer 2<br>TW: [19\u201349 min]<br>Demand: 1 units<br>Travel from depot: 10.9 min<br>TW slack: 38.1 min",
+      "color": {
+        "background": "rgb(75,131,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.306967,
+      "lon": 87.282705,
+      "demand": 1,
+      "e_i": 19,
+      "l_i": 49,
+      "tt": 10.8822
+    },
+    {
+      "id": "c2",
+      "label": "C3",
+      "title": "Customer 3<br>TW: [17\u201347 min]<br>Demand: 1 units<br>Travel from depot: 16.5 min<br>TW slack: 30.5 min",
+      "color": {
+        "background": "rgb(114,95,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.319198,
+      "lon": 87.34865,
+      "demand": 1,
+      "e_i": 17,
+      "l_i": 47,
+      "tt": 16.4627
+    },
+    {
+      "id": "c3",
+      "label": "C4",
+      "title": "Customer 4<br>TW: [20\u201350 min]<br>Demand: 3 units<br>Travel from depot: 13.9 min<br>TW slack: 36.1 min",
+      "color": {
+        "background": "rgb(96,112,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.334641,
+      "lon": 87.336794,
+      "demand": 3,
+      "e_i": 20,
+      "l_i": 50,
+      "tt": 13.8967
+    },
+    {
+      "id": "c4",
+      "label": "C5",
+      "title": "Customer 5<br>TW: [17\u201347 min]<br>Demand: 2 units<br>Travel from depot: 16.9 min<br>TW slack: 30.1 min",
+      "color": {
+        "background": "rgb(117,93,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.323445,
+      "lon": 87.346666,
+      "demand": 2,
+      "e_i": 17,
+      "l_i": 47,
+      "tt": 16.8591
+    },
+    {
+      "id": "c5",
+      "label": "C6",
+      "title": "Customer 6<br>TW: [7\u201337 min]<br>Demand: 2 units<br>Travel from depot: 31.6 min<br>TW slack: 5.4 min",
+      "color": {
+        "background": "rgb(220,0,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.275212,
+      "lon": 87.36645,
+      "demand": 2,
+      "e_i": 7,
+      "l_i": 37,
+      "tt": 31.629
+    },
+    {
+      "id": "c6",
+      "label": "C7",
+      "title": "Customer 7<br>TW: [18\u201348 min]<br>Demand: 2 units<br>Travel from depot: 8.1 min<br>TW slack: 39.9 min",
+      "color": {
+        "background": "rgb(56,148,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.314439,
+      "lon": 87.290018,
+      "demand": 2,
+      "e_i": 18,
+      "l_i": 48,
+      "tt": 8.1447
+    },
+    {
+      "id": "c7",
+      "label": "C8",
+      "title": "Customer 8<br>TW: [0\u201330 min]<br>Demand: 1 units<br>Travel from depot: 11.1 min<br>TW slack: 18.9 min",
+      "color": {
+        "background": "rgb(77,129,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.307708,
+      "lon": 87.305892,
+      "demand": 1,
+      "e_i": 0,
+      "l_i": 30,
+      "tt": 11.1329
+    },
+    {
+      "id": "c8",
+      "label": "C9",
+      "title": "Customer 9<br>TW: [13\u201343 min]<br>Demand: 2 units<br>Travel from depot: 13.8 min<br>TW slack: 29.2 min",
+      "color": {
+        "background": "rgb(96,112,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.337656,
+      "lon": 87.331047,
+      "demand": 2,
+      "e_i": 13,
+      "l_i": 43,
+      "tt": 13.836
+    },
+    {
+      "id": "c9",
+      "label": "C10",
+      "title": "Customer 10<br>TW: [8\u201338 min]<br>Demand: 1 units<br>Travel from depot: 10.7 min<br>TW slack: 27.3 min",
+      "color": {
+        "background": "rgb(74,132,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.307475,
+      "lon": 87.282747,
+      "demand": 1,
+      "e_i": 8,
+      "l_i": 38,
+      "tt": 10.7218
+    },
+    {
+      "id": "c10",
+      "label": "C11",
+      "title": "Customer 11<br>TW: [6\u201336 min]<br>Demand: 2 units<br>Travel from depot: 16.6 min<br>TW slack: 19.4 min",
+      "color": {
+        "background": "rgb(115,94,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.345311,
+      "lon": 87.324197,
+      "demand": 2,
+      "e_i": 6,
+      "l_i": 36,
+      "tt": 16.6304
+    },
+    {
+      "id": "c11",
+      "label": "C12",
+      "title": "Customer 12<br>TW: [3\u201333 min]<br>Demand: 1 units<br>Travel from depot: 13.1 min<br>TW slack: 19.9 min",
+      "color": {
+        "background": "rgb(91,117,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.33297,
+      "lon": 87.336335,
+      "demand": 1,
+      "e_i": 3,
+      "l_i": 33,
+      "tt": 13.1068
+    },
+    {
+      "id": "c12",
+      "label": "C13",
+      "title": "Customer 13<br>TW: [12\u201342 min]<br>Demand: 1 units<br>Travel from depot: 7.7 min<br>TW slack: 34.3 min",
+      "color": {
+        "background": "rgb(53,151,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 14,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.326175,
+      "lon": 87.320117,
+      "demand": 1,
+      "e_i": 12,
+      "l_i": 42,
+      "tt": 7.7114
+    },
+    {
+      "id": "c13",
+      "label": "C14",
+      "title": "Customer 14<br>TW: [11\u201341 min]<br>Demand: 2 units<br>Travel from depot: 18.8 min<br>TW slack: 22.2 min",
+      "color": {
+        "background": "rgb(130,81,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.288477,
+      "lon": 87.333284,
+      "demand": 2,
+      "e_i": 11,
+      "l_i": 41,
+      "tt": 18.786
+    },
+    {
+      "id": "c14",
+      "label": "C15",
+      "title": "Customer 15<br>TW: [19\u201349 min]<br>Demand: 2 units<br>Travel from depot: 19.4 min<br>TW slack: 29.6 min",
+      "color": {
+        "background": "rgb(135,77,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.345592,
+      "lon": 87.289167,
+      "demand": 2,
+      "e_i": 19,
+      "l_i": 49,
+      "tt": 19.4126
+    },
+    {
+      "id": "c15",
+      "label": "C16",
+      "title": "Customer 16<br>TW: [1\u201331 min]<br>Demand: 3 units<br>Travel from depot: 18.1 min<br>TW slack: 12.9 min",
+      "color": {
+        "background": "rgb(126,85,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.353579,
+      "lon": 87.314667,
+      "demand": 3,
+      "e_i": 1,
+      "l_i": 31,
+      "tt": 18.1363
+    },
+    {
+      "id": "c16",
+      "label": "C17",
+      "title": "Customer 17<br>TW: [14\u201344 min]<br>Demand: 3 units<br>Travel from depot: 15.5 min<br>TW slack: 28.5 min",
+      "color": {
+        "background": "rgb(108,101,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.341008,
+      "lon": 87.332974,
+      "demand": 3,
+      "e_i": 14,
+      "l_i": 44,
+      "tt": 15.5411
+    },
+    {
+      "id": "c17",
+      "label": "C18",
+      "title": "Customer 18<br>TW: [3\u201333 min]<br>Demand: 2 units<br>Travel from depot: 12.8 min<br>TW slack: 20.2 min",
+      "color": {
+        "background": "rgb(89,118,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 18,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.336606,
+      "lon": 87.3286,
+      "demand": 2,
+      "e_i": 3,
+      "l_i": 33,
+      "tt": 12.8447
+    },
+    {
+      "id": "c18",
+      "label": "C19",
+      "title": "Customer 19<br>TW: [2\u201332 min]<br>Demand: 3 units<br>Travel from depot: 19.9 min<br>TW slack: 12.1 min",
+      "color": {
+        "background": "rgb(138,74,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.283747,
+      "lon": 87.290907,
+      "demand": 3,
+      "e_i": 2,
+      "l_i": 32,
+      "tt": 19.9215
+    },
+    {
+      "id": "c19",
+      "label": "C20",
+      "title": "Customer 20<br>TW: [9\u201339 min]<br>Demand: 3 units<br>Travel from depot: 16.4 min<br>TW slack: 22.6 min",
+      "color": {
+        "background": "rgb(114,96,60)",
+        "border": "#555"
+      },
+      "shape": "dot",
+      "size": 22,
+      "font": {
+        "color": "#ffffff",
+        "size": 11
+      },
+      "lat": 22.29658,
+      "lon": 87.319646,
+      "demand": 3,
+      "e_i": 9,
+      "l_i": 39,
+      "tt": 16.3994
+    }
+  ],
+  "edges": [
+    {
+      "from": "depot",
+      "to": "c0",
+      "label": "20.0m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c1",
+      "label": "10.9m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c2",
+      "label": "16.5m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c3",
+      "label": "13.9m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c4",
+      "label": "16.9m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c5",
+      "label": "31.6m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c6",
+      "label": "8.1m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c7",
+      "label": "11.1m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c8",
+      "label": "13.8m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c9",
+      "label": "10.7m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c10",
+      "label": "16.6m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c11",
+      "label": "13.1m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c12",
+      "label": "7.7m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c13",
+      "label": "18.8m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c14",
+      "label": "19.4m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c15",
+      "label": "18.1m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c16",
+      "label": "15.5m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c17",
+      "label": "12.8m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c18",
+      "label": "19.9m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    },
+    {
+      "from": "depot",
+      "to": "c19",
+      "label": "16.4m",
+      "dashes": true,
+      "color": {
+        "color": "#444466"
+      },
+      "font": {
+        "color": "#888",
+        "size": 9
+      },
+      "arrows": "to"
+    }
+  ],
+  "options": {
+    "physics": {
+      "solver": "forceAtlas2Based",
+      "forceAtlas2Based": {
+        "gravitationalConstant": -60,
+        "springLength": 120,
+        "damping": 0.4
+      }
+    },
+    "interaction": {
+      "tooltipDelay": 100
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "irad_mode": "synthetic",
+  "irad_csv_path": "data/irad_accidents.csv",
+  "congestion_mode": "SPEED_PROXY",
+  "google_maps_api_key": "",
+  "n_customers": 200,
+  "k_riders": 5,
+  "vehicle_capacity": 10,
+  "lambda1": 0.4,
+  "lambda2": 0.4,
+  "lambda3": 0.2,
+  "algorithm": "GA",
+  "steps": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ]
+}

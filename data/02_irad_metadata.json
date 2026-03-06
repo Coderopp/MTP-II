@@ -1,0 +1,17 @@
+{
+  "data_source": "synthetic",
+  "accident_count": 150,
+  "years_span": 5,
+  "year_range": [
+    2018,
+    2023
+  ],
+  "severity_counts": {
+    "minor": 77,
+    "damage only": 34,
+    "grievous": 30,
+    "fatal": 9
+  },
+  "edges_with_risk": 137,
+  "total_edges": 15763
+}
