@@ -36,9 +36,9 @@ OUT_PKL      = DATA_DIR / "04_vrptw_instance.pkl"
 # Problem parameters
 N_CUSTOMERS       = 20      # number of delivery locations
 K_RIDERS          = 5       # fleet size
-VEHICLE_CAPACITY  = 10      # Q: units per rider
+VEHICLE_CAPACITY  = 3       # Q: units per rider (QC reality, usually carried in single bag)
 DEMAND_MIN        = 1       # minimum order size
-DEMAND_MAX        = 3       # maximum order size
+DEMAND_MAX        = 2       # maximum order size
 
 # Time-window generation (minutes from start of dispatch window)
 TW_EARLIEST_OPEN  = 0       # earliest any order opens
@@ -127,7 +127,11 @@ def main() -> None:
             skipped += 1
             continue
 
-        e_i = rng.randint(TW_EARLIEST_OPEN, TW_LATEST_OPEN)
+        # FIX: Time window must be dynamically feasible based on travel time from depot
+        tt_mins = int(np.ceil(tt))
+        min_arrival = max(TW_EARLIEST_OPEN, tt_mins)
+        
+        e_i = rng.randint(min_arrival, min_arrival + 15)
         l_i = e_i + TW_WINDOW_LENGTH
         q_i = rng.randint(DEMAND_MIN, DEMAND_MAX)
 
