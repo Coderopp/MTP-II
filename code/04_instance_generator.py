@@ -34,24 +34,24 @@ OUT_JSON     = DATA_DIR / "04_vrptw_instance.json"
 OUT_PKL      = DATA_DIR / "04_vrptw_instance.pkl"
 
 # Problem parameters
-N_CUSTOMERS       = 20      # number of delivery locations
-K_RIDERS          = 5       # fleet size
-VEHICLE_CAPACITY  = 3       # Q: units per rider (QC reality, usually carried in single bag)
-DEMAND_MIN        = 1       # minimum order size
-DEMAND_MAX        = 2       # maximum order size
+N_CUSTOMERS       = 30      # rolling horizon total customers
+K_RIDERS          = 10      # total fleet across stores
+VEHICLE_CAPACITY  = 2       # Q: units per rider (strictly constrained for q-commerce)
+DEMAND_MIN        = 1       
+DEMAND_MAX        = 2       
 
-# Time-window generation (minutes from start of dispatch window)
-TW_EARLIEST_OPEN  = 0       # earliest any order opens
-TW_LATEST_OPEN    = 20      # latest an order can open
-TW_WINDOW_LENGTH  = 30      # window width (10–40 min delivery promise)
+# Time-window generation (rolling batches every 5-10 minutes)
+TW_WINDOW_LENGTH  = 15      # hyper-strict 15 min SLA
 
-# Objective weights (lambda_1, lambda_2, lambda_3) — must sum to 1.0
-# Default: balanced between time and safety
-LAMBDA = [0.40, 0.40, 0.20]    # [time, risk, congestion]
+# Objective weights
+LAMBDA = [0.40, 0.40, 0.20]
 
-# IIT Kharagpur Technology Market as dark store (OSM approx)
-DEPOT_LAT = 22.3190
-DEPOT_LON = 87.3095
+# Multi-Depot Locations (Dark Stores)
+DEPOTS = [
+    {"name": "DarkStore_TechMarket", "lat": 22.3190, "lon": 87.3095},
+    {"name": "DarkStore_Prembazar", "lat": 22.3350, "lon": 87.3150},
+    {"name": "DarkStore_GoleBazaar", "lat": 22.3420, "lon": 87.3220}
+]
 
 RANDOM_SEED = 42
 
@@ -120,65 +120,81 @@ def main() -> None:
     all_nodes = list(G.nodes())
     print(f"  Graph: {G.number_of_nodes():,} nodes, {G.number_of_edges():,} edges")
 
-    # --- Depot node ---------------------------------------------------------
-    depot_node = nearest_node(G, DEPOT_LAT, DEPOT_LON)
-    print(f"  Depot node (dark store): {depot_node}  "
-          f"→  lat={G.nodes[depot_node]['y']:.5f}, "
-          f"lon={G.nodes[depot_node]['x']:.5f}")
+    # --- Depot nodes ---------------------------------------------------------
+    depots = []
+    for d in DEPOTS:
+        try:
+            d_node = nearest_node(G, d['lat'], d['lon'])
+            depots.append({
+                "name": d['name'],
+                "node_id": str(d_node),
+                "lat": round(G.nodes[str(d_node)]['y'], 6),
+                "lon": round(G.nodes[str(d_node)]['x'], 6),
+                "e_0": 0,
+                "l_0": 120
+            })
+        except Exception:
+            pass # ignore if out of bounds for the current graph
 
-    # --- Sample customer nodes (exclude depot) -------------------------------
-    candidate_nodes = [n for n in all_nodes if n != depot_node]
+    depot_ids = [d['node_id'] for d in depots]
+    
+    # --- Sample customer nodes (exclude depots) -------------------------------
+    candidate_nodes = [n for n in all_nodes if n not in depot_ids]
     sampled_nodes = rng.sample(candidate_nodes, N_CUSTOMERS)
 
-    # --- Build customer records ---------------------------------------------
+    # --- Build customer records (Rolling Horizon) -----------------------------
     customers = []
     skipped = 0
+    current_time_tick = 0 # Simulate dynamic drops every 2 minutes
+    
     for node_id in sampled_nodes:
-        # Check reachability from depot (quick check via t_ij shortest path)
-        tt = compute_travel_time(G, depot_node, node_id)
-        if tt is None:
+        # Assign to nearest dark store
+        best_depot = None
+        min_tt = float('inf')
+        for d in depots:
+            tt = compute_travel_time(G, d['node_id'], node_id)
+            if tt is not None and tt < min_tt:
+                min_tt = tt
+                best_depot = d['node_id']
+                
+        if best_depot is None:
             skipped += 1
             continue
 
-        # FIX: Time window must be dynamically feasible based on travel time from depot
-        tt_mins = int(np.ceil(tt))
-        min_arrival = max(TW_EARLIEST_OPEN, tt_mins)
-        
-        e_i = rng.randint(min_arrival, min_arrival + 15)
-        l_i = e_i + TW_WINDOW_LENGTH
+        tt_mins = int(np.ceil(min_tt))
+        # Rolling horizon: order enters system at `current_time_tick`
+        e_i = current_time_tick
+        l_i = e_i + TW_WINDOW_LENGTH 
         q_i = rng.randint(DEMAND_MIN, DEMAND_MAX)
 
         customers.append({
-            "node_id":          str(node_id),   # str to match GraphML keys
+            "node_id":          str(node_id),
+            "assigned_depot":   str(best_depot),
             "lat":              round(G.nodes[str(node_id)]["y"], 6),
             "lon":              round(G.nodes[str(node_id)]["x"], 6),
             "e_i":              e_i,
             "l_i":              l_i,
             "q_i":              q_i,
-            "tt_from_depot":    tt,
+            "tt_from_depot":    min_tt,
         })
+        current_time_tick += rng.randint(1, 3) # Next order arrives 1-3 mins later
 
     print(f"  Customers generated: {len(customers)} "
           f"(skipped unreachable: {skipped})")
 
-    # --- Assemble instance dict ---------------------------------------------
+    # --- Assemble continuous DPDP instance dict ------------------------------
     instance = {
         "metadata": {
-            "description": "SA-VRPTW instance for Kharagpur q-commerce",
+            "description": "SA-VRPTW Multi-Depot Rolling Horizon Instance",
             "n_customers":      len(customers),
             "k_riders":         K_RIDERS,
             "vehicle_capacity": VEHICLE_CAPACITY,
             "lambda":           LAMBDA,
             "seed":             RANDOM_SEED,
+            "type":             "MD-DPDP"
         },
         "graph_path": str(INPUT_GRAPH.relative_to(DATA_DIR.parent)),
-        "depot": {
-            "node_id":  str(depot_node),    # str to match GraphML keys
-            "lat":      round(G.nodes[str(depot_node)]["y"], 6),
-            "lon":      round(G.nodes[str(depot_node)]["x"], 6),
-            "e_0":      0,
-            "l_0":      120,
-        },
+        "depots": depots,
         "customers": customers,
         "parameters": {
             "Q":       VEHICLE_CAPACITY,
@@ -198,8 +214,7 @@ def main() -> None:
         pickle.dump(instance, f)
     print(f"  Pickle → {OUT_PKL}")
 
-    print(f"[04] Done. Instance: {len(customers)} customers, "
-          f"{K_RIDERS} riders, Q={VEHICLE_CAPACITY}\n")
+    print(f"[04] Done. Instance: {len(customers)} customers mapped across {len(depots)} depots.")
 
 
 if __name__ == "__main__":
