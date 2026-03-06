@@ -80,8 +80,26 @@ def congestion_speed_proxy(G) -> dict:
     speed_series = pd.Series(list(speeds.values()))
     speed_norm   = normalize(speed_series)  # 0 = slowest, 1 = fastest
 
-    # Invert: slowest → highest congestion
-    congestion_series = 1.0 - speed_norm
+    # FIX: Ensure we don't structurally penalize residential streets. 
+    # Highway=residential means inherently slow limits, but usually uncongested.
+    congestion_list = []
+    keys_list = list(speeds.keys())
+    for i, (u, v, k) in enumerate(keys_list):
+        data = G[u][v][k]
+        hw = data.get("highway", "")
+        if isinstance(hw, list):
+            hw = hw[0] if hw else ""
+            
+        is_residential = hw in ["residential", "living_street", "service", "pedestrian"]
+        
+        if is_residential:
+            # inherently slow but usually empty
+            congestion_list.append(np.clip(0.1 + 0.1 * (speed_norm.iloc[i]), 0, 1))
+        else:
+            # Invert: slowest major roads -> highest congestion
+            congestion_list.append(np.clip(1.0 - speed_norm.iloc[i], 0, 1))
+            
+    congestion_series = pd.Series(congestion_list)
 
     for i, (u, v, k) in enumerate(speeds.keys()):
         G[u][v][k]["c_ij"] = round(float(congestion_series.iloc[i]), 6)
@@ -211,22 +229,46 @@ def congestion_google_maps(G, api_key: str) -> dict:
     known_norm = normalize(known_vals)
     sampled_c_norm = dict(zip(known_keys, known_norm.values))
 
-    # Build KDTree from midpoints of sampled edges
-    sampled_midpoints = []
+    # FIX: Instead of Euclidean KDTree which ignores civic topology (rivers, railways),
+    # we use Shortest Path Graph distance from sampled nodes to propagate congestion.
+    import networkx as nx
+    
+    # Map each node that is part of a sampled edge to the congestion value
+    node_to_c = {}
     for u, v, k in known_keys:
-        lat, lon = _edge_midpoint(G, u, v, k)
-        sampled_midpoints.append([lat, lon])
-    tree = KDTree(sampled_midpoints)
+        node_to_c[u] = sampled_c_norm[(u, v, k)]
+        node_to_c[v] = sampled_c_norm[(u, v, k)]
+        
+    sampled_nodes = list(node_to_c.keys())
+    nearest_sampled_mapping = {}
+    
+    if sampled_nodes:
+        # Add a dummy super-source connected to all sampled_nodes to run multi-source shortest path
+        G_dummy = G.copy()
+        G_dummy.add_node("SUPER_SOURCE")
+        for sn in sampled_nodes:
+            G_dummy.add_edge("SUPER_SOURCE", sn, key=0, length=0)
+        
+        try:
+            lengths, paths = nx.single_source_dijkstra(G_dummy, "SUPER_SOURCE", weight="length")
+            for node in G.nodes():
+                if node in paths and len(paths[node]) > 1:
+                    nearest_sn = paths[node][1]
+                    nearest_sampled_mapping[node] = node_to_c[nearest_sn]
+                else:
+                    nearest_sampled_mapping[node] = 0.5 # fallback
+        except Exception:
+            for node in G.nodes(): nearest_sampled_mapping[node] = 0.5
 
-    # Assign c_ij to ALL edges (NN interpolation for unsampled edges)
+    # Assign c_ij to ALL edges
     for u, v, k, data in G.edges(keys=True, data=True):
         if (u, v, k) in sampled_c_norm:
             c = sampled_c_norm[(u, v, k)]
         else:
-            lat, lon = _edge_midpoint(G, u, v, k)
-            _, idx = tree.query([lat, lon])
-            near_key = known_keys[idx]
-            c = sampled_c_norm[near_key]
+            # Average the inherited congestion of the two endpoints
+            c_u = nearest_sampled_mapping.get(u, 0.5)
+            c_v = nearest_sampled_mapping.get(v, 0.5)
+            c = (c_u + c_v) / 2.0
         G[u][v][k]["c_ij"] = round(float(c), 6)
 
     all_c = [d.get("c_ij", 0.5) for _, _, d in G.edges(data=True)]

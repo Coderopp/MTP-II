@@ -215,7 +215,11 @@ def compute_risk(G, accidents: pd.DataFrame, data_source: str) -> dict:
     # Build Series for global min-max normalisation
     all_keys   = list(edge_risk_norm.keys())
     all_values = pd.Series([edge_risk_norm[k] for k in all_keys])
-    all_normalised = normalize(all_values)
+    
+    # FIX: Use log-scaling before min-max normalization to prevent extreme outliers 
+    # (like a single massive pileup) from squashing the variance of all other roads.
+    log_values = np.log1p(all_values)
+    all_normalised = normalize(log_values)
 
     # Write r_ij back to graph
     for i, (u, v, k_) in enumerate(all_keys):
