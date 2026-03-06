@@ -1,0 +1,27 @@
+# SA-VRPTW Data Acquisition Dependencies
+# Install with: pip install -r requirements.txt
+
+# Graph / OSM
+osmnx==1.9.4
+networkx==3.3
+
+# Geospatial
+geopandas==0.14.4
+shapely==2.0.4
+pyproj==3.6.1
+
+# Data processing
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.0
+
+# Environment / config
+python-dotenv==1.0.1
+requests==2.32.3
+
+# Visualization (for validation notebook)
+matplotlib==3.9.0
+folium==0.16.0
+
+# Solver (Phase 3 — installed now so environment is ready)
+pyvrp==0.8.2

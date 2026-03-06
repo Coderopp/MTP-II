@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SA-VRPTW Control Center</title>
+<link rel="stylesheet" href="/static/css/style.css"/>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Vis.js Network -->
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════ TOP NAR ═══════════════════ -->
+<nav class="topbar">
+  <a class="topbar-logo" href="#">
+    🗺 SA-VRPTW <span>Control Center</span>
+  </a>
+  <span id="irad-badge" class="topbar-badge badge-synthetic">Synthetic iRAD</span>
+  <span id="cong-badge"  class="topbar-badge badge-synthetic">Speed Proxy</span>
+  <div class="topbar-spacer"></div>
+  <span class="status-dot" id="status-dot" title="Idle"></span>
+  <span style="font-size:11px;color:var(--muted);margin-left:6px;" id="status-label">Idle</span>
+</nav>
+
+<!-- ═══════════════════ LAYOUT ══════════════════════ -->
+<div class="layout">
+
+  <!-- ─────────── LEFT SIDEBAR ─────────── -->
+  <aside class="sidebar">
+
+    <!-- DATA SOURCES -->
+    <div class="sidebar-section">
+      <div class="section-title">📡 Data Sources</div>
+
+      <label>iRAD Accident Data</label>
+      <div class="toggle-group" id="irad-toggle">
+        <button class="toggle-btn active" data-val="synthetic" onclick="setIrad('synthetic',this)">Synthetic</button>
+        <button class="toggle-btn"        data-val="real"      onclick="setIrad('real',this)">Real iRAD</button>
+      </div>
+
+      <label>Congestion Mode</label>
+      <div class="toggle-group" id="cong-toggle">
+        <button class="toggle-btn active" data-val="SPEED_PROXY"  onclick="setCong('SPEED_PROXY',this)">Speed Proxy</button>
+        <button class="toggle-btn"        data-val="GOOGLE_MAPS"  onclick="setCong('GOOGLE_MAPS',this)">Google Maps</button>
+      </div>
+
+      <label>Google Maps API Key</label>
+      <div class="api-key-wrap">
+        <input type="password" id="gmaps-key" placeholder="AIza…" oninput="schedSave()"/>
+        <button class="eye-btn" onclick="toggleKeyVis()" title="Show/hide">👁</button>
+      </div>
+    </div>
+
+    <!-- SOLVER CONFIG -->
+    <div class="sidebar-section">
+      <div class="section-title">⚙️ Solver Config</div>
+
+      <label>Objective Weights (λ₁ + λ₂ + λ₃ = 1)</label>
+
+      <div class="lambda-row">
+        <span class="lambda-label">λ₁</span>
+        <input type="range" class="lambda-slider" id="l1" min="0" max="1" step="0.01" value="0.40" oninput="lambdaChanged(1)"/>
+        <span class="lambda-value" id="l1v">0.40</span>
+      </div>
+      <small style="color:var(--muted);font-size:10px;margin-left:28px;">Travel Time</small>
+
+      <div class="lambda-row" style="margin-top:8px;">
+        <span class="lambda-label">λ₂</span>
+        <input type="range" class="lambda-slider" id="l2" min="0" max="1" step="0.01" value="0.40" oninput="lambdaChanged(2)"/>
+        <span class="lambda-value" id="l2v">0.40</span>
+      </div>
+      <small style="color:var(--muted);font-size:10px;margin-left:28px;">Collision Risk</small>
+
+      <div class="lambda-row" style="margin-top:8px;">
+        <span class="lambda-label">λ₃</span>
+        <input type="range" class="lambda-slider" id="l3" min="0" max="1" step="0.01" value="0.20" oninput="lambdaChanged(3)"/>
+        <span class="lambda-value" id="l3v">0.20</span>
+      </div>
+      <small style="color:var(--muted);font-size:10px;margin-left:28px;">Congestion</small>
+
+      <div class="lambda-sum" id="lambda-sum">∑ = 1.00 ✓</div>
+
+      <div class="two-col" style="margin-top:10px;">
+        <div>
+          <label>Riders (K)</label>
+          <input type="number" id="k-riders" value="5" min="1" max="20" oninput="schedSave()"/>
+        </div>
+        <div>
+          <label>Capacity (Q)</label>
+          <input type="number" id="q-cap" value="10" min="1" max="50" oninput="schedSave()"/>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:2px;">
+        <div>
+          <label>Customers (N)</label>
+          <input type="number" id="n-cust" value="20" min="5" max="100" oninput="schedSave()"/>
+        </div>
+        <div>
+          <label>Algorithm</label>
+          <select id="algorithm" onchange="schedSave()">
+            <option value="GA">GA (Genetic)</option>
+            <option value="ACO">ACO</option>
+            <option value="MILP">MILP (exact)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUN PIPELINE -->
+    <div class="sidebar-section">
+      <div class="section-title">▶ Run Pipeline</div>
+
+      <div class="step-checks">
+        <label class="step-check"><input type="checkbox" id="s1" checked/> 1: OSM</label>
+        <label class="step-check"><input type="checkbox" id="s2" checked/> 2: iRAD</label>
+        <label class="step-check"><input type="checkbox" id="s3" checked/> 3: Cong</label>
+        <label class="step-check"><input type="checkbox" id="s4" checked/> 4: Instance</label>
+        <label class="step-check"><input type="checkbox" id="s5" checked/> 5: Validate</label>
+      </div>
+
+      <button class="run-btn" id="run-btn" onclick="runPipeline()">
+        ⚡ Run Selected Steps
+      </button>
+    </div>
+
+    <!-- LIVE LOG -->
+    <div class="sidebar-section" style="flex:1;display:flex;flex-direction:column;padding-bottom:0;min-height:0;">
+      <div class="section-title">📋 Live Log
+        <button onclick="clearLog()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px;margin-left:auto;">⊗ clear</button>
+      </div>
+      <div class="log-console" id="log-console">
+        <span style="color:var(--muted)">Pipeline output will appear here…</span>
+      </div>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+  <!-- ─────────── MAIN PANE ─────────── -->
+  <main class="main-pane">
+
+    <!-- Tabs -->
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="showView('map',this)">🗺 Map View</button>
+      <button class="view-tab"        onclick="showView('graph',this)">🔗 Graph View</button>
+      <button class="view-tab"        onclick="showView('stats',this)">📊 Statistics</button>
+    </div>
+
+    <!-- ─── MAP VIEW ─── -->
+    <div class="view-container active" id="view-map">
+      <div id="map"></div>
+
+      <!-- Floating controls -->
+      <div class="map-controls">
+        <div class="layer-card">
+          <h4>Road Layer</h4>
+          <div class="layer-btn-group">
+            <button class="layer-btn active" id="lb-risk" onclick="setLayer('risk',this)">Risk</button>
+            <button class="layer-btn"        id="lb-cong" onclick="setLayer('congestion',this)">Cong</button>
+            <button class="layer-btn"        id="lb-time" onclick="setLayer('time',this)">Time</button>
+          </div>
+          <div class="legend-bar"></div>
+          <div class="legend-labels"><span>Low</span><span>High</span></div>
+        </div>
+
+        <div class="layer-card">
+          <h4>Markers</h4>
+          <div class="layer-btn-group">
+            <button class="layer-btn active" id="mb-depot" onclick="toggleMarker('depot',this)">Depot</button>
+            <button class="layer-btn active" id="mb-cust"  onclick="toggleMarker('customers',this)">Customers</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GRAPH VIEW ─── -->
+    <div class="view-container" id="view-graph">
+      <div id="graph-container"></div>
+      <div class="graph-stats" id="graph-stats">
+        <h4>Instance Summary</h4>
+        <div class="stat-row"><span>Customers</span><span class="val" id="gs-n">–</span></div>
+        <div class="stat-row"><span>Riders (K)</span><span class="val" id="gs-k">–</span></div>
+        <div class="stat-row"><span>Capacity (Q)</span><span class="val" id="gs-q">–</span></div>
+        <div class="stat-row"><span>λ₁ Time</span><span class="val" id="gs-l1">–</span></div>
+        <div class="stat-row"><span>λ₂ Risk</span><span class="val" id="gs-l2">–</span></div>
+        <div class="stat-row"><span>λ₃ Cong</span><span class="val" id="gs-l3">–</span></div>
+        <div class="stat-row"><span>At-risk edges</span><span class="val" id="gs-risk">–</span></div>
+      </div>
+    </div>
+
+    <!-- ─── STATISTICS VIEW ─── -->
+    <div class="view-container" id="view-stats"
+         style="padding:24px;gap:24px;overflow-y:auto;flex-direction:row;flex-wrap:wrap;align-content:flex-start;">
+      <div style="width:100%;color:var(--accent);font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">
+        Edge Attribute Distributions
+      </div>
+      <div style="flex:1;min-width:280px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:12px;">Collision Risk  r<sub>ij</sub></div>
+        <canvas id="chart-risk" height="180"></canvas>
+      </div>
+      <div style="flex:1;min-width:280px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:12px;">Travel Time  t<sub>ij</sub>  (min)</div>
+        <canvas id="chart-time" height="180"></canvas>
+      </div>
+      <div style="flex:1;min-width:280px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:12px;">Congestion  c<sub>ij</sub></div>
+        <canvas id="chart-cong" height="180"></canvas>
+      </div>
+      <div style="flex:1;min-width:280px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:12px;">Customer TW Slack  (min)</div>
+        <canvas id="chart-slack" height="180"></canvas>
+      </div>
+    </div>
+
+  </main><!-- /main-pane -->
+
+</div><!-- /layout -->
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
