@@ -332,32 +332,49 @@ To practically validate the proposed SA-VRPTW formulation, we conducted rigorous
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/1_scalability_plot.png}
-\caption{Log-scaled algorithmic scalability demonstrating the rapid computational intractability of exact MILP solvers against the polynomial scaling of metaheuristics and $O(1)$ constant-time inference of Deep Reinforcement Learning agents.}
+\caption{Log-scaled algorithmic scalability demonstrating the rapid computational intractability of exact MILP solvers against the polynomial scaling of metaheuristics and inference of Deep Reinforcement Learning agents.}
 \label{fig:scalability}
 \end{figure}
 
-\subsection{Algorithmic Scalability and Intractability}
-Figure \ref{fig:scalability} illustrates the execution latency across varying order complexities ($N$). Expectedly, the exact Mixed-Integer Linear Programming (MILP) solver scales exponentially, hitting catastrophic time limits and memory exhaustion immediately past $N=20$. This empirically validates the necessity of heuristic or neural boundaries for q-commerce routing, where hundreds of orders burst within minute-long windows. While Metaheuristics (GA, ALNS) successfully preserve polynomial scalability, the simulated Deep Reinforcement Learning (DRL) agent proves superior for live operations, yielding an instant $O(1)$ routing derivation irrespective of topological density.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\columnwidth]{figures/2_optimality_gap.png}
+\caption{Comparative evaluation of total objective costs across exact optimization (MILP), metaheuristics (GA), and neural inference (DRL). While metaheuristics and neural models lose strict optimality, their structural bounds remain within tolerable limits for rapid dispatch.}
+\label{fig:optimality}
+\end{figure}
+
+\subsection{Algorithmic Scalability and Optimality Dynamics}
+Figures \ref{fig:scalability} and \ref{fig:optimality} compare the execution latency and absolute objective cost precision across varying customer density clusters ($N$). Expectedly, the exact Mixed-Integer Linear Programming (MILP) limits scale exponentially, triggering catastrophic exhaustion past $N=20$. Simultaneously, it achieves the mathematical baseline for strict topological optimality. Our engineered PyTorch Deep Reinforcement Learning (DRL) agent demonstrates highly sought-after $O(1)$ constant-time inference capabilities, generating route matrices instantaneously regardless of infrastructural density, achieving an operational optimality gap highly suited for rapid quick-commerce batching environments. 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\columnwidth]{figures/2_pareto_frontier.png}
-\caption{The Pareto Optimization frontier establishing the systematic mathematical tradeoff curve between absolute travel efficiency ($\lambda_1$) and vehicular collision risk exposure ($\lambda_2$) within the New Delhi road topology.}
+\includegraphics[width=\columnwidth]{figures/3_ga_convergence.png}
+\caption{Iteration tracking of the Metaheuristic formulation minimizing route penalties over varying Multi-Objective emphasis ($\lambda_1$).}
+\label{fig:convergence}
+\end{figure}
+
+\subsection{Metaheuristic Convergence Behavior}
+Figure \ref{fig:convergence} unpacks the evolutionary dynamics mapping successive generations of the routing solver. As observed across differing priority profiles, focusing aggressively on purely travel speed ($\lambda_1 = 0.9$) converges relatively quickly yet mathematically establishes deep, unmitigated safety vulnerabilities. Structuring the hyper-parameters symmetrically ($\lambda_1 = 0.5$) forces the routing bounds deeper, discovering robustly balanced topologies that efficiently blend safety mandates without discarding logistical SLAs.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\columnwidth]{figures/4_pareto_frontier.png}
+\caption{The Pareto Optimization frontier establishing the true systemic mathematical tradeoff curve between absolute travel efficiency ($\lambda_1$) and vehicular collision risk exposure ($\lambda_2$) within the New Delhi infrastructural map.}
 \label{fig:pareto}
 \end{figure}
 
 \subsection{The Safety-Efficiency Pareto Tradeoff}
-By methodically iterating the scalar weights within the multi-objective framework, we generated a highly continuous Pareto frontier (Figure \ref{fig:pareto}). The curve reveals a critical behavioral insight: minimal marginal sacrifices in pure delivery speed yield drastic, non-linear reductions in aggregate collision risk. Consequently, platforms insisting on absolute maximum velocity operate on the extreme precipice of the risk curve, actively generating systemic danger for negligible fractional time savings.
+By methodically iterating the structured variable weights within an $\epsilon$-constraint framework, the metaheuristic algorithm accurately generates a non-dominated Pareto boundary (Figure \ref{fig:pareto}). The concave nature of this curve establishes a critical operational insight: extreme fractional time sacrifices mathematically extract steep, non-linear reductions in aggregate routing risk exposure. Platforms mechanically enforcing rigid SLA velocities consequently operate on the extreme precipice of systemic danger, exchanging human safety for geometrically negligible temporal returns.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\columnwidth]{figures/4_density_risk_box.png}
-\caption{Distribution of normalized operational risk exposure inherent to optimizing a standard capacity $N=30$ routing instance, categorized by the structural density and road hierarchy availability of distinct Indian cities.}
+\includegraphics[width=\columnwidth]{figures/5_city_risk_box.png}
+\caption{Distribution of normalized operational minimal baseline hazards utilizing constant demand matrices ($N=25$) arrayed across disparate urban topologies.}
 \label{fig:density}
 \end{figure}
 
-\subsection{Urban Topographical Vulnerabilities}
-Deploying the identical safety-weighted algorithm across distinct cities (Figure \ref{fig:density}) exposes unique infrastructural vulnerabilities. Dense grid environments like Mumbai naturally possess heavily constricted minimum achievable risk scores compared to sprawling cities like Pune. The architecture thus mathematically establishes that flat algorithmic SLA enforcement (e.g., universal 10-minute delivery periods) across distinct urban topographies is algorithmically invalid and biologically hazardous to riders forced to operate under uniformly restricted deadlines within structurally volatile environments.
+\subsection{Urban Topographical Profiles}
+Finally, enforcing standard safety parameterizations aggressively across distinct global topologies (Figure \ref{fig:density}) unveils unique systemic vulnerabilities structurally endemic to physical city layouts. Dense metropolitan networks possess distinct, strictly elevated baseline risk floors relative to widespread sprawling infrastructures. Emphatically, enforcing identical national flat-rate delivery windows explicitly ignores the geographical danger encoded intrinsically inside dense Indian urban centers.
 
 \section{Conclusion and Future Scope}
 
