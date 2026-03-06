@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.11.10)  6 MAR 2026 17:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.11.10)  6 MAR 2026 17:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -856,23 +856,21 @@ Overfull \hbox (4.13908pt too wide) in paragraph at lines 283--284
  [][] 
  []
 
-
-LaTeX Warning: Reference `fig:scalability' on page 5 undefined on input line 33
-3.
-
-<figures/1_scalability_plot.png, id=136, 722.7pt x 433.62pt>
+<figures/1_scalability_plot.png, id=156, 722.7pt x 433.62pt>
 File: figures/1_scalability_plot.png Graphic file (type png)
 <use figures/1_scalability_plot.png>
-Package pdftex.def Info: figures/1_scalability_plot.png  used on input line 337
+Package pdftex.def Info: figures/1_scalability_plot.png  used on input line 334
 .
 (pdftex.def)             Requested size: 247.94499pt x 148.76538pt.
 
-LaTeX Warning: Reference `fig:pareto' on page 5 undefined on input line 343.
+Underfull \hbox (badness 10000) in paragraph at lines 339--339
+[]\T1/cmr/bx/n/12 Algorithmic Scal-a-bil-ity and In-
+ []
 
-<figures/2_pareto_frontier.png, id=138, 650.43pt x 433.62pt>
+<figures/2_pareto_frontier.png, id=159, 650.43pt x 433.62pt>
 File: figures/2_pareto_frontier.png Graphic file (type png)
 <use figures/2_pareto_frontier.png>
-Package pdftex.def Info: figures/2_pareto_frontier.png  used on input line 347.
+Package pdftex.def Info: figures/2_pareto_frontier.png  used on input line 344.
 
 (pdftex.def)             Requested size: 247.94499pt x 165.2934pt.
 [5
@@ -880,72 +878,65 @@ pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.350 \end{figure}
-                  
+l.351 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.350 \end{figure}
-                  
+l.351 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.350 \end{figure}
-                   <./figures/1_scalability_plot.png>]
-
-LaTeX Warning: Reference `fig:density' on page 6 undefined on input line 353.
-
-<figures/4_density_risk_box.png, id=151, 794.97pt x 433.62pt>
+l.351 
+       <./figures/1_scalability_plot.png>]
+<figures/4_density_risk_box.png, id=173, 794.97pt x 433.62pt>
 File: figures/4_density_risk_box.png Graphic file (type png)
 <use figures/4_density_risk_box.png>
-Package pdftex.def Info: figures/4_density_risk_box.png  used on input line 357
+Package pdftex.def Info: figures/4_density_risk_box.png  used on input line 354
 .
 (pdftex.def)             Requested size: 247.94499pt x 135.24126pt.
 
-Underfull \vbox (badness 6775) has occurred while \output is active []
+Underfull \hbox (badness 7030) in paragraph at lines 366--367
+[]\T1/cmr/m/n/10 By ac-cu-rately com-bin-ing au-then-tic ge-o-graph-i-cal
+ []
+
+
+Underfull \vbox (badness 1132) has occurred while \output is active []
 
  [6
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.387 \end{document}
-                    
+l.381 \bibitem{desrochers1992}
+                               Desrochers, M., Desrosiers, J., \& Solomon, M...
+
 pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.387 \end{document}
-                     <./figures/2_pareto_frontier.png> <./figures/4_density_ris
-k_box.png>] (./SafetyAwareRoutingProposal.aux)
+l.381 \bibitem{desrochers1992}
+                               Desrochers, M., Desrosiers, J., \& Solomon, M...
+ <./figures/2_pareto_frontier.png> <./figures/4_density_risk_box.png>] [7
+
+]
+(./SafetyAwareRoutingProposal.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `SafetyAwareRoutingProposal.out' has chang
-ed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `SafetyAwareRoutingProposal.out':
-(rerunfilecheck)             Before: 0C70B1231D24E010A74E1EBC25C278DA;4057
-(rerunfilecheck)             After:  CB6B145CEDA26F0D27E314538F0A704B;4841.
+Package rerunfilecheck Info: File `SafetyAwareRoutingProposal.out' has not chan
+ged.
+(rerunfilecheck)             Checksum: 430A4CA7C973CB3DA4ED7DEBC96C8597;5412.
  ) 
 Here is how much of TeX's memory you used:
- 23729 strings out of 476182
- 459577 string characters out of 5795594
+ 23736 strings out of 476182
+ 459672 string characters out of 5795594
  1945975 words of memory out of 5000000
- 45258 multiletter control sequences out of 15000+600000
+ 45263 multiletter control sequences out of 15000+600000
  579083 words of font info for 96 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,9n,87p,1547b,1079s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -973,10 +964,10 @@ ist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
 c/amsfonts/symbols/msbm10.pfb>
-Output written on SafetyAwareRoutingProposal.pdf (6 pages, 794595 bytes).
+Output written on SafetyAwareRoutingProposal.pdf (7 pages, 799253 bytes).
 PDF statistics:
- 711 PDF objects out of 1000 (max. 8388607)
- 232 compressed objects within 3 object streams
- 51 named destinations out of 1000 (max. 500000)
- 196 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 742 PDF objects out of 1000 (max. 8388607)
+ 256 compressed objects within 3 object streams
+ 53 named destinations out of 1000 (max. 500000)
+ 236 words of extra memory for PDF output out of 10000 (max. 10000000)
 
