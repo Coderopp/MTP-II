@@ -71,11 +71,24 @@ def nearest_node(G: nx.MultiDiGraph, lat: float, lon: float) -> str:
 def get_edge_attr(G: nx.MultiDiGraph, u: int, v: int, attr: str,
                   default: float = 0.0) -> float:
     """Return attr from the first key of a multigraph edge."""
-    edges = G[u][v]
-    if not edges:
+    # When nx.shortest_path is used with a weight, it implicitly selects the
+    # edge with the minimum weight for each (u,v) pair.
+    # So, when summing up the path, we should retrieve the attribute from
+    # the edge that was actually chosen by shortest_path.
+    # However, networkx's shortest_path for MultiDiGraph returns a path of nodes,
+    # not edges. To get the specific edge data, we need to iterate through
+    # the parallel edges and find the one that matches the shortest path criteria.
+    # For 't_ij', this means finding the minimum 't_ij' edge.
+    
+    # Fix: explicitly select the minimal parallel edge weight rather than arbitrary index 0
+    parallel_edges = G[u][v]
+    if not parallel_edges:
         return default
-    data = list(edges.values())[0]
-    return float(data.get(attr, default))
+    
+    # Find the edge with the minimum 't_ij' among parallel edges
+    # This assumes 't_ij' is the relevant attribute for pathfinding.
+    best_edge_data = min(parallel_edges.values(), key=lambda e: e.get('t_ij', float('inf')))
+    return float(best_edge_data.get(attr, default))
 
 
 def compute_travel_time(G: nx.MultiDiGraph, u: int, v: int) -> float:

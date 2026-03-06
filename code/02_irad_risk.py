@@ -177,8 +177,8 @@ def compute_risk(G, accidents: pd.DataFrame, data_source: str) -> dict:
             vs = edges_arr[:, 1]
             ks = edges_arr[:, 2]
         else:                             # shape (N,) of tuples
-            us = np.array([e[0] for e in edges_arr])
-            vs = np.array([e[1] for e in edges_arr])
+            us = np.array([str(e[0]) for e in edges_arr])
+            vs = np.array([str(e[1]) for e in edges_arr])
             ks = np.array([e[2] for e in edges_arr])
     elif len(ne_result) == 4:
         us, vs, ks, dists = ne_result
