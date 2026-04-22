@@ -1,0 +1,57 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+A level-1 auxiliary file: ./FrontMatter/titlePage.aux
+A level-1 auxiliary file: ./FrontMatter/certificate.aux
+A level-1 auxiliary file: ./FrontMatter/acknowledgements.aux
+A level-1 auxiliary file: ./FrontMatter/abstract.aux
+A level-1 auxiliary file: ./Chapters/chapter1.aux
+A level-1 auxiliary file: ./Chapters/chapter2.aux
+A level-1 auxiliary file: ./Chapters/chapter3.aux
+A level-1 auxiliary file: ./Chapters/chapter4.aux
+A level-1 auxiliary file: ./Chapters/chapter5.aux
+A level-1 auxiliary file: ./Chapters/chapter6.aux
+A level-1 auxiliary file: ./Chapters/chapter7.aux
+The style file: agsm.bst
+Database file #1: references.bib
+You've used 21 entries,
+            2909 wiz_defined-function locations,
+            771 strings with 7757 characters,
+and the built_in function-call counts, 84914 in all, are:
+= -- 13985
+> -- 895
+< -- 1
++ -- 6590
+- -- 266
+* -- 7245
+:= -- 17099
+add.period$ -- 22
+call.type$ -- 21
+change.case$ -- 296
+chr.to.int$ -- 21
+cite$ -- 21
+duplicate$ -- 320
+empty$ -- 653
+format.name$ -- 337
+if$ -- 15222
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 18
+newline$ -- 67
+num.names$ -- 215
+pop$ -- 87
+preamble$ -- 1
+purify$ -- 315
+quote$ -- 0
+skip$ -- 276
+stack$ -- 0
+substring$ -- 19777
+swap$ -- 51
+text.length$ -- 295
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 82
+warning$ -- 0
+while$ -- 462
+width$ -- 0
+write$ -- 269

@@ -1,0 +1,441 @@
+/* ===================================================================
+   MTP-II Presentation — Minimal Academic Theme
+   Colour Palette: White (#ffffff), Cream (#f5f0e8), Black (#1a1a1a)
+   =================================================================== */
+
+/* --- Reset & Base -------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: #1a1a1a;
+  color: #1a1a1a;
+  overflow: hidden;
+}
+
+/* --- Slide Container ----------------------------------------------- */
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow-y: auto;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* Slide variants */
+.slide--cream  { background: #f5f0e8; }
+.slide--dark   { background: #1a1a1a; color: #f5f0e8; }
+
+/* --- Typography ---------------------------------------------------- */
+h1 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.4em;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.slide--dark h1,
+.slide--dark h2,
+.slide--dark h3 { color: #f5f0e8; }
+
+h2 {
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  color: #1a1a1a;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 0.25em;
+}
+
+h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-top: 0.8em;
+  margin-bottom: 0.3em;
+  color: #333;
+}
+
+p, li {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: #2a2a2a;
+}
+
+.slide--dark p, .slide--dark li { color: #ddd; }
+
+ul, ol {
+  margin-left: 1.8em;
+  margin-bottom: 0.6em;
+}
+
+li { margin-bottom: 0.35em; }
+
+strong { font-weight: 700; }
+
+em { font-style: italic; color: #555; }
+
+/* --- Title Slide --------------------------------------------------- */
+.title-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px;
+}
+
+.title-slide h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.3em;
+  max-width: 900px;
+}
+
+.title-slide .subtitle {
+  font-size: 1.3rem;
+  color: #555;
+  margin-bottom: 1.5em;
+  font-style: italic;
+}
+
+.title-slide .meta {
+  font-size: 1.05rem;
+  color: #444;
+  line-height: 1.8;
+}
+
+.title-slide .meta span {
+  display: block;
+}
+
+.title-slide .institution {
+  margin-top: 1.6em;
+  font-size: 1.0rem;
+  color: #777;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- Two-Column Layout --------------------------------------------- */
+.columns {
+  display: flex;
+  gap: 40px;
+  flex: 1;
+  align-items: flex-start;
+  margin-top: 0.5em;
+}
+
+.col { flex: 1; }
+.col--narrow { flex: 0.45; }
+.col--wide   { flex: 0.55; }
+
+/* --- Figures ------------------------------------------------------- */
+.figure {
+  text-align: center;
+  margin: 0.8em 0;
+}
+
+.figure img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.figure.large img {
+  max-height: 480px;
+}
+
+.figure.small img {
+  max-height: 280px;
+}
+
+.figure.full img {
+  max-height: 520px;
+  max-width: 95%;
+}
+
+.figure-caption {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.4em;
+  font-style: italic;
+}
+
+/* Side-by-side figures */
+.figures-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0.6em 0;
+}
+
+.figures-row .figure {
+  flex: 1;
+}
+
+.figures-row .figure img {
+  max-height: 320px;
+}
+
+/* --- Equations (MathJax containers) -------------------------------- */
+.equation-block {
+  background: #f5f0e8;
+  border-left: 4px solid #1a1a1a;
+  padding: 16px 24px;
+  margin: 0.8em 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 1.1rem;
+  overflow-x: auto;
+}
+
+.slide--cream .equation-block {
+  background: #fff;
+}
+
+.equation-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Tables -------------------------------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  font-size: 0.95rem;
+}
+
+th {
+  background: #1a1a1a;
+  color: #f5f0e8;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) td { background: #faf8f4; }
+
+/* --- Citation Tags ------------------------------------------------- */
+.cite {
+  font-size: 0.85rem;
+  color: #777;
+  font-style: italic;
+}
+
+.ref-list {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.ref-list li {
+  margin-bottom: 0.5em;
+}
+
+/* --- Iframe for HTML maps ------------------------------------------ */
+.map-embed {
+  width: 100%;
+  height: 420px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.map-embed.tall {
+  height: 480px;
+}
+
+/* --- Code reference tag -------------------------------------------- */
+.code-ref {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #333;
+}
+
+/* --- Pipeline steps ------------------------------------------------ */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 1em 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pipeline-step {
+  background: #f5f0e8;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  min-width: 130px;
+  max-width: 170px;
+}
+
+.pipeline-step strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.pipeline-arrow {
+  font-size: 1.6rem;
+  color: #999;
+  padding: 0 6px;
+}
+
+/* --- Slide Counter ------------------------------------------------- */
+.slide-counter {
+  position: fixed;
+  bottom: 18px;
+  right: 28px;
+  font-size: 0.85rem;
+  color: #999;
+  font-family: 'Courier New', monospace;
+  z-index: 100;
+}
+
+/* --- Progress Bar -------------------------------------------------- */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: #1a1a1a;
+  z-index: 100;
+  transition: width 0.3s ease;
+}
+
+/* --- Architecture Diagram (CSS) ------------------------------------ */
+.arch-diagram {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: center;
+  margin: 1.2em 0;
+}
+
+.arch-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.arch-box {
+  border: 1.5px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 12px 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  min-width: 180px;
+}
+
+.arch-box.osm      { background: #e8e8e8; }
+.arch-box.irad     { background: #f5e0e0; }
+.arch-box.traffic  { background: #f5ece0; }
+.arch-box.ops      { background: #e8e0f0; }
+.arch-box.rider    { background: #f5f0d8; }
+
+.arch-engine {
+  border: 2.5px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 1.0rem;
+  background: #fafafa;
+  min-width: 220px;
+}
+
+.arch-output {
+  border: 2px solid #4a7a4a;
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 0.95rem;
+  background: #eaf5ea;
+  min-width: 160px;
+}
+
+.arch-arrow {
+  font-size: 2rem;
+  color: #666;
+}
+
+/* --- Highlight Box ------------------------------------------------- */
+.highlight-box {
+  background: #f5f0e8;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 0.6em 0;
+}
+
+.slide--cream .highlight-box {
+  background: #fff;
+}
+
+/* --- Key Finding --------------------------------------------------- */
+.key-finding {
+  border-left: 4px solid #1a1a1a;
+  padding: 12px 20px;
+  margin: 0.6em 0;
+  background: #faf8f4;
+  font-size: 1.0rem;
+}
+
+/* --- Navigation Help ----------------------------------------------- */
+.nav-help {
+  position: fixed;
+  bottom: 18px;
+  left: 28px;
+  font-size: 0.75rem;
+  color: #aaa;
+  z-index: 100;
+}
+
+/* --- Print / Responsive -------------------------------------------- */
+@media print {
+  .slide { page-break-after: always; position: relative; opacity: 1 !important; pointer-events: auto !important; }
+  .slide-counter, .progress-bar, .nav-help { display: none; }
+}
+
+@media (max-width: 900px) {
+  .slide { padding: 30px 30px; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.4rem; }
+  .columns { flex-direction: column; gap: 16px; }
+  .figures-row { flex-direction: column; }
+}

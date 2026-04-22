@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-from utils import DATA_DIR, KHARAGPUR_BBOX, filter_bbox, load_graph, normalize, save_graph
+from utils import DATA_DIR, BENGALURU_BBOX, filter_bbox, load_graph, normalize, save_graph
 
 import osmnx as ox
 
@@ -58,18 +58,18 @@ RANDOM_SEED = 42
 
 def generate_synthetic_accidents(n: int = SYNTHETIC_N, seed: int = RANDOM_SEED) -> pd.DataFrame:
     """
-    Generate synthetic iRAD-like accident records within Kharagpur bounding box.
+    Generate synthetic iRAD-like accident records within Bengaluru bounding box.
     Records are clustered around known high-traffic zones via a Gaussian mixture.
     """
     rng = np.random.default_rng(seed)
-    bbox = KHARAGPUR_BBOX
+    bbox = BENGALURU_BBOX
 
-    # Cluster centres: NH16, IIT zone, town market, station area
+    # Cluster centres for Bengaluru
     cluster_centres = [
-        (22.3460, 87.3190),   # NH16 eastern bypass
-        (22.3175, 87.3095),   # IIT Kharagpur campus exit
-        (22.3300, 87.3200),   # Town market
-        (22.3400, 87.3300),   # Kharagpur railway station
+        (12.9716, 77.5946),   # Majestic / City Center
+        (12.9250, 77.6227),   # Koramangala
+        (12.9784, 77.6408),   # Indiranagar
+        (13.0285, 77.5895),   # Hebbal
     ]
     weights = [0.35, 0.25, 0.25, 0.15]
     n_per_cluster = rng.multinomial(n, weights)
@@ -138,7 +138,7 @@ def load_irad_real(csv_path: Path) -> pd.DataFrame:
     df["Latitude"]  = pd.to_numeric(df["Latitude"],  errors="coerce")
     df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
     df = df.dropna(subset=["Latitude", "Longitude"])
-    df = filter_bbox(df, bbox=KHARAGPUR_BBOX)
+    df = filter_bbox(df, bbox=BENGALURU_BBOX)
     print(f"  [Real iRAD] {len(df):,} records after bbox filter")
     return df
 
@@ -214,6 +214,9 @@ def compute_risk(G, accidents: pd.DataFrame, data_source: str) -> dict:
 
     # Build Series for global min-max normalisation
     all_keys   = list(edge_risk_norm.keys())
+    print(f"  [DEBUG] Snapped to {len(all_keys)} unique edges.")
+    all_values = pd.Series([edge_risk_norm[k] for k in all_keys])
+    print(f"  [DEBUG] Min raw risk: {all_values.min()}, Max raw risk: {all_values.max()}")
     all_values = pd.Series([edge_risk_norm[k] for k in all_keys])
     
     # FIX: Use log-scaling before min-max normalization to prevent extreme outliers 

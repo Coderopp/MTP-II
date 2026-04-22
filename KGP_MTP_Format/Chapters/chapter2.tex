@@ -1,0 +1,71 @@
+\chapter{Literature Review}
+
+A systematic literature search was conducted across academic databases including PubMed, arXiv, and Semantic Scholar, focusing on publications from 2015 to 2026. From an initial pool of 450 records, 120 duplicates were removed and 330 were screened by title and abstract. Ninety full-text articles were assessed for eligibility, of which 25 were included in the final thematic synthesis. This chapter organizes the reviewed literature across three foundational pillars: computational optimization, safety-aware routing, and behavioral logistics.
+
+\section{Computational Foundations: The VRPTW}
+
+The mathematical core of q-commerce logistics is the Vehicle Routing Problem with Time Windows (VRPTW), which extends the classic VRP by imposing strict temporal constraints on customer service. The VRP was first conceptualized by \citet{dantzig1959} as the ``truck dispatching problem.'' \citet{solomon1987} established the foundational heuristic algorithms and benchmark instances for the VRPTW, providing the standard test bed that remains in use today. \citet{desrochers1992} subsequently introduced exact solution methods using column generation, proving that provably optimal solutions were achievable for small-to-medium problem instances.
+
+The VRPTW is classified as NP-hard \citep{toth2002}, meaning that exact optimization methods become computationally prohibitive for real-world datasets characterized by large vehicle fleets and high order volumes. Modern routing engines therefore prioritize metaheuristics such as Genetic Algorithms \citep{holland1975, goldberg1989} and Tabu Search \citep{gendreau2010}, which identify high-quality solutions within the limited CPU time necessitated by on-demand delivery.
+
+The standard VRPTW formulation requires that each customer $i$ be visited exactly once within a specific time interval $[a_i, b_i]$. If a vehicle arrives before the window opens, it must wait; if it arrives after the window closes, the service is considered a failure or incurs a significant penalty. The primary objective is typically the minimization of total operational cost:
+\begin{equation}
+    \min Z = \sum_{k \in K} \sum_{(i,j) \in A} c_{ij} x_{ij}^k + \sum_{k \in K} \sum_{i \in C} P_i(t_i^k)
+\end{equation}
+where $c_{ij}$ represents the cost of traversing arc $(i,j)$ and $P_i(t_i^k)$ is the penalty cost for arriving outside the preferred time window.
+
+Several important VRP extensions are relevant to q-commerce operations, as summarized in Table~\ref{tab:vrp_variants}.
+
+\begin{table}[ht]
+\centering
+\caption{VRP variants relevant to quick commerce logistics.}
+\label{tab:vrp_variants}
+\begin{tabular}{lll}
+\toprule
+\textbf{Variant} & \textbf{Key Focus} & \textbf{Primary Constraint} \\
+\midrule
+CVRP     & Capacity     & Vehicle load $\leq Q$ \\
+VRPTW    & Timeliness   & Service within $[a_i, b_i]$ \\
+TDVRP    & Realism      & $t_{ij} = f(t_{\text{departure}}, \text{traffic})$ \\
+MTVRPTWR & Efficiency   & Multiple trips + release dates \\
+GVRPTW   & Sustainability & Emissions minimization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Safety-Aware and Risk-Aware Routing}
+
+Safety-aware routing integrates accident risk as a primary objective in the routing function. The earliest safety-oriented models originated in Hazardous Materials (Hazmat) logistics, where risk was defined as the product of population exposure and release probability \citep{zografos2004, erkut1998}. Drawing from Failure Mode and Effects Analysis (FMEA), the risk index $R_{ij}$ for a road segment $(i,j)$ is typically expressed as:
+\begin{equation}
+    R_{ij} = P_{ij} \times C_{ij}
+\end{equation}
+where $P_{ij}$ is the probability of an adverse event and $C_{ij}$ is its projected consequence.
+
+More recently, researchers have applied these concepts to everyday urban logistics. \citet{hoseinzadeh2020} defined a ``Safety Index'' using historical crash data combined with real-time driver volatility telematics, scoring each road segment by its inherent danger level. The Risk-Aware Dynamic Routing (RADR) framework extends this approach using spatio-temporal graph learning to proactively avoid high-risk road segments. These methods have demonstrated that delivery fleets can reduce accident risk exposure by over 18\% with only a minor increase ($\sim$2\%) in total travel time.
+
+The Ministry of Road Transport and Highways (MoRTH) in India has implemented the Integrated Road Accident Database (iRAD) and the e-Detailed Accident Report (e-DAR) to facilitate data-driven safety interventions \citep{irad2021}. The iRAD system enables geo-tagged accident data capture through mobile applications, creating a centralized national repository. By integrating iRAD coordinates into a routing engine's GIS layer, platforms can apply high cost penalties to arcs intersecting known black spots, effectively ``safety-weighting'' the route selection process.
+
+The International Road Assessment Programme (iRAP) provides a complementary proactive methodology, rating roads from 1 star (high risk) to 5 stars (low risk) based on 50 infrastructure attributes coded every 100 metres \citep{irap2020}. This objective measure allows routing engines to prefer safer infrastructure even when alternative routes are geodesically longer.
+
+\section{Behavioral Logistics and Rider Safety}
+
+A critical component of safety-aware routing is the recognition of ``behavioral logistics''---the interaction between algorithmic directives and human response within the gig economy. Delivery riders are not mere agents following coordinates; they are independent workers influenced by economic incentives, psychological pressure, and physical fatigue.
+
+\citet{sinchaisri2023} demonstrated that gig-economy riders exhibit non-rational behavioural patterns such as ``income-targeting'' and ``inertia,'' where financial goals directly dictate their risk tolerance. Performance-based pay (piece-rate wages) incentivizes productivity but inadvertently promotes unsafe driving as riders attempt to maximize trip counts per shift. Studies have found that paying drivers based on time worked or offering higher base pay is strongly associated with better safety outcomes.
+
+\citet{salmon2023} argued that road safety incidents in q-commerce should be viewed as ``systemic failures'' rather than individual human errors. The algorithm's pressure for extreme speed structurally forces riders to take risks---a perspective that shifts responsibility from the rider to the platform design itself.
+
+To counter these effects, researchers have experimented with ``nudging'' strategies. Information nudging---providing riders with real-time data on crash probabilities for different route choices---can influence route selection. However, monetary incentives for choosing safer, albeit longer, routes are often necessary to motivate actual behavioural change. The Fairwork India Ratings 2024 report evaluated 11 platforms and found that no platform scored above 6 out of 10 on fair work principles, with all platforms scoring zero on the ``Fair Representation'' principle due to refusal to recognize collective worker bodies \citep{fairwork2024}.
+
+\section{Research Gaps}
+
+While research on VRP optimization, risk modelling, and gig-economy behaviour exists independently, there is a lack of integrated studies. Specifically, the following gaps emerge from the literature:
+
+\begin{enumerate}
+    \item \textbf{Technological integration scale:} The engineering challenge of integrating national-level crash databases (iRAD) into sub-second dispatch loops remains under-explored.
+    \item \textbf{Longitudinal fatigue modelling:} Most behavioral models are cross-sectional snapshots; they do not account for cumulative rider fatigue over 12-hour gig-economy shifts.
+    \item \textbf{Governance trade-offs:} There is no established standard for what level of ``time penalty'' is acceptable in exchange for safety from a regulatory perspective.
+    \item \textbf{Stakeholder conflict resolution:} No mathematical framework exists for resolving the inherent conflict between a platform's profit, a customer's time expectation, and a rider's physical safety.
+\end{enumerate}
+
+This thesis addresses these gaps by creating a unified SA-VRPTW framework that treats rider safety not as a constraint to be satisfied, but as a primary Pareto objective of urban logistics.

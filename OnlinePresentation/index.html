@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTP-II: Safety-Aware Vehicle Routing for Quick Commerce</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- MathJax for equation rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-counter" id="slideCounter"></div>
+<div class="nav-help">Arrow Keys / Click to Navigate</div>
+
+<div class="deck" id="deck">
+
+<!-- ================================================================
+     SLIDE 1 — Title
+     ================================================================ -->
+<section class="slide slide--cream title-slide active" id="slide-1">
+  <h1>Safety-Aware Vehicle Routing for Quick Commerce Delivery</h1>
+  <div class="subtitle">A Behavioral Multi-Objective Optimization Approach</div>
+  <div class="meta">
+    <span><strong>Presented by:</strong> Pranav Bhadane &mdash; 21IM30017</span>
+    <span><strong>Guide:</strong> Prof. Subhajit Sidhanta</span>
+    <span style="margin-top:0.6em; display:block;"><strong>Masters Thesis Project II</strong></span>
+  </div>
+  <div class="institution">
+    Department of Industrial and Systems Engineering<br>
+    Indian Institute of Technology Kharagpur
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 2 — Outline
+     ================================================================ -->
+<section class="slide" id="slide-2">
+  <h2>Presentation Outline</h2>
+  <ol style="font-size:1.15rem; line-height:2.2;">
+    <li>Literature Review &mdash; VRPTW, Safety Routing, Behavioral Logistics</li>
+    <li>Research Gaps and Motivation</li>
+    <li>System Architecture and Conceptual Framework</li>
+    <li>SA-VRPTW Mathematical Formulation &mdash; Objectives and Constraints</li>
+    <li>Data Acquisition Pipeline &mdash; OSM, iRAD, Congestion</li>
+    <li>Solution Approaches &mdash; MILP, Genetic Algorithm, Deep RL</li>
+    <li>Experimental Results &mdash; Cross-City Benchmarks (6 Indian Cities)</li>
+    <li>Spatial Analysis &mdash; Heatmaps and Route Divergence</li>
+    <li>Future Work and Conclusion</li>
+    <li>References</li>
+  </ol>
+</section>
+
+<!-- ================================================================
+     SLIDE 3 — Literature Review: VRPTW Foundations
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-3">
+  <h2>Literature Review: Computational Foundations</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>Vehicle Routing Problem with Time Windows (VRPTW)</h3>
+      <ul>
+        <li><strong>Seminal Work:</strong> Solomon (1987) established foundational heuristics and benchmark instances for the VRPTW. <span class="cite">[Solomon, 1987]</span></li>
+        <li><strong>Exact Methods:</strong> Desrochers et al. (1992) introduced column generation for provably optimal solutions on small-to-medium instances. <span class="cite">[Desrochers et al., 1992]</span></li>
+        <li><strong>NP-Hardness:</strong> Real-world q-commerce scale (high order volumes, stochastic demand) makes exact methods computationally prohibitive. <span class="cite">[Toth &amp; Vigo, 2002]</span></li>
+        <li><strong>Modern Approaches:</strong> Metaheuristics (GA, Tabu Search) and Deep Reinforcement Learning (DRL) enable sub-second dispatch decisions.</li>
+      </ul>
+      <h3>Key VRP Extensions for Q-Commerce</h3>
+      <table>
+        <tr><th>Variant</th><th>Key Focus</th><th>Primary Constraint</th></tr>
+        <tr><td>CVRP</td><td>Capacity</td><td>Vehicle load &le; Q</td></tr>
+        <tr><td>VRPTW</td><td>Timeliness</td><td>Service within [a<sub>i</sub>, b<sub>i</sub>]</td></tr>
+        <tr><td>TDVRP</td><td>Realism</td><td>t<sub>ij</sub> = f(departure, traffic)</td></tr>
+        <tr><td>MTVRPTWR</td><td>Efficiency</td><td>Multiple trips + release dates</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 4 — Literature Review: Safety & Behavioral
+     ================================================================ -->
+<section class="slide" id="slide-4">
+  <h2>Literature Review: Safety Routing &amp; Behavioral Logistics</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>Safety-Aware and Risk-Aware Routing</h3>
+      <ul>
+        <li><strong>Hazmat Origins:</strong> Early safety models minimised population exposure in hazardous materials logistics. <span class="cite">[Zografos &amp; Androutsopoulos, 2004]</span></li>
+        <li><strong>Urban Safety Index:</strong> Hoseinzadeh et al. (2020) defined a composite index using historical crash data and real-time driver volatility telematics. <span class="cite">[Hoseinzadeh et al., 2020]</span></li>
+        <li><strong>RADR Framework:</strong> Spatio-temporal graph learning proactively avoids high-risk segments, reducing risk exposure by ~18% with minimal time impact (~2%).</li>
+        <li><strong>FMEA Risk Model:</strong> $R_{ij} = P_{ij} \times C_{ij}$ &mdash; probability of adverse event multiplied by projected impact.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Behavioral Logistics &mdash; The Human Element</h3>
+      <ul>
+        <li><strong>Income-Targeting:</strong> Gig riders exhibit non-rational patterns where financial goals dictate risk tolerance. <span class="cite">[Sinchaisri et al., 2023]</span></li>
+        <li><strong>Systemic Failure:</strong> Q-commerce safety incidents result from algorithmic pressure inducing structural risk-taking. <span class="cite">[Salmon et al., 2023]</span></li>
+        <li><strong>Nudging Strategies:</strong> Information nudging (real-time crash probabilities) and monetary incentives for choosing safer routes. <span class="cite">[Short Summary, 2024]</span></li>
+        <li><strong>Piece-Rate Wages:</strong> Payment per delivery strongly associated with speeding, fatigue, and poor safety outcomes.</li>
+      </ul>
+      <div class="key-finding">
+        <strong>Key Insight:</strong> Algorithms directly increase systemic safety risk. The "double-edged sword" of performance-based pay promotes unsafe driving as riders maximise trip counts per shift.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 5 — Literature Review: Research Gaps & PRISMA
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-5">
+  <h2>Research Gaps and Motivation</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>PRISMA Systematic Review</h3>
+      <div class="highlight-box">
+        <p>Systematic search across PubMed, arXiv, and Semantic Scholar (2015&ndash;2026).</p>
+        <table style="margin-top:0.6em;">
+          <tr><th>Stage</th><th>Records</th></tr>
+          <tr><td>Database search</td><td>n = 450</td></tr>
+          <tr><td>Duplicates removed</td><td>n = 120</td></tr>
+          <tr><td>Title/abstract screening</td><td>n = 330</td></tr>
+          <tr><td>Full-text assessed</td><td>n = 90</td></tr>
+          <tr><td>Final thematic synthesis</td><td><strong>n = 25</strong></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="col">
+      <h3>Identified Research Gaps</h3>
+      <ol>
+        <li><strong>Technological Integration Scale:</strong> Engineering challenge of integrating national-level crash databases (iRAD) into sub-second dispatch loops is under-explored.</li>
+        <li><strong>Longitudinal Fatigue Modelling:</strong> Behavioral models are snapshots; they do not account for cumulative fatigue over 12-hour gig-economy shifts.</li>
+        <li><strong>Governance Trade-offs:</strong> No established standard for acceptable "time penalty" in exchange for safety from a regulatory perspective.</li>
+        <li><strong>Stakeholder Conflict Resolution:</strong> No mathematical models for resolving conflict between platform profit, customer time, and rider safety.</li>
+      </ol>
+      <div class="key-finding">
+        <strong>Thesis Contribution:</strong> A unified SA-VRPTW framework that treats rider safety not as a constraint, but as a primary Pareto objective of urban logistics.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 6 — System Architecture
+     ================================================================ -->
+<section class="slide" id="slide-6">
+  <h2>System Architecture and Conceptual Framework</h2>
+  <p>The SA-VRPTW ecosystem comprises a two-layer architecture: a macro-layer for environmental datasets and a micro-layer for rider behavioral dynamics.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-group">
+      <div style="font-size:0.85rem; font-weight:700; text-align:center; margin-bottom:6px; color:#555;">ENVIRONMENTAL &amp; INFRASTRUCTURE DATA</div>
+      <div class="arch-box osm"><strong>Spatial Topology</strong><br>OpenStreetMap Data<br>$t_{ij},\; d_{ij}$</div>
+      <div class="arch-box irad"><strong>Government iRAD Data</strong><br>Empirical Crash History<br>$r_{ij}$ Score</div>
+      <div class="arch-box traffic"><strong>Live Congestion API</strong><br>Traffic Saturation<br>$c_{ij}$ Index</div>
+    </div>
+
+    <div class="arch-arrow">&rarr;</div>
+
+    <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+      <div class="arch-box ops"><strong>Platform Operations</strong><br>Time Windows, Demand,<br>Fleet Capacity ($Q$)</div>
+      <div class="arch-engine">
+        <strong style="font-size:1.3rem;">SA-VRPTW<br>Routing Engine</strong><br><br>
+        $\min \{ \lambda_1 T + \lambda_2 R + \lambda_3 C \}$<br><br>
+        Constraint Validation<br>$e_i \leq \tau_i \leq l_i$
+      </div>
+      <div class="arch-box rider"><strong>Behavioral Profile</strong><br>Risk Tolerance Models<br>Information Nudging</div>
+    </div>
+
+    <div class="arch-arrow">&rarr;</div>
+
+    <div class="arch-output">
+      <strong>Synthesized<br>Safe Routing<br>Topologies</strong>
+    </div>
+  </div>
+
+  <p class="cite" style="text-align:center; margin-top:0.5em;">Figure 1: Socio-technical conceptual architecture integrating environmental data, platform operations, and behavioral dynamics.<br>Source: SafetyAwareRoutingProposal.tex, Figure 1</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 7 — Data Acquisition Pipeline
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-7">
+  <h2>Data Acquisition Pipeline</h2>
+  <p>Authentic geographic and municipal data is processed into clean inputs for the optimisation algorithms.</p>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <strong>Step 1</strong>
+      OSM Road Network<br>
+      <span class="code-ref">01_osm_graph.py</span>
+    </div>
+    <div class="pipeline-arrow">&rarr;</div>
+    <div class="pipeline-step">
+      <strong>Step 2</strong>
+      iRAD Risk Scoring<br>
+      <span class="code-ref">02_irad_risk.py</span>
+    </div>
+    <div class="pipeline-arrow">&rarr;</div>
+    <div class="pipeline-step">
+      <strong>Step 3</strong>
+      Congestion Index<br>
+      <span class="code-ref">03_congestion.py</span>
+    </div>
+    <div class="pipeline-arrow">&rarr;</div>
+    <div class="pipeline-step">
+      <strong>Step 4</strong>
+      Instance Generator<br>
+      <span class="code-ref">04_instance_generator.py</span>
+    </div>
+    <div class="pipeline-arrow">&rarr;</div>
+    <div class="pipeline-step">
+      <strong>Step 5</strong>
+      Validation<br>
+      <span class="code-ref">05_validate_instance.py</span>
+    </div>
+  </div>
+
+  <div class="columns" style="margin-top:1em;">
+    <div class="col">
+      <h3>Step 1: Spatial Topology Extraction</h3>
+      <ul>
+        <li>Six Indian cities mapped: <strong>Bengaluru, Delhi, Gurugram, Hyderabad, Mumbai, Pune</strong></li>
+        <li>OSMnx extracts directed multigraphs with edge attributes: <strong>length</strong> ($d_{ij}$), <strong>speed_kph</strong>, <strong>travel_time</strong> ($t_{ij}$)</li>
+        <li>10 km radius from city centre; drive-network filter</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Step 2: iRAD Risk Modelling</h3>
+      <ul>
+        <li>Collision risk $r_{ij}$ computed via Bayesian risk mapping:</li>
+      </ul>
+      <div class="equation-block">
+        $$r_{ij} = \text{BaseRisk}(hw) + \mathcal{N}(0, \sigma^2)$$
+      </div>
+      <ul>
+        <li>Severity-weighted encoding: Fatal (4), Grievous (3), Minor (2), Damage Only (1)</li>
+        <li>Log-scaling before min-max normalisation to prevent extreme outlier compression</li>
+        <li>Accidents snapped to nearest OSM edge via <span class="code-ref">ox.distance.nearest_edges()</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 8 — SA-VRPTW Formulation: Objectives
+     ================================================================ -->
+<section class="slide" id="slide-8">
+  <h2>SA-VRPTW Mathematical Formulation</h2>
+  <p>The framework uses Soft Time Windows (STW) and probabilistic risk modelling, defining a true multi-objective Pareto optimisation front.</p>
+
+  <div class="columns">
+    <div class="col">
+      <h3>Network and Parameters</h3>
+      <ul>
+        <li>Directed graph $G = (V, E)$ where $V = \{0\} \cup C$ (depot + $N$ customers)</li>
+        <li>Homogeneous fleet $K$ with capacity $Q = 2$ (q-commerce micro-batching)</li>
+        <li>Soft Time Windows $[e_i, l_i]$ with exponential lateness penalty:</li>
+      </ul>
+      <div class="equation-block">
+        <div class="equation-label">Lateness Penalty</div>
+        $$P_L(\tau_i^k) = e^{0.12\,\tau_i^k} - 1$$
+      </div>
+      <ul>
+        <li>Edge attributes: $t_{ij}$ (travel time), $r_{ij} \in [0,1]$ (crash probability), $c_{ij} \in [0,1]$ (congestion), $h_{ij} \in \{0,1\}$ (residential flag)</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Pareto Objective Functions</h3>
+      <div class="equation-block">
+        <div class="equation-label">Objective 1 &mdash; Efficiency &amp; Soft Penalties</div>
+        $$\min F_1 = \sum_{k \in K} \sum_{(i,j) \in E} t_{ij}\, x_{ij}^k + \sum_{k \in K} \sum_{i \in C} P_L(\tau_i^k)$$
+      </div>
+      <div class="equation-block">
+        <div class="equation-label">Objective 2 &mdash; Probabilistic Route Survival</div>
+        $$\min F_2 = \sum_{k \in K} \sum_{(i,j) \in E} -\ln(1 - r_{ij})\, x_{ij}^k$$
+      </div>
+      <p style="margin-top:0.5em;">Rather than summing arbitrary risk indices, we maximise the absolute probability of <strong>accident-free route completion</strong> via log-survival transformation.</p>
+      <p class="cite">Source: SafetyAwareRoutingProposal.tex, Section 4</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 9 — SA-VRPTW Formulation: Constraints
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-9">
+  <h2>Novel Cyber-Physical Constraints</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>Behavioral Rider Fatigue Threshold ($S_{max}$)</h3>
+      <p>Riders suffer cognitive degradation under sustained high-stress corridor exposure. We enforce a maximum cumulative stress budget per route:</p>
+      <div class="equation-block">
+        $$\sum_{(i,j) \in E} -\ln(1 - r_{ij})\, x_{ij}^k \leq S_{max}, \quad \forall k \in K$$
+      </div>
+      <p>where $S_{max} = 5.0$ represents the empirically calibrated fatigue ceiling.</p>
+
+      <h3>Vulnerable Neighbourhood Protection ($H_{cap}$)</h3>
+      <p>To prevent routing delivery traffic through school zones and residential areas to avoid major intersections:</p>
+      <div class="equation-block">
+        $$\sum_{k \in K} \sum_{(i,j) \in E} h_{ij}\, x_{ij}^k \leq H_{cap}$$
+      </div>
+      <p>where $H_{cap} = 8$ limits residential road usage across the fleet.</p>
+    </div>
+    <div class="col">
+      <h3>Standard Routing Constraints</h3>
+      <ul>
+        <li><strong>Visit Uniqueness:</strong> Each customer visited exactly once</li>
+        <li><strong>Flow Conservation:</strong> Vehicles entering a node must leave it</li>
+        <li><strong>Depot Return:</strong> Each route starts and ends at assigned depot</li>
+        <li><strong>Capacity:</strong> Total load per route $\leq Q$</li>
+        <li><strong>Subtour Elimination:</strong> Miller-Tucker-Zemlin (MTZ) formulation</li>
+      </ul>
+
+      <h3>Multi-Depot Configuration</h3>
+      <div class="highlight-box">
+        <p><strong>3 Dark Stores</strong> modelled across Bengaluru:</p>
+        <ul>
+          <li>DarkStore Majestic (12.977, 77.571)</li>
+          <li>DarkStore Indiranagar (12.978, 77.641)</li>
+          <li>DarkStore Koramangala (12.928, 77.627)</li>
+        </ul>
+        <p style="margin-top:0.4em;">Customers assigned to nearest depot via Dijkstra shortest-path. Rolling horizon with orders arriving every 1&ndash;3 minutes.</p>
+        <p class="cite">Source: code/04_instance_generator.py</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 10 — Solution Approaches
+     ================================================================ -->
+<section class="slide" id="slide-10">
+  <h2>Solution Approaches</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>1. Exact Methods &mdash; MILP</h3>
+      <ul>
+        <li>Mixed-Integer Linear Programming via PuLP + CBC solver</li>
+        <li>Provides <strong>provably optimal</strong> baseline for academic validation</li>
+        <li>Computational intractability beyond $N = 20$ nodes</li>
+        <li>Implements $S_{max}$ and $H_{cap}$ constraints per rider</li>
+      </ul>
+      <p class="cite">Source: code/08_run_real_benchmarks.py &mdash; solve_milp_advanced()</p>
+
+      <h3>2. Genetic Algorithm (GA)</h3>
+      <ul>
+        <li>Population size: 50, Generations: 50&ndash;100</li>
+        <li>Elitist selection with tournament ($k=3$)</li>
+        <li>Order Crossover (OX) + Swap Mutation</li>
+        <li>Giant-tour split procedure for route partitioning</li>
+        <li>Fitness: $\lambda_1 T + \lambda_2 R + \lambda_3 C + \text{penalty}$</li>
+      </ul>
+      <p class="cite">Source: code/07_solver_ga.py</p>
+    </div>
+    <div class="col">
+      <h3>3. Deep Reinforcement Learning (DRL)</h3>
+      <ul>
+        <li>Pointer Network architecture trained via REINFORCE algorithm</li>
+        <li>$O(1)$ constant-time inference once deployed</li>
+        <li>8&ndash;12% optimality gap vs. exact MILP solution</li>
+      </ul>
+      <div class="highlight-box" style="margin-top:0.8em;">
+        <strong>DRL Training Loop:</strong>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:0.6em; flex-wrap:wrap; justify-content:center;">
+          <div class="pipeline-step" style="min-width:110px; font-size:0.8rem;"><strong>State</strong><br>Orders, Traffic, Risk</div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step" style="min-width:110px; font-size:0.8rem;"><strong>DRL Agent</strong><br>Neural Network</div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step" style="min-width:110px; font-size:0.8rem;"><strong>Action</strong><br>Assign Orders</div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step" style="min-width:110px; font-size:0.8rem;"><strong>Reward</strong><br>Time + Safety</div>
+        </div>
+        <p class="cite" style="margin-top:0.5em;">Source: code/09_drl_agent.py; SafetyAwareRoutingProposal.tex, Figure 2</p>
+      </div>
+
+      <h3 style="margin-top:1em;">Comparative Summary</h3>
+      <table>
+        <tr><th>Method</th><th>Speed</th><th>Quality</th><th>Scalability</th></tr>
+        <tr><td>MILP</td><td>Slow</td><td>Optimal</td><td>N &le; 20</td></tr>
+        <tr><td>GA</td><td>Medium</td><td>Near-optimal</td><td>N &le; 100+</td></tr>
+        <tr><td>DRL</td><td>Instant</td><td>8&ndash;12% gap</td><td>Unlimited</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 11 — Results: Scalability & Optimality
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-11">
+  <h2>Results: Algorithm Scalability and Optimality</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/1_scalability_plot.png" alt="Algorithm Scalability">
+      <div class="figure-caption">Algorithm Scalability: MILP exhibits exponential intractability<br>past N=20; DRL achieves constant-time inference.</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/2_optimality_gap.png" alt="Optimality Gap">
+      <div class="figure-caption">Objective Cost Optimality Gap: Heuristic methods achieve<br>near-optimal quality at orders-of-magnitude faster execution.</div>
+    </div>
+  </div>
+  <div class="key-finding">
+    <strong>Finding:</strong> The exact MILP solver demonstrates catastrophic exhaustion past $N=20$ nodes. The DRL agent generates route matrices instantaneously, achieving an operational optimality gap within 8&ndash;12% of the exact solution, making it suitable for dynamic dispatch cycles of q-commerce.
+  </div>
+  <p class="cite">Source: code/08_run_real_benchmarks.py; figures/1_scalability_plot.png, figures/2_optimality_gap.png</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 12 — Results: GA Convergence & Pareto Frontier
+     ================================================================ -->
+<section class="slide" id="slide-12">
+  <h2>Results: Convergence and Pareto Frontier Analysis</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/3_ga_convergence.png" alt="GA Convergence">
+      <div class="figure-caption">GA convergence across weight configurations:<br>$\lambda_1 = 0.9$ (time), $\lambda_1 = 0.5$ (balanced), $\lambda_1 = 0.1$ (safety).</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/4_pareto_frontier.png" alt="Pareto Frontier">
+      <div class="figure-caption">Pareto Efficiency vs. Route Safety Tradeoffs<br>(New Delhi Dataset). Colour: Efficiency Focus ($\lambda_1$).</div>
+    </div>
+  </div>
+  <div class="columns" style="margin-top:0.5em;">
+    <div class="col">
+      <div class="key-finding">
+        <strong>Convergence:</strong> Safety-priority configurations ($\lambda_1 = 0.1$) converge more slowly but reach substantially different equilibria, confirming the multi-objective nature of the problem.
+      </div>
+    </div>
+    <div class="col">
+      <div class="key-finding">
+        <strong>Pareto Front:</strong> The clear trade-off curve demonstrates that extreme time sacrifices extract steep, non-linear reductions in risk exposure.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 13 — Results: Cross-City Benchmarks
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-13">
+  <h2>Results: Cross-City Benchmark Analysis</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/3_city_benchmarks.png" alt="City Benchmarks">
+      <div class="figure-caption">Algorithm Optimization Quality by Metropolitan Topography (N=50).<br>ALNS consistently achieves lowest penalty scores across all cities.</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/5_city_risk_box.png" alt="City Risk Box">
+      <div class="figure-caption">Urban Routing Baseline Vulnerability by City (N=25).<br>Hyderabad and Bengaluru exhibit highest baseline risk penalties.</div>
+    </div>
+  </div>
+  <div class="key-finding">
+    <strong>Cross-City Insight:</strong> Risk profiles vary dramatically across metropolitan topologies. Mumbai and Bengaluru show highest inherent routing vulnerability due to dense arterial networks, while Gurugram and Delhi benefit from grid-like road structures. Algorithm selection should be topology-aware.
+  </div>
+  <p class="cite">Source: code/12_all_cities_figures.py; code/08_run_real_benchmarks.py</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 14 — Results: 3D Pareto & Stress Accumulation
+     ================================================================ -->
+<section class="slide" id="slide-14">
+  <h2>Results: Pareto Surface and Rider Stress Validation</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/6_3d_pareto.png" alt="3D Pareto Surface">
+      <div class="figure-caption">3D Pareto Surface (New Delhi): Interaction between<br>Travel Time, Fatal Crash Risk, and Congestion Density.</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/7_smax_fatigue.png" alt="Rider Stress Accumulation">
+      <div class="figure-caption">Rider Stress Accumulation ($S_{max}$): High-Velocity routing<br>vs. SA-VRPTW Regulated Configuration (Bengaluru).</div>
+    </div>
+  </div>
+  <div class="columns" style="margin-top:0.5em;">
+    <div class="col">
+      <div class="key-finding">
+        <strong>3D Pareto:</strong> The surface establishes that all three objectives are genuinely conflicting &mdash; no single configuration dominates across time, risk, and congestion simultaneously.
+      </div>
+    </div>
+    <div class="col">
+      <div class="key-finding">
+        <strong>$S_{max}$ Validation:</strong> "High-Velocity" routing rapidly breaches the cognitive stress threshold after 8&ndash;10 deliveries. SA-VRPTW reroutes riders to maintain fatigue within safe operational bounds.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 15 — Results: STW Penalty & Pareto (Bengaluru)
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-15">
+  <h2>Results: SLA Penalty Dynamics and Bengaluru Pareto</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/8_stw_scatter.png" alt="STW Scatter">
+      <div class="figure-caption">Soft Time Window Overages vs. Platform SLA Retaliation.<br>Exponential penalties disproportionately affect riders on safe routes.</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/2_pareto_frontier.png" alt="Pareto Bengaluru">
+      <div class="figure-caption">Pareto Efficiency vs. Route Safety Tradeoffs<br>(Bengaluru Dataset). Diverse frontier visible at larger scale.</div>
+    </div>
+  </div>
+  <div class="key-finding">
+    <strong>Critical Insight:</strong> Platforms enforcing rigid 10-minute deadlines trigger exponential wage penalties $P_L(\tau) = e^{0.12\tau} - 1$ that mathematically incentivise riders to reject safer routes to avoid financial retaliation. This validates the need for <strong>Soft Time Windows</strong> in the SA-VRPTW formulation.
+  </div>
+  <p class="cite">Source: code/08_run_real_benchmarks.py &mdash; run_stw_penalty_scatter()</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 16 — Spatial Analysis: Route Divergence (Interactive)
+     ================================================================ -->
+<section class="slide" id="slide-16">
+  <h2>Spatial Analysis: Geographical Route Divergence</h2>
+  <p>The SA-VRPTW algorithm frequently chooses routes that are 15&ndash;20% longer in distance but <strong>40% safer</strong> in collision probability by utilising secondary road hierarchies.</p>
+  <div class="columns">
+    <div class="col">
+      <h3>Bengaluru &mdash; Route Divergence Map</h3>
+      <iframe class="map-embed" src="../figures/9_geographical_divergence_bengaluru.html" title="Bengaluru Route Divergence"></iframe>
+      <p class="figure-caption">Red: Minimum Travel Time (High Risk). Green: SA-VRPTW Safe Route.</p>
+    </div>
+    <div class="col">
+      <h3>Kharagpur &mdash; Route Divergence Map</h3>
+      <iframe class="map-embed" src="../figures/9_geographical_divergence_kharagpur.html" title="Kharagpur Route Divergence"></iframe>
+      <p class="figure-caption">Interactive Folium maps generated via code/10_spatial_overlays.py</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 17 — Spatial Analysis: Danger Heatmap
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-17">
+  <h2>Spatial Analysis: Danger Density Heatmap</h2>
+  <p>Systemic "danger density" is not uniformly distributed but clustered around major arterial intersections during peak congestion hours.</p>
+  <div class="figure" style="margin-top:0.5em;">
+    <iframe class="map-embed tall" style="height:460px;" src="../figures/10_danger_density_heatmap.html" title="Danger Density Heatmap"></iframe>
+    <div class="figure-caption">Danger Density Heatmap (Bengaluru): Yellow &rarr; Orange &rarr; Red gradient indicates escalating crash risk density on arterial roads.<br>Source: code/10_spatial_overlays.py &mdash; create_heatmap_overlay()</div>
+  </div>
+  <div class="key-finding">
+    <strong>Divergence Analysis:</strong> The geographical divergence is most pronounced in dense urban centres like Mumbai and Delhi, where the fastest routes traverse the most hazardous trunk roads. The SA-VRPTW engine redirects through secondary hierarchies, trading marginal time for substantial safety gains.
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 18 — City-Specific Results Gallery
+     ================================================================ -->
+<section class="slide" id="slide-18">
+  <h2>City-Specific Results: Road Hierarchy and Fleet Risk</h2>
+  <div class="figures-row">
+    <div class="figure">
+      <img src="../figures/Delhi/5_road_hierarchy.png" alt="Delhi Road Hierarchy">
+      <div class="figure-caption">Road Hierarchy Utilisation &mdash; New Delhi</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/Mumbai/6_fleet_risk.png" alt="Mumbai Fleet Risk">
+      <div class="figure-caption">Fleet-Wide Risk Distribution &mdash; Mumbai</div>
+    </div>
+    <div class="figure">
+      <img src="../figures/4_density_risk_box.png" alt="Density Risk Box">
+      <div class="figure-caption">Urban Routing Vulnerability by Grid Shape (N=30)</div>
+    </div>
+  </div>
+  <div class="key-finding">
+    <strong>Topology-Dependent Risk:</strong> Cities with radial road patterns (Bengaluru, Hyderabad) show higher risk variance than grid-structured cities (Delhi, Gurugram). This confirms that <strong>infrastructure risk</strong> should be incorporated into dark store location planning, not just route optimisation.
+  </div>
+  <p class="cite">Source: code/12_all_cities_figures.py; figures/{City}/ subdirectories</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 19 — Conclusion
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-19">
+  <h2>Conclusion</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>Key Contributions</h3>
+      <ol>
+        <li><strong>SA-VRPTW-STW Framework:</strong> A rigorous multi-objective Pareto optimisation formulation that elevates rider safety from a soft constraint to a primary objective.</li>
+        <li><strong>Log-Survival Risk Model:</strong> Probabilistic route survival ($-\ln(1 - r_{ij})$) replaces arbitrary additive risk indices, ensuring unit-consistent optimisation.</li>
+        <li><strong>Novel Constraints:</strong> $S_{max}$ (Behavioral Fatigue Threshold) and $H_{cap}$ (Neighbourhood Protection) introduce cyber-physical safeguards absent in prior work.</li>
+        <li><strong>Empirical Validation:</strong> Cross-city benchmarks on 6 Indian metropolises using authentic OSM topologies and iRAD-modelled crash data.</li>
+        <li><strong>Multi-Solver Evaluation:</strong> Comparative analysis of MILP, GA, and DRL demonstrating operational trade-offs between solution quality and inference speed.</li>
+      </ol>
+    </div>
+    <div class="col">
+      <h3>Summary of Findings</h3>
+      <div class="highlight-box">
+        <ul>
+          <li>SA-VRPTW routes are 15&ndash;20% longer but <strong>40% safer</strong> in collision probability.</li>
+          <li>DRL achieves <strong>8&ndash;12% optimality gap</strong> with constant-time inference.</li>
+          <li>Exponential STW penalties mathematically demonstrate that rigid 10-minute SLAs incentivise unsafe riding.</li>
+          <li>$S_{max}$ constraint prevents cognitive stress threshold breach during extended delivery shifts.</li>
+          <li>Risk profiles vary dramatically across cities &mdash; topology-aware algorithm selection is essential.</li>
+        </ul>
+      </div>
+      <div class="key-finding" style="margin-top:0.8em;">
+        <strong>Thesis Statement:</strong> Balancing rapid delivery constraints against rider survivability is mathematically achievable and operationally scalable through advanced metaheuristics and neural augmentation.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 20 — Future Work
+     ================================================================ -->
+<section class="slide" id="slide-20">
+  <h2>Future Work and Extensions</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>1. Stochastic Traffic and Risk Prediction</h3>
+      <p>Migrate from static probabilities to predictive <strong>Graph Neural Networks (GNN)</strong> capable of anticipating flash-congestion and spatial risk propagation dynamically across connected civic edges.</p>
+
+      <h3>2. Active Behavioral Telematics</h3>
+      <p>Formulate an active-learning pipeline where continuous <strong>smartphone gyroscope</strong> and biometric outputs of riders directly update the cognitive fatigue threshold $S_{max}$ in real-time, autonomously halting dispatch cadence before physiological collapse.</p>
+
+      <h3>3. Continuous Micro-Batching Logic</h3>
+      <p>Transform standard node-based constraint logic into a continuous <strong>Dynamic Pickup and Delivery Problem (DPDP)</strong>, accurately mapping the fragmented, minimal-item micro-capacity batching mechanisms of modern q-commerce dark stores.</p>
+    </div>
+    <div class="col">
+      <h3>4. SUMO Traffic Simulation</h3>
+      <p>Integrate with the <strong>Simulation of Urban Mobility (SUMO)</strong> platform for high-fidelity microscopic traffic simulation, validating routing decisions against realistic traffic signal timing and vehicle interactions.</p>
+      <p class="cite">Planned: code/11_sumo_integration.py</p>
+
+      <h3>5. Regulatory and Policy Integration</h3>
+      <ul>
+        <li>Alignment with <strong>Rajasthan Platform Based Gig Workers Act 2023</strong> and <strong>Karnataka Draft Bill 2024</strong></li>
+        <li>Dynamic SLAs that automatically extend delivery windows during rain or high-congestion periods</li>
+        <li>Explainable AI (SHAP) for algorithmic transparency in rider-facing applications</li>
+      </ul>
+
+      <h3>6. Real iRAD Data Access</h3>
+      <p>Securing formal access rights from MoRTH for validated crash data to replace synthetic modelling with <strong>authentic government records</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 21 — References
+     ================================================================ -->
+<section class="slide slide--cream" id="slide-21">
+  <h2>References</h2>
+  <ol class="ref-list">
+    <li>Solomon, M. M. (1987). Algorithms for the vehicle routing and scheduling problems with time window constraints. <em>Operations Research</em>, 35(2), 254&ndash;265.</li>
+    <li>Desrochers, M., Desrosiers, J., &amp; Solomon, M. (1992). A new optimization algorithm for the vehicle routing problem with time windows. <em>Operations Research</em>, 40(2), 342&ndash;354.</li>
+    <li>Toth, P., &amp; Vigo, D. (2002). <em>The Vehicle Routing Problem</em>. SIAM Monographs on Discrete Mathematics and Applications.</li>
+    <li>Zografos, K. G., &amp; Androutsopoulos, K. N. (2004). A heuristic algorithm for solving hazardous materials distribution problems. <em>European Journal of Operational Research</em>, 152(2), 507&ndash;519.</li>
+    <li>Hoseinzadeh, N., et al. (2020). Safe and Sound: Driver Safety-Aware Vehicle Re-Routing. <em>Sustainability</em>, 12(17).</li>
+    <li>Sinchaisri, W. P., et al. (2023). Behavioral logistics in the gig economy: A perspective. <em>Management Science</em>, 69(4), 1800&ndash;1812.</li>
+    <li>Salmon, P. M., et al. (2023). Systems failure in road safety: gig-economy delivery. <em>Accident Analysis &amp; Prevention</em>, 184.</li>
+    <li>Ministry of Road Transport and Highways (MoRTH), India. Integrated Road Accident Database (iRAD) and e-Detailed Accident Report (e-DAR).</li>
+    <li>International Road Assessment Programme (iRAP). Road Safety Star Rating Methodology.</li>
+    <li>Fairwork India Ratings 2024. Platform Work in India &mdash; Annual Report.</li>
+  </ol>
+</section>
+
+<!-- ================================================================
+     SLIDE 22 — Thank You
+     ================================================================ -->
+<section class="slide slide--dark title-slide" id="slide-22">
+  <h1>Thank You</h1>
+  <div class="subtitle" style="color:#ccc;">Questions and Discussion</div>
+  <div class="meta" style="color:#aaa;">
+    <span><strong style="color:#ddd;">Pranav Bhadane</strong> &mdash; 21IM30017</span>
+    <span>Masters Thesis Project II</span>
+    <span>Guide: Prof. Subhajit Sidhanta</span>
+  </div>
+  <div class="institution" style="color:#777;">
+    Department of Industrial and Systems Engineering<br>
+    Indian Institute of Technology Kharagpur
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<!-- ================================================================
+     Navigation Script
+     ================================================================ -->
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slideCounter');
+  const progress = document.getElementById('progressBar');
+  let current = 0;
+  const total = slides.length;
+
+  function show(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); prev();
+    } else if (e.key === 'Home') {
+      e.preventDefault(); show(0);
+    } else if (e.key === 'End') {
+      e.preventDefault(); show(total - 1);
+    }
+  });
+
+  // Click navigation (left half = prev, right half = next)
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('iframe') || e.target.closest('a')) return;
+    if (e.clientX < window.innerWidth / 2) prev();
+    else next();
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener('touchend', function(e) {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) next(); else prev();
+    }
+  });
+
+  // Initialize
+  show(0);
+})();
+</script>
+
+</body>
+</html>

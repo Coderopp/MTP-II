@@ -1,0 +1,23 @@
+name: alns
+
+iterations: 25000
+segment_length: 100
+reaction_factor: 0.1
+# Ropke-Pisinger reward weights.
+sigma: [33, 9, 1, 0]   # new-best, improving, accepted-worse, rejected
+
+destroy_operators:
+  - random_removal
+  - worst_removal
+  - shaw_removal
+  - risk_cluster_removal
+
+repair_operators:
+  - greedy_insert
+  - regret_2_insert
+  - regret_3_insert
+
+# Simulated-annealing acceptance.
+acceptance:
+  T_start_ratio: 0.05
+  cooling_rate: 0.99975

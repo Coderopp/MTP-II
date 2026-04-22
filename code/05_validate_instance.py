@@ -88,12 +88,13 @@ def main() -> None:
 
     with open(INSTANCE_PATH) as f:
         inst = json.load(f)
-    depot = inst["depot"]
+    depots = inst["depots"]
     customers = inst["customers"]
     params = inst["parameters"]
-    # JSON node IDs are stored as strings; ensure consistent type
-    depot_id = str(depot["node_id"])
-    print(f"  Instance: {len(customers)} customers, "
+
+    # Map depots for easy lookup
+    depot_map = {str(d["node_id"]): d for d in depots}
+    print(f"  Instance: {len(customers)} customers, {len(depots)} depots, "
           f"K={params['K']}, Q={params['Q']}")
 
     # --- Check 2: t_ij finite on all edges ----------------------------------
@@ -139,21 +140,22 @@ def main() -> None:
                f"missing: {missing_nodes}" if missing_nodes else "all present")
     all_passed &= ok
 
-    ok = check("Depot node exists in graph",
-               depot_id in graph_nodes,
-               f"depot_id={depot_id}")
-    all_passed &= ok
+    for d_id in depot_map.keys():
+        ok = check(f"Depot {d_id} exists in graph",
+                   d_id in graph_nodes)
+        all_passed &= ok
 
     # --- Check 6: Reachability from depot -----------------------------------
     print("\n[REACHABILITY]")
     unreachable = []
     for c in customers:
         cid = str(c["node_id"])
-        if cid not in graph_nodes:
+        did = str(c["assigned_depot"])
+        if cid not in graph_nodes or did not in graph_nodes:
             continue   # already caught in check 5
-        if not nx.has_path(G, depot_id, cid):
-            unreachable.append(cid)
-    ok = check("All customers reachable from depot",
+        if not nx.has_path(G, did, cid):
+            unreachable.append(f"{cid} from {did}")
+    ok = check("All customers reachable from assigned depot",
                len(unreachable) == 0,
                f"unreachable: {unreachable}" if unreachable else "all reachable")
     all_passed &= ok

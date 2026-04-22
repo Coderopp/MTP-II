@@ -1,11 +1,11 @@
 """
-01_osm_graph.py — Step 1: Download OSM road network for Kharagpur.
+01_osm_graph.py — Step 1: Download OSM road network for Bengaluru.
 
 Strategy (in order of preference):
-  1. graph_from_point — 6 km radius from city centre (fast, reliable)
+  1. graph_from_point — 10 km radius from city centre (fast, reliable)
   2. graph_from_place — Nominatim geocoder fallback
 
-The bbox approach is intentionally NOT used as primary — the Kharagpur
+The bbox approach is intentionally NOT used as primary — the Bengaluru
 bounding box is ~13,000× larger than the Overpass API default query area,
 causing very long download times with automatic subdivision.
 
@@ -35,10 +35,10 @@ import networkx as nx
 NETWORK_TYPE = "drive"
 OUTPUT_PATH  = DATA_DIR / "01_osm_graph.graphml"
 
-# IIT Kharagpur campus / technology market area — city centre
-CENTRE_LAT = 22.3200
-CENTRE_LON = 87.3190
-RADIUS_M   = 6_000     # 6 km covers urban Kharagpur comfortably
+# Bengaluru city centre
+CENTRE_LAT = 12.9716
+CENTRE_LON = 77.5946
+RADIUS_M   = 10_000     # 10 km covers central Bengaluru
 
 
 # ---------------------------------------------------------------------------
@@ -46,7 +46,7 @@ RADIUS_M   = 6_000     # 6 km covers urban Kharagpur comfortably
 # ---------------------------------------------------------------------------
 
 def _try_point():
-    print("  Strategy 1: graph_from_point (centre + 6 km radius) …")
+    print("  Strategy 1: graph_from_point (centre + 10 km radius) …")
     try:
         G = ox.graph_from_point(
             (CENTRE_LAT, CENTRE_LON),
@@ -63,7 +63,7 @@ def _try_place():
     print("  Strategy 2: graph_from_place (Nominatim) …")
     try:
         G = ox.graph_from_place(
-            "Kharagpur, West Bengal, India",
+            "Bengaluru, Karnataka, India",
             network_type=NETWORK_TYPE,
         )
         return G
@@ -77,7 +77,7 @@ def _try_place():
 # ---------------------------------------------------------------------------
 
 def build_graph():
-    print("[01] Downloading OSM drive network for Kharagpur …")
+    print("[01] Downloading OSM drive network for Bengaluru …")
     G = _try_point() or _try_place()
 
     if G is None:

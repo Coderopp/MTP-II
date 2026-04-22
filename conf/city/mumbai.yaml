@@ -1,0 +1,11 @@
+slug: mumbai
+display_name: Mumbai
+osm_place: "Mumbai, Maharashtra, India"
+center: [19.0760, 72.8777]
+bbox:
+  lat_min: 18.89
+  lat_max: 19.28
+  lon_min: 72.77
+  lon_max: 73.02
+kml_folders:
+  - "Blinkit Mumbai (less than 80m).xlsx"

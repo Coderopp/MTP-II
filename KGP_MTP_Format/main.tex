@@ -1,0 +1,64 @@
+\documentclass[12pt]{report}
+
+%load packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,positioning,calc,fit,backgrounds}
+
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=blue!60!black, urlcolor=blue!60!black}
+
+\setlength{\topmargin}{0.0in}
+\setlength{\oddsidemargin}{0.33in}
+\setlength{\evensidemargin}{-0.08in}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6.0in}
+
+\def\mytitle{Safety-Aware Vehicle Routing for Quick Commerce Delivery: An Epsilon-Constrained Formulation with Soft Time Windows}
+\def\myname{Pranav Bhadane}
+\def\mydegree{Master of Technology}
+\def\mysupervisor{Prof. Subhajit Sidhanta}
+\def\myrollno{21IM30017}
+\def\mydep{Industrial and Systems Engineering}
+\def\mydegreedate{2026}
+
+\begin{document}
+ \baselineskip=18pt plus1pt
+ \setcounter{secnumdepth}{3}
+ \setcounter{tocdepth}{3}
+ \pagenumbering{roman}
+
+ %Front Matter
+ \include{./FrontMatter/titlePage}
+ \include{./FrontMatter/certificate}
+ \include{./FrontMatter/acknowledgements}
+ \include{./FrontMatter/abstract}
+ \tableofcontents
+ \listoffigures
+ \listoftables
+
+ %Main material
+ \clearpage
+ \pagenumbering{arabic}
+
+ \include{./Chapters/chapter1}
+ \include{./Chapters/chapter2}
+ \include{./Chapters/chapter3}
+ \include{./Chapters/chapter4}
+ \include{./Chapters/chapter5}
+ \include{./Chapters/chapter6}
+ \include{./Chapters/chapter7}
+
+ %Bibliography
+ \addcontentsline{toc}{chapter}{Bibliography}
+ \bibliographystyle{agsm}
+ \bibliography{references}
+
+\end{document}

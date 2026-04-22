@@ -1,0 +1,33 @@
+# Top-level Hydra config.
+# Every experiment is materialised by composing these groups.
+#
+# Example:
+#   python scripts/run_experiment.py city=bengaluru solver=ga instance.N=50
+
+defaults:
+  - _self_
+  - city: bengaluru
+  - risk: basm_v1
+  - congestion: bpr
+  - solver: ga
+  - experiment: default
+  - instance: default
+
+# Canonical problem constants — MUST match FORMULATION.md §3.4.
+problem:
+  Q: 2              # vehicle capacity (items)
+  T_max: 35.0       # min — max route duration
+  H_cap_route: 8    # per-route residential-edge cap  H̄_k
+  beta_stw: 0.12    # lateness-penalty exponent
+  w_early: 1.0      # idle-wait weight in F₁
+  eta_promise_min: 10.0  # q-commerce 10-min delivery promise
+
+paths:
+  raw_data: data/raw
+  processed: data/processed
+  results: data/results
+  validation: data/validation
+  osmnx_cache: cache
+
+repro:
+  seeds: [42, 101, 202, 303, 404, 505, 606, 707, 808, 909]

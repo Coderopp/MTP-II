@@ -1,0 +1,54 @@
+\chapter{Data Acquisition and Implementation}
+
+This chapter documents the current software pipeline that materializes an SA-VRPTW instance from public geographic data and project configuration. The implementation is written in Python~3.12 and organized around the modular package under \texttt{src/savrptw/}. The objective of the refactor is to ensure that every solver consumes the same \texttt{Instance} contract and that every data transformation is externally auditable.
+
+\section{Road Network Extraction}
+
+City street graphs are downloaded from OpenStreetMap using OSMnx \citep{boeing2017}. Each city is defined by a committed bounding box in \texttt{conf/city/<city>.yaml}; this replaces earlier hard-coded Bengaluru-specific assumptions. The graph is extracted with \texttt{network\_type='drive'} and simplified into a directed multigraph. During enrichment, the loader standardizes OSM tags that otherwise appear as lists, imputes missing speeds via \texttt{osmnx.add\_edge\_speeds()}, and computes free-flow travel time
+\begin{equation}
+    t^{free}_{ij} = \frac{60 \cdot \text{length}_{ij}}{1000 \cdot v^{free}_{ij}}
+\end{equation}
+in minutes. Each edge is also assigned a binary residential indicator $h_{ij}$ that equals 1 for \texttt{residential} and \texttt{living\_street} classes.
+
+\section{Congestion via BPR}
+
+Travel-time inflation is handled through the Bureau of Public Roads formulation rather than through a separate congestion objective:
+\begin{equation}
+    \rho_{ij} = \alpha \left(\frac{V_{ij}}{C_{ij}}\right)^{\beta}, \qquad
+    t_{ij} = t^{free}_{ij}(1+\rho_{ij}).
+\end{equation}
+The current implementation uses $\alpha=0.15$ and $\beta=4$. Capacity per lane, default lane counts, and class-specific peak-hour volume-to-capacity assumptions are stored in \texttt{conf/congestion/bpr.yaml}. This design has two advantages. First, congestion parameters are visible to reviewers in configuration rather than buried in code. Second, all solvers see the same congestion-inflated edge times through the single field $t_{ij}$.
+
+\section{BASM Risk Calibration}
+
+The critical change in this branch is the replacement of the earlier placeholder risk layer with a documented Bengaluru and Indian-city Accident Surrogate Model (BASM). BASM does not assume access to restricted iRAD microdata. Instead, it uses a public-source chain:
+
+\begin{enumerate}
+    \item aggregate 2022 road-safety statistics from MoRTH \citep{morth2022},
+    \item the directional finding that highways and main arterials are associated with higher fatality rates than non-arterials \citep{mohan2017},
+    \item graph-local OpenStreetMap proxies already available in the road network.
+\end{enumerate}
+
+For each edge, BASM computes
+\begin{equation}
+    r_{ij} = \mathrm{clip}\!\left(\lambda_{\mathrm{class}(ij)} \cdot \mathrm{len}_{ij}^{km} \cdot m_{\mathrm{class}(ij)} \cdot \omega_{ij},\; 0,\; 0.99\right)
+\end{equation}
+where $\lambda_{\mathrm{class}(ij)}$ is the per-kilometre base rate, $m_{\mathrm{class}(ij)}$ is the class multiplier, and $\omega_{ij}$ is a bounded local proxy weight. The class constants are stored in \texttt{conf/risk/basm\_v1.yaml}, and the derivation is documented in \texttt{docs/BASM\_CALIBRATION.md}. The proxy term combines approximate edge betweenness, local traffic-signal density, and local crossing density, clipped to the range $[0.5, 2.0]$. This redistributes risk within a class without replacing the public-source calibration of the class prior itself.
+
+\section{Dark Stores and City Scope}
+
+Depot candidates are derived from the committed KML snapshot \texttt{data/raw/darkstoremap\_in\_2026-04-09.kml}. The primary experiment scope is Blinkit only. For each retained city, Blinkit placemarks are filtered by city-specific bounding box, clustered by $k$-means, and snapped to the nearest OSM nodes. The retained primary cities are Bengaluru, Delhi, Gurugram, Mumbai, and Pune.
+
+Hyderabad remains in the repository as a disabled configuration file, but it is excluded from the primary experiment set because the committed Blinkit snapshot contains zero Hyderabad placemarks. This exclusion is deliberate and reproducible; it is also guarded by a regression test so that a future data refresh cannot silently change the thesis scope.
+
+\section{Customer Sampling and Super-Arcs}
+
+Customers are sampled from the road graph with residential weighting. In the current implementation, a node adjacent to at least one residential edge receives full weight and non-residential nodes receive a smaller background weight. Each sampled customer is assigned demand $q_i \in \{1,2\}$, order release time $e_i$ within the first hour of the batch, promised time $\mathrm{ETA}_i=e_i+10$, and a home depot chosen by nearest free-flow travel time.
+
+Once depots and customers are fixed, the software builds a complete super-graph. For each origin super-node, a single-source Dijkstra run on the congestion-inflated street graph determines the shortest-time path to every other super-node. The resulting path is then used to aggregate travel time, log-survival risk, and residential-edge count into the super-arc tuple $(T_{uv}, R_{uv}, H_{uv})$.
+
+\section{Validation and Reproducibility}
+
+The refactored codebase is backed by an automated test suite. The branch status at the time of this manuscript update is that the end-to-end pipeline is runnable on synthetic instances and the test suite is green. The BASM refactor adds explicit tests that every attached edge risk satisfies $0 \le r_{ij} \le 0.99$ and that higher-order roads are assigned higher crash priors than residential roads on a controlled synthetic graph.
+
+Reproducibility is enforced through committed configuration, deterministic seeds, and strict contract checks. A production run is not allowed to proceed with \texttt{source: uncalibrated} in the BASM configuration. This fail-loud behaviour is preferable to silently generating edge risks from arbitrary placeholder constants.

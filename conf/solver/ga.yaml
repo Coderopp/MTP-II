@@ -1,0 +1,20 @@
+name: ga
+
+pop_size: 100
+generations: 200
+cx_prob: 0.85
+mut_prob: 0.20
+elite_size: 4
+tournament_k: 5
+# Split procedure: "bellman_ford" (optimal) | "greedy" (fast, dominant only in
+# pilots).  Default must be "bellman_ford" per FORMULATION.md §15.
+split: bellman_ford
+
+# Constraint-violation penalties used in fitness during search (never in final
+# scoring — the evaluator is strict).
+penalties:
+  tw_late: 50.0
+  tw_early: 5.0
+  capacity: 1000.0
+  risk_budget: 1000.0
+  residential_route_cap: 500.0

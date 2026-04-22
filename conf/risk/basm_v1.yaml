@@ -1,0 +1,74 @@
+# BASM calibration v1.
+#
+# Functional form:
+#   r_ij = clip(λ_class · len_km · severity_multiplier · proxy_edge, 0, r_max_clip)
+#
+# Source derivation:
+#   docs/BASM_CALIBRATION.md
+#
+# Public-source chain:
+#   - MoRTH Road Accidents in India 2022, Table 2.1 (p.25)
+#   - MoRTH Road Accidents in India 2022, fatal + grievous totals (p.8)
+#   - Mohan, Bangdiwala, Villaveces (2017), J Safety Research 62:63-71
+
+source: morth_mohan_osm_proxy_v1
+source_detail: "morth2022_p8+p25+p89__mohan2017_pp63_71__osm_proxy"
+
+# Per-km, per-traversal base probability by OSM class.
+# Derived in docs/BASM_CALIBRATION.md §3 from:
+#   (fatal + grievous events per km-year in MoRTH road category)
+#   ÷ (reference annual traversals from the BPR exposure table).
+lambda_class:
+  motorway: 3.88e-08
+  trunk: 6.13e-08
+  primary: 6.11e-08
+  secondary: 8.65e-08
+  tertiary: 6.53e-09
+  residential: 2.61e-08
+  living_street: 1.04e-07
+  unclassified: 9.41e-09
+  service: 5.87e-08
+
+# Rank-preserving class multipliers.
+# These are a reproducible bounded transform of MoRTH road-category fatality
+# intensity, with the arterial > collector > local ordering justified by Mohan
+# (2017). Exact derivation is documented in BASM_CALIBRATION.md §4.
+severity_multiplier:
+  motorway: 2.086
+  trunk: 2.086
+  primary: 2.086
+  secondary: 1.481
+  tertiary: 1.481
+  residential: 0.324
+  living_street: 0.324
+  unclassified: 0.324
+  service: 0.324
+
+proxy:
+  betweenness_k: 64
+  max_betweenness_reference: 0.10
+  max_signal_count: 6
+  max_crossing_count: 6
+  w_betweenness: 0.40
+  w_signal_density: 0.30
+  w_crossing_density: 0.30
+  min_weight: 0.50
+  max_weight: 2.00
+
+# Representative annual traversals for a one-kilometre edge by class.
+# Derived from conf/congestion/bpr.yaml capacity × lanes × V/C × hourly profile;
+# used only for city-scale cross-validation, not for per-edge attachment.
+cross_validation:
+  annual_edge_traversals_reference:
+    motorway: 22896450
+    trunk: 14501085
+    primary: 14545980
+    secondary: 5050688
+    tertiary: 3232440
+    residential: 808110
+    living_street: 202028
+    unclassified: 2244750
+    service: 359160
+  acceptance_relative_error_max: 0.25
+
+r_max_clip: 0.99

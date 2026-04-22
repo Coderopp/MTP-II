@@ -1,0 +1,13 @@
+slug: gurugram
+display_name: Gurugram
+osm_place: "Gurugram, Haryana, India"
+center: [28.4595, 77.0266]
+# Gurugram is embedded in the Delhi NCR Blinkit folder; a tight bbox carves
+# out only the Gurugram district.
+bbox:
+  lat_min: 28.38
+  lat_max: 28.55
+  lon_min: 76.95
+  lon_max: 77.12
+kml_folders:
+  - "Blinkit Delhi"   # same source; bbox filter isolates Gurugram rows

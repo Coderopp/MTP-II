@@ -35,7 +35,7 @@ OUT_PKL      = DATA_DIR / "04_vrptw_instance.pkl"
 
 # Problem parameters
 N_CUSTOMERS       = 30      # rolling horizon total customers
-K_RIDERS          = 10      # total fleet across stores
+K_RIDERS          = 30      # total fleet across stores
 VEHICLE_CAPACITY  = 2       # Q: units per rider (strictly constrained for q-commerce)
 DEMAND_MIN        = 1       
 DEMAND_MAX        = 2       
@@ -48,9 +48,9 @@ LAMBDA = [0.40, 0.40, 0.20]
 
 # Multi-Depot Locations (Dark Stores)
 DEPOTS = [
-    {"name": "DarkStore_TechMarket", "lat": 22.3190, "lon": 87.3095},
-    {"name": "DarkStore_Prembazar", "lat": 22.3350, "lon": 87.3150},
-    {"name": "DarkStore_GoleBazaar", "lat": 22.3420, "lon": 87.3220}
+    {"name": "DarkStore_Majestic", "lat": 12.9766, "lon": 77.5713},
+    {"name": "DarkStore_Indiranagar", "lat": 12.9784, "lon": 77.6408},
+    {"name": "DarkStore_Koramangala", "lat": 12.9279, "lon": 77.6271}
 ]
 
 RANDOM_SEED = 42

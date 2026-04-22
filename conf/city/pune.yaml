@@ -1,0 +1,11 @@
+slug: pune
+display_name: Pune
+osm_place: "Pune, Maharashtra, India"
+center: [18.5204, 73.8567]
+bbox:
+  lat_min: 18.43
+  lat_max: 18.64
+  lon_min: 73.72
+  lon_max: 73.98
+kml_folders:
+  - "Pune Blinkit (less than 80m).xlsx"

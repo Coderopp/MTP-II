@@ -1,0 +1,6 @@
+# Instance-generation knobs (one row from the experiment grid).
+N: 50                        # customers per instance
+n_depots: 5                  # k-means cluster size for Blinkit depots
+R_bar: 0.40                  # ε-constraint: per-route risk budget (from FORMULATION.md §6)
+H_bar: 1000000               # fleet residential budget (∞-sentinel by default)
+seed: 42

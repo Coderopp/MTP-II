@@ -1,0 +1,12 @@
+slug: delhi
+display_name: Delhi
+osm_place: "Delhi, India"
+center: [28.6139, 77.2090]
+# Core-Delhi bbox; Gurugram is covered by its own city file.
+bbox:
+  lat_min: 28.40
+  lat_max: 28.88
+  lon_min: 77.05
+  lon_max: 77.35
+kml_folders:
+  - "Blinkit Delhi"

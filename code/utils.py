@@ -109,16 +109,16 @@ def normalize(series: pd.Series, clip_zero: bool = True) -> pd.Series:
 # Bounding box
 # ---------------------------------------------------------------------------
 
-# Approximate bounding box for Kharagpur urban area
-KHARAGPUR_BBOX = {
-    "lat_min": 22.28,
-    "lat_max": 22.40,
-    "lon_min": 87.25,
-    "lon_max": 87.42,
+# Approximate bounding box for Bengaluru urban area
+BENGALURU_BBOX = {
+    "lat_min": 12.8340,
+    "lat_max": 13.1436,
+    "lon_min": 77.4601,
+    "lon_max": 77.7840,
 }
 
 
-def in_bbox(lat: float, lon: float, bbox: dict = KHARAGPUR_BBOX) -> bool:
+def in_bbox(lat: float, lon: float, bbox: dict = BENGALURU_BBOX) -> bool:
     """Return True if (lat, lon) falls inside the given bounding box."""
     return (
         bbox["lat_min"] <= lat <= bbox["lat_max"]
@@ -128,7 +128,7 @@ def in_bbox(lat: float, lon: float, bbox: dict = KHARAGPUR_BBOX) -> bool:
 
 def filter_bbox(df: pd.DataFrame, lat_col: str = "Latitude",
                 lon_col: str = "Longitude",
-                bbox: dict = KHARAGPUR_BBOX) -> pd.DataFrame:
+                bbox: dict = BENGALURU_BBOX) -> pd.DataFrame:
     """Filter a DataFrame to rows within the bounding box."""
     mask = (
         df[lat_col].between(bbox["lat_min"], bbox["lat_max"])

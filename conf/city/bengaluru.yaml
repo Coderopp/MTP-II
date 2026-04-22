@@ -1,0 +1,12 @@
+slug: bengaluru
+display_name: Bengaluru
+osm_place: "Bengaluru, Karnataka, India"
+center: [12.9716, 77.5946]   # [lat, lon]
+bbox:
+  lat_min: 12.834
+  lat_max: 13.144
+  lon_min: 77.460
+  lon_max: 77.784
+# Blinkit-folder names from the KML snapshot that land inside this bbox.
+kml_folders:
+  - "Blinkit Bangalore Dark store"

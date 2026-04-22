@@ -1,0 +1,49 @@
+# BPR congestion: ρ = α(V/C)^β,  t_ij = t_ij_free · (1 + ρ).
+
+alpha: 0.15
+beta: 4
+
+# HCM 2010 Exhibit 10-3 capacity (veh/h per lane) by highway class.
+capacity_per_lane:
+  motorway: 2000
+  trunk: 1900
+  primary: 1800
+  secondary: 1500
+  tertiary: 1200
+  residential: 600
+  living_street: 300
+  unclassified: 1000
+  service: 400
+
+# Default lane count when OSM tag is missing.
+default_lanes:
+  motorway: 3
+  trunk: 2
+  primary: 2
+  secondary: 1
+  tertiary: 1
+  residential: 1
+  living_street: 1
+  unclassified: 1
+  service: 1
+
+# Time-of-day V/C hour profile (peak multiplier applied to class-default AADT).
+hour_profile:
+  peak_hours: [8, 9, 10, 18, 19, 20]
+  peak_multiplier: 1.00
+  offpeak_multiplier: 0.35
+
+# Class-default AADT share (fraction of capacity at peak).
+vc_class_peak:
+  motorway: 0.85
+  trunk: 0.85
+  primary: 0.90
+  secondary: 0.75
+  tertiary: 0.60
+  residential: 0.30
+  living_street: 0.15
+  unclassified: 0.50
+  service: 0.20
+
+# Solve time = the batch's wall-clock hour (used for V/C lookup).
+dispatch_hour: 19

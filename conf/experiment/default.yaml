@@ -1,0 +1,35 @@
+# Experiment-level knobs: instance size, ε-sweep grid, replications.
+#
+# An "experiment" = one (city, brand, N, seed, R̄, H̄, solver) tuple.  The
+# runner multiplies this out into a grid.
+
+name: default
+
+# Brand scope — final decision is Blinkit only.
+brand: Blinkit
+
+# Primary experiment cities. Hyderabad is intentionally excluded because the
+# committed 2026-04-09 Blinkit snapshot has zero in-bbox placemarks there.
+cities: [bengaluru, delhi, gurugram, mumbai, pune]
+
+# Per-depot-cluster customer counts.  FORMULATION.md §11 — "per depot cluster,
+# not city-wide".
+N_values: [20, 50, 100, 200]
+
+# Depot-cluster size chosen by N:
+#   small (N=20)   → 3 depots
+#   medium (N=50)  → 5 depots
+#   large  (N=100) → 5 depots
+#   xlarge (N=200) → 8 depots
+depot_count_by_N:
+  20: 3
+  50: 5
+  100: 5
+  200: 8
+
+# ε-sweep grid (FORMULATION.md §6.4).
+R_bar_values: [0.05, 0.10, 0.20, 0.40, 0.80, 1.60, .inf]
+H_bar_values: [0, 4, 8, 16, 32, 1000000]   # 1e6 used as ∞-sentinel
+
+# Replications.
+seeds: ${repro.seeds}     # inherits from top-level config

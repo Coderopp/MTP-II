@@ -33,11 +33,15 @@ def create_divergence_overlay(city_name="Bengaluru", center=(12.9716, 77.5946)):
         data['risk'] = np.clip(base_risk + np.random.normal(0, 0.15), 0.05, 1.0)
 
     nodes = list(G.nodes())
-    start = random.choice(nodes)
-    # find a node roughly opposite
-    end = random.choice(nodes)
-    while nx.shortest_path_length(G, start, end, weight='time') < 10:
+    valid_pair = False
+    while not valid_pair:
+        start = random.choice(nodes)
         end = random.choice(nodes)
+        try:
+            if nx.shortest_path_length(G, start, end, weight='time') >= 10:
+                valid_pair = True
+        except nx.NetworkXNoPath:
+            continue
 
     fast_path = nx.shortest_path(G, start, end, weight='time')
     import math
@@ -93,5 +97,5 @@ def create_heatmap_overlay(center=(28.6139, 77.2090)): # Delhi Default
     print(f"Saved Density Risk Heatmap to {output_file}")
 
 if __name__ == "__main__":
-    create_divergence_overlay("Kharagpur", (22.3149, 87.3105)) # specific req
-    create_heatmap_overlay()
+    create_divergence_overlay("Bengaluru", (12.9716, 77.5946)) # specific req
+    create_heatmap_overlay(center=(12.9716, 77.5946))
