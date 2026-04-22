@@ -88,11 +88,11 @@ def main() -> None:
 
     with open(INSTANCE_PATH) as f:
         inst = json.load(f)
-    depot = inst["depot"]
+    depots = inst["depots"]
     customers = inst["customers"]
     params = inst["parameters"]
     # JSON node IDs are stored as strings; ensure consistent type
-    depot_id = str(depot["node_id"])
+    depot_ids = [str(depot["node_id"]) for depot in depots]
     print(f"  Instance: {len(customers)} customers, "
           f"K={params['K']}, Q={params['Q']}")
 
@@ -139,21 +139,22 @@ def main() -> None:
                f"missing: {missing_nodes}" if missing_nodes else "all present")
     all_passed &= ok
 
-    ok = check("Depot node exists in graph",
-               depot_id in graph_nodes,
-               f"depot_id={depot_id}")
+    ok = check("All Depot nodes exist in graph",
+               all(did in graph_nodes for did in depot_ids),
+               f"depot_ids={depot_ids}")
     all_passed &= ok
 
-    # --- Check 6: Reachability from depot -----------------------------------
+    # --- Check 6: Reachability from assigned depot -----------------------------------
     print("\n[REACHABILITY]")
     unreachable = []
     for c in customers:
         cid = str(c["node_id"])
         if cid not in graph_nodes:
             continue   # already caught in check 5
-        if not nx.has_path(G, depot_id, cid):
+        assigned_depot = str(c["assigned_depot"])
+        if not nx.has_path(G, assigned_depot, cid):
             unreachable.append(cid)
-    ok = check("All customers reachable from depot",
+    ok = check("All customers reachable from assigned depot",
                len(unreachable) == 0,
                f"unreachable: {unreachable}" if unreachable else "all reachable")
     all_passed &= ok
@@ -172,7 +173,7 @@ def main() -> None:
     # --- Check 8: Demand feasibility ----------------------------------------
     print("\n[CAPACITY]")
     total_demand = sum(c["q_i"] for c in customers)
-    max_load = params["K"] * params["Q"]
+    max_load = sum(d["K_d"] for d in depots) * params["Q"]
     ok = check("Total demand ≤ K × Q",
                total_demand <= max_load,
                f"demand={total_demand}, max={max_load}")

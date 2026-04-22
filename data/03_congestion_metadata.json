@@ -1,7 +1,0 @@
-{
-  "mode": "SPEED_PROXY",
-  "c_ij_mean": 1.0,
-  "c_ij_std": 0.0,
-  "c_ij_min": 1.0,
-  "c_ij_max": 1.0
-}

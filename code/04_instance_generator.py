@@ -163,9 +163,14 @@ def main() -> None:
 
         tt_mins = int(np.ceil(min_tt))
         # Rolling horizon: order enters system at `current_time_tick`
-        e_i = current_time_tick
+        # Ensure e_i gives enough time for travel so tt_from_depot <= l_i
+        e_i = max(current_time_tick, tt_mins)
         l_i = e_i + TW_WINDOW_LENGTH 
         q_i = rng.randint(DEMAND_MIN, DEMAND_MAX)
+
+        # Add Service Time (s_i) - mostly 2 mins, 4 mins for high rise
+        s_i = 4 if rng.random() < 0.2 else 2 # 20% chance of high rise
+        eta_i = e_i + 10 # Promised ETA
 
         customers.append({
             "node_id":          str(node_id),
@@ -174,6 +179,8 @@ def main() -> None:
             "lon":              round(G.nodes[str(node_id)]["x"], 6),
             "e_i":              e_i,
             "l_i":              l_i,
+            "eta_i":            eta_i,
+            "s_i":              s_i,
             "q_i":              q_i,
             "tt_from_depot":    min_tt,
         })
@@ -182,12 +189,26 @@ def main() -> None:
     print(f"  Customers generated: {len(customers)} "
           f"(skipped unreachable: {skipped})")
 
+    # Dynamically calculate N_d per depot
+    depot_counts = {d['node_id']: 0 for d in depots}
+    for c in customers:
+        depot_counts[c['assigned_depot']] += 1
+
+    for d in depots:
+        N_d = depot_counts[d['node_id']]
+        d['N_d'] = N_d
+        # Calculate fleet size K_d = ceiling(1.5 * N_d / Q) to ensure feasibility against bounds
+        d['K_d'] = int(np.ceil(1.5 * N_d / VEHICLE_CAPACITY))
+
+    total_K = sum(d['K_d'] for d in depots)
+    print(f"  Total Fleet Size: {total_K} riders across {len(depots)} depots.")
+
     # --- Assemble continuous DPDP instance dict ------------------------------
     instance = {
         "metadata": {
             "description": "SA-VRPTW Multi-Depot Rolling Horizon Instance",
             "n_customers":      len(customers),
-            "k_riders":         K_RIDERS,
+            "k_riders":         total_K,
             "vehicle_capacity": VEHICLE_CAPACITY,
             "lambda":           LAMBDA,
             "seed":             RANDOM_SEED,
