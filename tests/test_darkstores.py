@@ -59,25 +59,6 @@ def test_city_has_enough_blinkit_depots(city, min_count):
     )
 
 
-def test_hyderabad_has_no_blinkit_in_snapshot():
-    """DATA GAP: the 2026-04-09 KML has no Blinkit dedicated folder for
-    Hyderabad.  This test is intentionally an assertion of zero — it is a
-    regression tripwire. Hyderabad is excluded from the primary single-brand
-    experiments unless a future reproducible snapshot closes the gap.
-    """
-    with initialize_config_dir(config_dir=CONF, version_base="1.3"):
-        cfg = compose(config_name="config", overrides=["city=hyderabad"])
-    all_rec = parse_blinkit_placemarks(KML)
-    # With no folder allow-list, only bbox filter applies.
-    allow = set(cfg.city.get("kml_folders") or [])
-    pool = all_rec if not allow else [r for r in all_rec if r.folder in allow]
-    filtered = filter_by_bbox(pool, cfg.city.bbox)
-    assert len(filtered) == 0, (
-        "Hyderabad Blinkit coverage unexpectedly nonzero — "
-        "update the experiment city list; data gap has closed"
-    )
-
-
 def test_experiment_default_excludes_hyderabad():
     with initialize_config_dir(config_dir=CONF, version_base="1.3"):
         cfg = compose(config_name="config")

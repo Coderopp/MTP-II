@@ -119,7 +119,7 @@ def test_hydra_config_composes():
     from hydra import compose, initialize_config_dir
 
     conf_dir = str(Path(__file__).resolve().parents[1] / "conf")
-    cities = ["bengaluru", "delhi", "gurugram", "hyderabad", "mumbai", "pune"]
+    cities = ["bengaluru", "delhi", "gurugram", "mumbai", "pune"]
     solvers = ["milp", "ga", "alns"]
     with initialize_config_dir(config_dir=conf_dir, version_base="1.3"):
         for city in cities:

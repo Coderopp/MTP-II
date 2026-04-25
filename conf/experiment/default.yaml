@@ -8,8 +8,9 @@ name: default
 # Brand scope — final decision is Blinkit only.
 brand: Blinkit
 
-# Primary experiment cities. Hyderabad is intentionally excluded because the
-# committed 2026-04-09 Blinkit snapshot has zero in-bbox placemarks there.
+# Primary experiment cities. Hyderabad permanently dropped: the
+# 2026-04-09 and 2026-04-25 Blinkit KML snapshots both have zero in-bbox
+# placemarks, and refetching produced byte-identical coverage.
 cities: [bengaluru, delhi, gurugram, mumbai, pune]
 
 # Per-depot-cluster customer counts.  FORMULATION.md §11 — "per depot cluster,

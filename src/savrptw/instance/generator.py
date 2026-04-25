@@ -4,7 +4,7 @@ End-to-end pipeline (FORMULATION.md §11):
 
     1. Load OSM drive network for the city (bbox-bounded).
     2. Attach BPR congestion -> `t_ij` on every edge.
-    3. Attach calibrated crash probability -> `r_ij`   ← BLOCKED on Task #16.
+    3. Attach calibrated crash probability -> `r_ij` (BASM v1).
     4. Parse Blinkit KML for the city, k-means cluster to `n_depots`.
     5. Sample `N` customer nodes weighted by residential-land-use density.
     6. Assign each customer to its nearest depot by free-flow time.
@@ -12,8 +12,9 @@ End-to-end pipeline (FORMULATION.md §11):
     8. Compute super-arcs among (depots ∪ customers).
     9. Package everything into `savrptw.types.Instance`.
 
-Until Task #16 selects a calibrated risk source, step 3 raises
-`NotImplementedError` — no synthetic r_ij is ever used in production.
+Step 3 uses `morth_mohan_osm_proxy_v1` — see docs/BASM_CALIBRATION.md.
+Synthetic `r_ij` is never used; `attach_risk` raises if the source is
+`uncalibrated`.
 """
 
 from __future__ import annotations
@@ -110,7 +111,7 @@ def build_instance(cfg: DictConfig) -> Instance:
     # 2) BPR congestion.
     attach_congestion(G, cfg.congestion)
 
-    # 3) Calibrated r_ij.  RAISES until Task #16 lands.
+    # 3) Calibrated r_ij.
     attach_risk(G, cfg.risk)
 
     # 4) Dark stores → k-means → depots.
