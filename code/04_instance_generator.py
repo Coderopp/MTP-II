@@ -68,30 +68,18 @@ def nearest_node(G: nx.MultiDiGraph, lat: float, lon: float) -> str:
     return str(node_id)
 
 
-def get_edge_attr(G: nx.MultiDiGraph, u: int, v: int, attr: str,
-                  default: float = 0.0) -> float:
-    """Return attr from the first key of a multigraph edge."""
-    # When nx.shortest_path is used with a weight, it implicitly selects the
-    # edge with the minimum weight for each (u,v) pair.
-    # So, when summing up the path, we should retrieve the attribute from
-    # the edge that was actually chosen by shortest_path.
-    # However, networkx's shortest_path for MultiDiGraph returns a path of nodes,
-    # not edges. To get the specific edge data, we need to iterate through
-    # the parallel edges and find the one that matches the shortest path criteria.
-    # For 't_ij', this means finding the minimum 't_ij' edge.
-    
-    # Fix: explicitly select the minimal parallel edge weight rather than arbitrary index 0
+def get_edge_attr(G: nx.MultiDiGraph, u: str, v: str, attr: str,
+                  default: float = 0.0, weight_attr: str = 't_ij') -> float:
+    """Return attr from the edge of a multigraph that minimizes weight_attr."""
     parallel_edges = G[u][v]
     if not parallel_edges:
         return default
     
-    # Find the edge with the minimum 't_ij' among parallel edges
-    # This assumes 't_ij' is the relevant attribute for pathfinding.
-    best_edge_data = min(parallel_edges.values(), key=lambda e: e.get('t_ij', float('inf')))
+    best_edge_data = min(parallel_edges.values(), key=lambda e: e.get(weight_attr, float('inf')))
     return float(best_edge_data.get(attr, default))
 
 
-def compute_travel_time(G: nx.MultiDiGraph, u: int, v: int) -> float:
+def compute_travel_time(G: nx.MultiDiGraph, u: str, v: str) -> float:
     """
     Approximate travel time on the SHORTEST PATH (by t_ij) between u and v.
     Returns minutes; returns None if no path exists.
@@ -99,7 +87,7 @@ def compute_travel_time(G: nx.MultiDiGraph, u: int, v: int) -> float:
     try:
         path = nx.shortest_path(G, u, v, weight="t_ij")
         total = sum(
-            get_edge_attr(G, path[i], path[i + 1], "t_ij")
+            get_edge_attr(G, path[i], path[i + 1], "t_ij", weight_attr="t_ij")
             for i in range(len(path) - 1)
         )
         return round(total, 4)

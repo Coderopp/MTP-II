@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-from utils import DATA_DIR, BENGALURU_BBOX, filter_bbox, load_graph, normalize, save_graph
+from utils import DATA_DIR, CITY_CONFIG, filter_bbox, load_graph, normalize, save_graph
 
 import osmnx as ox
 
@@ -56,21 +56,17 @@ RANDOM_SEED = 42
 # Synthetic data generator
 # ---------------------------------------------------------------------------
 
-def generate_synthetic_accidents(n: int = SYNTHETIC_N, seed: int = RANDOM_SEED) -> pd.DataFrame:
+def generate_synthetic_accidents(city: str = "Bengaluru", n: int = SYNTHETIC_N, seed: int = RANDOM_SEED) -> pd.DataFrame:
     """
-    Generate synthetic iRAD-like accident records within Bengaluru bounding box.
+    Generate synthetic iRAD-like accident records within the given city bounding box.
     Records are clustered around known high-traffic zones via a Gaussian mixture.
     """
     rng = np.random.default_rng(seed)
-    bbox = BENGALURU_BBOX
 
-    # Cluster centres for Bengaluru
-    cluster_centres = [
-        (12.9716, 77.5946),   # Majestic / City Center
-        (12.9250, 77.6227),   # Koramangala
-        (12.9784, 77.6408),   # Indiranagar
-        (13.0285, 77.5895),   # Hebbal
-    ]
+    if city not in CITY_CONFIG:
+        city = "Bengaluru"
+        
+    cluster_centres = CITY_CONFIG[city]["cluster_centers"]
     weights = [0.35, 0.25, 0.25, 0.15]
     n_per_cluster = rng.multinomial(n, weights)
 
@@ -95,8 +91,8 @@ def generate_synthetic_accidents(n: int = SYNTHETIC_N, seed: int = RANDOM_SEED) 
 
     df = pd.DataFrame(rows)
     # Clip to bounding box
-    df = filter_bbox(df, bbox=bbox)
-    print(f"  [Synthetic] Generated {len(df)} accident records")
+    df = filter_bbox(df, city=city)
+    print(f"  [Synthetic] Generated {len(df)} accident records for {city}")
     return df
 
 
@@ -104,7 +100,7 @@ def generate_synthetic_accidents(n: int = SYNTHETIC_N, seed: int = RANDOM_SEED) 
 # Real iRAD loader
 # ---------------------------------------------------------------------------
 
-def load_irad_real(csv_path: Path) -> pd.DataFrame:
+def load_irad_real(csv_path: Path, city: str = "Bengaluru") -> pd.DataFrame:
     """
     Load and standardise a real iRAD CSV export.
 
@@ -138,7 +134,7 @@ def load_irad_real(csv_path: Path) -> pd.DataFrame:
     df["Latitude"]  = pd.to_numeric(df["Latitude"],  errors="coerce")
     df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
     df = df.dropna(subset=["Latitude", "Longitude"])
-    df = filter_bbox(df, bbox=BENGALURU_BBOX)
+    df = filter_bbox(df, city=city)
     print(f"  [Real iRAD] {len(df):,} records after bbox filter")
     return df
 
