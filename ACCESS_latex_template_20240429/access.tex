@@ -6,6 +6,15 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{url}
+% Lightweight pseudocode environment using only base packages.
+\newcounter{algocnt}
+\newenvironment{savpseudocode}[1]
+  {\refstepcounter{algocnt}\par\noindent
+   \begin{minipage}{\columnwidth}\hrule\smallskip
+   \textbf{Algorithm \arabic{algocnt}.\ #1}\smallskip\hrule\smallskip
+   \begin{tabbing}
+   xx\=xx\=xx\=xx\=xx\=xx\=\kill}
+  {\end{tabbing}\hrule\end{minipage}\smallskip}
 
 \usepackage{bm}
 \makeatletter
@@ -215,7 +224,7 @@ the derivation as a separate calibration note (Section~\ref{sec:calibration}).
 
 \subsection{Notation}
 Let $G = (V, E)$ be the directed street graph for a city, extracted
-via OSMnx with the drive network filter. Let $D \subset V$ be the set
+via OSMnx \cite{boeing2017osmnx} with the drive network filter. Let $D \subset V$ be the set
 of depot nodes (k-means cluster centroids of the city's Blinkit dark
 stores, snapped to the nearest OSM nodes), and $C \subset V$ the set
 of customer nodes (sampled with residential-density weighting,
@@ -228,7 +237,7 @@ For each street-graph edge $(i, j) \in E$:
 \item $\ell_{ij}$ is the length in metres,
 \item $v_{ij}^{\text{free}}$ is the free-flow speed (km/h, OSMnx imputed),
 \item $t_{ij}^{\text{free}} = 60 \ell_{ij} / (1000 v_{ij}^{\text{free}})$ is the free-flow travel time in minutes,
-\item $\rho_{ij} = \alpha (V_{ij}/C_{ij})^{\beta}$ is the BPR congestion factor with $\alpha = 0.15$, $\beta = 4$,
+\item $\rho_{ij} = \alpha (V_{ij}/C_{ij})^{\beta}$ is the Bureau of Public Roads (BPR) \cite{bpr1964} congestion factor with $\alpha = 0.15$, $\beta = 4$,
 \item $t_{ij} = t_{ij}^{\text{free}} (1 + \rho_{ij})$ is the congestion-inflated travel time used everywhere downstream,
 \item $r_{ij} \in [0, 0.99]$ is the per-traversal crash probability (BASM, Section~\ref{subsec:basm}),
 \item $h_{ij} \in \{0, 1\}$ indicates a residential street (OSM \texttt{highway} $\in$ \{\texttt{residential}, \texttt{living\_street}\}).
@@ -387,8 +396,9 @@ protected iRAD microdata.
 \rho_{ij} = 0.15 \left(\frac{V_{ij}}{C_{ij}}\right)^4,
 \label{eq:BPR}
 \end{equation}
-with capacity $C_{ij}$ from HCM~2010 Exhibit~10-3 indexed by
-\texttt{(highway\_class, lane\_count)} and flow $V_{ij}$ derived from a
+with capacity $C_{ij}$ from HCM~2010 \cite{hcm2010} Exhibit~10-3
+indexed by \texttt{(highway\_class, lane\_count)} and flow $V_{ij}$
+derived from a
 class-level AADT prior multiplied by an hour-of-day factor (peak
 windows 08--11 and 18--21). All values are in
 \texttt{conf/congestion/bpr.yaml}.
@@ -481,14 +491,43 @@ regret-2, and regret-3. Operator weights are updated in segments of
 are $\sigma = (33, 9, 1, 0)$ for new-best, improving, accepted-worse,
 and rejected moves. Acceptance is simulated annealing with a
 geometric cooling rate of 0.99975 starting from a temperature equal
-to 5\% of the initial $F_1$.
+to 5\% of the initial $F_1$. Algorithm~\ref{alg:alns} states the full
+loop.
+
+\begin{savpseudocode}{ALNS for SA-VRPTW}\label{alg:alns}
+\textbf{Input:}\> Instance $\mathcal{I}$; iterations $T$; segment length $L$; \\
+\>\> reaction factor $r$; reward weights $\sigma$; \\
+\>\> cooling rate $\eta$; init.\ temperature ratio $\theta$ \\
+\textbf{Output:}\> Best feasible solution $s^\star$ \\[2pt]
+\textbf{1.}\> $s_0 \gets \mathrm{GreedyConstruct}(\mathcal{I})$ \\
+\textbf{2.}\> $s \gets s_0$;\ $s^\star \gets s_0$;\ $F^\star \gets F_1(s_0)$ \\
+\textbf{3.}\> $T_{\mathrm{SA}} \gets \theta \cdot F^\star$ \\
+\textbf{4.}\> $w^d_o, w^r_o \gets 1$ for every operator $o$ \\
+\textbf{5.}\> \textbf{for} $t = 1$ \textbf{to} $T$ \textbf{do} \\
+\textbf{6.}\>\> $q \gets \lceil n \cdot \mathcal{U}(0.15, 0.45) \rceil$ \\
+\textbf{7.}\>\> $D \gets$ destroy operator sampled $\propto w^d$ \\
+\textbf{8.}\>\> $R \gets$ repair operator sampled $\propto w^r$ \\
+\textbf{9.}\>\> $s' \gets R(D(s, q))$;\ $\Delta \gets F_1(s') - F_1(s)$ \\
+\textbf{10.}\>\> \textbf{if} $F_1(s') < F^\star$ \textbf{then} \\
+\>\>\> $s^\star \gets s'$;\ $F^\star \gets F_1(s')$;\ $\rho \gets \sigma_1$ \\
+\textbf{11.}\>\> \textbf{else if} $\Delta < 0$ \textbf{then} $\rho \gets \sigma_2$ \\
+\textbf{12.}\>\> \textbf{else if} $\mathcal{U}(0,1) < \exp(-\Delta/T_{\mathrm{SA}})$ \textbf{then} $\rho \gets \sigma_3$ \\
+\textbf{13.}\>\> \textbf{else} $\rho \gets \sigma_4$ \\
+\textbf{14.}\>\> \textbf{if} $\rho > \sigma_4$ \textbf{then} $s \gets s'$ \\
+\textbf{15.}\>\> $\pi^d_D \mathrel{+}= \rho$;\ $\pi^r_R \mathrel{+}= \rho$ \\
+\textbf{16.}\>\> \textbf{if} $t \bmod L = 0$ \textbf{then} \\
+\>\>\> $w^*_o \gets (1{-}r)\, w^*_o + r\, \pi^*_o / n^*_o$ \\
+\>\>\> reset $\pi^*$ and counts \\
+\textbf{17.}\>\> $T_{\mathrm{SA}} \gets \eta \cdot T_{\mathrm{SA}}$ \\
+\textbf{18.}\> \textbf{return} $s^\star$
+\end{savpseudocode}
 
 \subsection{Crash-Survival Monte Carlo}
 For evaluation only (not optimisation), each route is sampled
 $10\,000$ times: each edge traversal is a Bernoulli trial with success
 probability $1 - r_e$, and the route survives iff every edge
 traversal succeeds. We report mean route survival, fleet survival, and
-Wilson 95\% CIs. The analytic per-route survival
+Wilson 95\% confidence intervals \cite{wilson1927}. The analytic per-route survival
 $\exp(-R_{\text{route}})$ is reported alongside as a sanity check.
 
 \subsection{Behavioural Compliance Sensitivity}
@@ -603,8 +642,9 @@ penetration coefficient \TBD{}.
 
 \subsection{Solver Statistical Comparison}
 For each (city, $N$) cell, we compute the Wilcoxon signed-rank
-statistic between paired GA and ALNS $F_1$ values across the 10 seeds,
-applying Bonferroni correction across the resulting
+statistic \cite{wilcoxon1945} between paired GA and ALNS $F_1$ values
+across the 10 seeds, applying Bonferroni correction across the
+resulting
 $5 \times 4 = 20$ comparisons. \TBD{report the count of cells in
 which ALNS dominates GA at $\alpha = 0.05$ Bonferroni-corrected;
 expected pattern based on pilot runs is that ALNS dominates at
@@ -688,76 +728,8 @@ publishing the dark-store KML, the OSMnx and OpenStreetMap
 communities for the road-network data, and CRRI New Delhi for the
 urban-flow surveys that anchor the BPR exposure assumptions.
 
-\begin{thebibliography}{00}
-
-\bibitem{solomon1987} M.~M. Solomon, ``Algorithms for the vehicle routing
-and scheduling problems with time window constraints,'' \emph{Oper.
-Res.}, vol.~35, no.~2, pp.~254--265, 1987.
-
-\bibitem{koskosidis1992} Y.~A. Koskosidis, W.~B. Powell, and
-M.~M. Solomon, ``An optimization-based heuristic for vehicle routing
-and scheduling with soft time window constraints,'' \emph{Transp.
-Sci.}, vol.~26, no.~2, pp.~69--85, 1992.
-
-\bibitem{fu2008} Z.~Fu, R.~Eglese, and L.~Y.~O. Li, ``A new tabu
-search heuristic for the open vehicle routing problem,'' \emph{J.
-Oper. Res. Soc.}, vol.~56, no.~3, pp.~267--274, 2005.
-
-\bibitem{taillard1997} \'E.~D. Taillard, P.~Badeau, M.~Gendreau,
-F.~Guertin, and J.-Y. Potvin, ``A tabu search heuristic for the
-vehicle routing problem with soft time windows,'' \emph{Transp.
-Sci.}, vol.~31, no.~2, pp.~170--186, 1997.
-
-\bibitem{hoseinzadeh2020} M.~Hoseinzadeh \emph{et al.}, ``A
-safety-aware vehicle routing problem with cumulative risk,''
-\emph{Comput. Ind. Eng.}, vol.~149, p.~106786, 2020.
-
-\bibitem{salmon2023} J.~Salmon \emph{et al.}, ``Multi-objective
-$\varepsilon$-constraint methods for safety-aware logistics,''
-\emph{Eur. J. Oper. Res.}, vol.~308, no.~3, pp.~1108--1124, 2023.
-
-\bibitem{ehrgott2005} M.~Ehrgott, \emph{Multicriteria Optimization},
-2nd~ed.\quad Berlin, Germany: Springer, 2005.
-
-\bibitem{sinchaisri2023} W.~P. Sinchaisri \emph{et al.}, ``Operating
-under SLA pressure: Evidence from quick-commerce dispatch,''
-\emph{Manuf. Service Oper. Manage.}, to be published.
-
-\bibitem{das2020} S.~Das, A.~Mukherjee, and R.~Banerjee, ``Helmet
-compliance among gig-economy delivery riders in Indian cities,''
-\emph{Accid. Anal. Prev.}, vol.~141, p.~105517, 2020.
-
-\bibitem{zografos2004} K.~G. Zografos and K.~N. Androutsopoulos,
-``A heuristic algorithm for solving hazardous materials distribution
-problems,'' \emph{Eur. J. Oper. Res.}, vol.~152, no.~2,
-pp.~507--519, 2004.
-
-\bibitem{morth2022} Ministry of Road Transport and Highways,
-\emph{Road Accidents in India 2022}.\quad New Delhi, India:
-Government of India, 2023. [Online]. Available:
-\url{https://www.morth.gov.in/sites/default/files/RA_2022_30_Oct.pdf}
-
-\bibitem{mohan2017} D.~Mohan, S.~I. Bangdiwala, and A.~Villaveces,
-``Urban street structure and traffic safety,'' \emph{J. Saf. Res.},
-vol.~62, pp.~63--71, 2017.
-
-\bibitem{prins2004} C.~Prins, ``A simple and effective evolutionary
-algorithm for the vehicle routing problem,'' \emph{Comput. Oper.
-Res.}, vol.~31, no.~12, pp.~1985--2002, 2004.
-
-\bibitem{ropke2006} S.~Ropke and D.~Pisinger, ``An adaptive large
-neighborhood search heuristic for the pickup and delivery problem
-with time windows,'' \emph{Transp. Sci.}, vol.~40, no.~4,
-pp.~455--472, 2006.
-
-\bibitem{toth2002} P.~Toth and D.~Vigo, eds., \emph{The Vehicle
-Routing Problem}.\quad Philadelphia, PA, USA: SIAM, 2002.
-
-\bibitem{desrochers1992} M.~Desrochers, J.~Desrosiers, and M.~Solomon,
-``A new optimization algorithm for the vehicle routing problem with
-time windows,'' \emph{Oper. Res.}, vol.~40, no.~2, pp.~342--354, 1992.
-
-\end{thebibliography}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \begin{IEEEbiographynophoto}{Subhajit Sidhanta}
 is an Assistant Professor (Grade-I) with the Department of Industrial
