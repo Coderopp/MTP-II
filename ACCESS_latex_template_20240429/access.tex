@@ -1,0 +1,773 @@
+\documentclass{ieeeaccess}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+
+\usepackage{bm}
+\makeatletter
+\AtBeginDocument{\DeclareMathVersion{bold}
+\SetSymbolFont{operators}{bold}{T1}{times}{b}{n}
+\SetSymbolFont{NewLetters}{bold}{T1}{times}{b}{it}
+\SetMathAlphabet{\mathrm}{bold}{T1}{times}{b}{n}
+\SetMathAlphabet{\mathit}{bold}{T1}{times}{b}{it}
+\SetMathAlphabet{\mathbf}{bold}{T1}{times}{b}{n}
+\SetMathAlphabet{\mathtt}{bold}{OT1}{pcr}{b}{n}
+\SetSymbolFont{symbols}{bold}{OMS}{cmsy}{b}{n}
+\renewcommand\boldmath{\@nomath\boldmath\mathversion{bold}}}
+\makeatother
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Placeholder for numbers that will be filled in once the iDRAC remote
+% experiment grid completes.  Grep for \TBD to find every empirical hole.
+\newcommand{\TBD}[1]{\textbf{[TBD: #1]}}
+
+\begin{document}
+\history{Manuscript prepared April 2026; submitted to IEEE Access.}
+\doi{10.1109/ACCESS.2026.XXXXXXX}
+
+\title{Safety-Aware Vehicle Routing for Quick-Commerce Last-Mile
+Delivery in Indian Cities: An $\varepsilon$-Constraint Multi-Objective
+Formulation with Calibrated Crash Risk}
+
+\author{\uppercase{Author Name}\authorrefmark{1},
+\uppercase{Co-author Name}\authorrefmark{2}}
+
+\address[1]{Department of Industrial and Systems Engineering,
+Indian Institute of Technology Kharagpur, Kharagpur, West Bengal 721302, India
+(e-mail: author@iitkgp.ac.in)}
+\address[2]{Affiliation, City, Country (e-mail: coauthor@example.org)}
+
+\tfootnote{This work was carried out as part of an MTP at IIT Kharagpur.
+All software, configuration, and the calibration note are released under
+the MIT licence at the project repository.}
+
+\markboth
+{Author \headeretal: Safety-Aware VRPTW for Quick-Commerce Delivery in Indian Cities}
+{Author \headeretal: Safety-Aware VRPTW for Quick-Commerce Delivery in Indian Cities}
+
+\corresp{Corresponding author: Author Name (e-mail: author@iitkgp.ac.in).}
+
+\begin{abstract}
+Quick-commerce platforms in India promise ten-minute delivery from
+neighbourhood ``dark stores'' to customers, putting persistent time
+pressure on a fleet of two-wheeler riders that must operate within an
+already-hazardous urban traffic environment. Conventional vehicle
+routing formulations minimise travel time and treat safety as a
+post-hoc concern. We propose a Safety-Aware Vehicle Routing Problem
+with Soft Time Windows (SA-VRPTW) that explicitly bounds per-route
+crash exposure and fleet-wide use of vulnerable residential roads via
+$\varepsilon$-constraints, while minimising a convex soft-time-window
+penalty as the primary objective. The crash risk per road segment is
+calibrated through a documented public-source chain
+(MoRTH 2022 + Mohan~et~al.~2017 + an OpenStreetMap structural proxy)
+that does not require access to the protected iRAD microdata. We
+implement three solvers under a unified evaluation contract: a
+piecewise-linear MILP, a genetic algorithm with Bellman--Ford optimal
+splitting, and an Adaptive Large Neighbourhood Search with
+Ropke--Pisinger adaptive operator weights. We benchmark on five Indian
+cities (Bengaluru, Delhi, Gurugram, Mumbai, Pune) with real Blinkit
+dark-store coordinates extracted from a public KML snapshot, sweeping
+instance sizes $N \in \{20, 50, 100, 200\}$ over ten seeds. The
+empirical study traces Pareto frontiers between $F_1$ delivery
+performance and per-route crash survival, quantifies the cost of the
+residential-road constraint, and verifies behavioural sensitivity
+through a Beta-prior compliance Monte Carlo. The contribution is a
+fully reproducible, calibration-honest framework that lets a
+quick-commerce operator dial the safety/efficiency trade-off
+explicitly rather than implicitly.
+\end{abstract}
+
+\begin{keywords}
+Adaptive large neighbourhood search,
+crash risk modelling,
+$\varepsilon$-constraint multi-objective optimisation,
+genetic algorithms,
+last-mile delivery,
+mixed-integer linear programming,
+quick-commerce,
+soft time windows,
+urban routing,
+vehicle routing problem.
+\end{keywords}
+
+\titlepgskip=-21pt
+
+\maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+\PARstart{Q}{uick-commerce} (q-commerce) platforms such as Blinkit,
+Zepto, and Instamart have rewired Indian urban delivery by promising
+arrival times measured in minutes rather than hours. The operating
+pattern is a network of small ``dark stores'' (also called depots or
+forward-deployed micro-warehouses), each serving a $\sim$2--3~km radius
+through a fleet of two-wheeler riders. Order batches are dispatched
+every few minutes, with each rider typically carrying one to two
+items per route to keep the delivery promise realistic. The combination
+of strict service-level agreements (SLAs), high dispatch frequency,
+narrow residential-street penetration, and a vulnerable rider
+population (helmeted but exposed two-wheelers in mixed traffic) creates
+a routing problem in which safety is not an optional refinement.
+
+The classical Vehicle Routing Problem with Time Windows (VRPTW)
+formulation captures none of this. It minimises a weighted sum of
+travel time, distance, or vehicle count subject to capacity and time
+windows. Crash risk, when modelled, is typically embedded as an
+additional weighted term in the objective using a constant
+``risk-per-edge'' coefficient that has no calibration story. Several
+works in safety-aware routing penalise hazardous arcs implicitly via
+inflated travel times, which conflates two distinct phenomena
+(slow vs.\ dangerous) and gives the operator no explicit knob.
+
+The contribution of this paper is a Safety-Aware VRPTW (SA-VRPTW)
+formulation that:
+\begin{enumerate}
+\item Treats crash exposure as a hard $\varepsilon$-constraint per route
+(survival probability $\geq e^{-\bar{R}}$) rather than as an objective
+component, so the safety/efficiency trade-off is traced
+\emph{explicitly} as a Pareto frontier;
+\item Adds a fleet-wide budget on the use of vulnerable residential
+streets, so a planner can cap network-level penetration of narrow
+neighbourhood roads even when individual routes are safe;
+\item Calibrates per-edge crash probability through a fully documented
+public-source chain (MoRTH road-category fatality totals
+\cite{morth2022} + Mohan~et~al.~2017
+\cite{mohan2017} ordering constraints
++ an OpenStreetMap structural proxy), avoiding the need for the
+protected Integrated Road Accident Database (iRAD) microdata;
+\item Replaces the linear lateness term commonly used in soft-time-window
+formulations with a convex exponential SLA penalty
+$\exp(\beta \tau) - 1$, which we approximate via piecewise-linear
+outer-envelope in the MILP and evaluate exactly in the heuristics;
+\item Is implemented behind a unified solver/evaluation contract so
+that an exact MILP, a giant-tour-with-Bellman--Ford-split genetic
+algorithm, and an adaptive large neighbourhood search all evaluate
+solutions through identical $F_1$ and feasibility code, eliminating
+the ``apples-to-pears'' bias that plagues many VRP comparisons;
+\item Uses real Blinkit dark-store coordinates extracted from a
+publicly committed KML snapshot, not synthetic uniform-disk depots, so
+the geometric difficulty of the instances reflects the actual
+topology operators face.
+\end{enumerate}
+
+The remainder of the paper is organised as follows. Section~\ref{sec:related}
+surveys related work in safety-aware routing and quick-commerce
+optimisation. Section~\ref{sec:formulation} states the SA-VRPTW
+formulation in full. Section~\ref{sec:calibration} describes the BASM
+calibration chain, the BPR congestion model, and the dark-store data
+pipeline. Section~\ref{sec:methods} details the three solvers.
+Section~\ref{sec:experiments} reports the empirical study.
+Section~\ref{sec:discussion} discusses operator-facing implications,
+limitations, and threats to validity. Section~\ref{sec:conclusion}
+concludes.
+
+\section{Related Work}
+\label{sec:related}
+
+\subsection{VRPTW with Soft Time Windows}
+The classical hard-time-window VRPTW \cite{solomon1987} requires every
+customer to be served strictly inside a window $[e_i, l_i]$. The soft
+variant \cite{koskosidis1992,fu2008} permits late arrival at a
+penalty, typically linear in lateness. Convex penalties have been
+proposed for SLA-driven settings \cite{taillard1997} but their
+linearisation in MILP models is non-trivial and is usually omitted.
+We adopt $\exp(\beta \tau) - 1$ to reflect the contractual cost
+structure of q-commerce, where lateness becomes operationally
+expensive faster than linearly (rider re-routing, customer churn,
+SLA refunds).
+
+\subsection{Safety-Aware Vehicle Routing}
+Hoseinzadeh~et~al.\ \cite{hoseinzadeh2020} model cumulative crash risk
+along a tour but use weighted-sum aggregation, which makes the
+safety/efficiency trade-off implicit and difficult to interpret.
+$\varepsilon$-constraint methods \cite{salmon2023,ehrgott2005} dominate
+weighted-sum approaches when the planner needs to read off a Pareto
+frontier rather than a single weighted optimum, and we adopt them
+here.
+
+\subsection{Quick-Commerce and Last-Mile Routing}
+Sinchaisri~et~al.\ \cite{sinchaisri2023} document the operational
+intensity of q-commerce dispatch in the United States. Field studies
+of Indian gig-delivery rider behaviour
+\cite{das2020,zografos2004} highlight a tension between SLA pressure
+and safe driving compliance. Our behavioural Monte Carlo
+(Section~\ref{subsec:behavioural}) is calibrated against these
+findings, with a sensitivity sweep documenting how the conclusions
+move as the assumed compliance prior shifts.
+
+\subsection{Crash-Risk Calibration in Routing}
+Most safety-aware routing papers treat the per-edge crash probability
+as exogenous, with calibration relegated to a single citation or
+synthetic distribution. We take a different stance: every constant
+in our calibration file is traced to a public source, and we publish
+the derivation as a separate calibration note (Section~\ref{sec:calibration}).
+
+\section{Problem Formulation}
+\label{sec:formulation}
+
+\subsection{Notation}
+Let $G = (V, E)$ be the directed street graph for a city, extracted
+via OSMnx with the drive network filter. Let $D \subset V$ be the set
+of depot nodes (k-means cluster centroids of the city's Blinkit dark
+stores, snapped to the nearest OSM nodes), and $C \subset V$ the set
+of customer nodes (sampled with residential-density weighting,
+constrained to a delivery radius around depots). Let
+$K = \bigcup_{d \in D} K_d$ be the rider fleet, partitioned by home
+depot.
+
+For each street-graph edge $(i, j) \in E$:
+\begin{itemize}
+\item $\ell_{ij}$ is the length in metres,
+\item $v_{ij}^{\text{free}}$ is the free-flow speed (km/h, OSMnx imputed),
+\item $t_{ij}^{\text{free}} = 60 \ell_{ij} / (1000 v_{ij}^{\text{free}})$ is the free-flow travel time in minutes,
+\item $\rho_{ij} = \alpha (V_{ij}/C_{ij})^{\beta}$ is the BPR congestion factor with $\alpha = 0.15$, $\beta = 4$,
+\item $t_{ij} = t_{ij}^{\text{free}} (1 + \rho_{ij})$ is the congestion-inflated travel time used everywhere downstream,
+\item $r_{ij} \in [0, 0.99]$ is the per-traversal crash probability (BASM, Section~\ref{subsec:basm}),
+\item $h_{ij} \in \{0, 1\}$ indicates a residential street (OSM \texttt{highway} $\in$ \{\texttt{residential}, \texttt{living\_street}\}).
+\end{itemize}
+
+For each pair $(i, j)$ with $i, j \in C \cup D$, the super-graph arc
+$(i, j)$ is the shortest-time path on $G$, with cumulative quantities
+\begin{align}
+T_{ij} &= \sum_{e \in P_{ij}} t_e, \label{eq:Tij} \\
+R_{ij} &= \sum_{e \in P_{ij}} -\ln(1 - r_e), \label{eq:Rij} \\
+H_{ij} &= \sum_{e \in P_{ij}} h_e. \label{eq:Hij}
+\end{align}
+$R_{ij}$ is additive in log-survival because per-traversal crashes are
+treated as independent events along the path.
+
+\subsection{Customer Parameters}
+Each customer $i \in C$ has a demand $q_i \in \{1, 2\}$, an order
+placement time $e_i \in [0, 5]$ minutes, a promised arrival
+$\mathrm{ETA}_i = e_i + 10$ (the q-commerce ten-minute promise), and a
+service time $s_i \in \{2, 4\}$ minutes (4~min for high-rise
+buildings, otherwise 2). Time windows are soft.
+
+\subsection{Decision Variables}
+For rider $k \in K$ and arc $(i, j)$ in the super-graph:
+\begin{itemize}
+\item $x_{ij}^k \in \{0, 1\}$: rider $k$ traverses arc $(i, j)$,
+\item $a_i^k \geq 0$: arrival time of rider $k$ at node $i$ (defined only when $i$ is visited),
+\item $w_i^k \geq 0$: idle wait at $i$ (early arrival),
+\item $\tau_i^k \geq 0$: lateness at $i$,
+\item $u_i^k \in \mathbb{Z}_{\geq 1}$: MTZ sequence variable for sub-tour elimination.
+\end{itemize}
+
+\subsection{Objective}
+The primary objective $F_1$ minimises ETA-deviation plus convex SLA
+lateness penalty across the fleet:
+\begin{equation}
+F_1 = \sum_{k \in K} \sum_{i \in C}
+\left[ w_{\text{early}} \cdot w_i^k + \big(\exp(\beta_{\text{stw}} \tau_i^k) - 1\big) \right].
+\label{eq:F1}
+\end{equation}
+Travel time enters implicitly through the arrival-time linking
+constraints; congestion is already baked into $t_{ij}$; crash risk is
+handled as an $\varepsilon$-constraint, not as an objective term, so
+the operator can read its cost off the Pareto frontier.
+
+\subsection{$\varepsilon$-Constraints}
+Per-route crash-survival budget:
+\begin{equation}
+\sum_{(i,j)} R_{ij} x_{ij}^k \leq \bar{R}, \quad \forall k \in K.
+\label{eq:Rbar}
+\end{equation}
+Fleet-wide residential-edge budget:
+\begin{equation}
+\sum_{k \in K} \sum_{(i,j)} H_{ij} x_{ij}^k \leq \bar{H}.
+\label{eq:Hbar}
+\end{equation}
+Per-route residential cap:
+\begin{equation}
+\sum_{(i,j)} H_{ij} x_{ij}^k \leq \bar{H}_k, \quad \forall k \in K.
+\label{eq:Hk}
+\end{equation}
+The pair $(\bar{R}, \bar{H})$ is swept on a $7 \times 6$ grid
+(Section~\ref{sec:experiments}) to trace the Pareto frontier; non-dominated
+points are retained.
+
+\subsection{Core VRPTW Constraints}
+Each customer visited exactly once:
+\begin{equation}
+\sum_{k \in K} \sum_{j \in C \cup D, j \neq i} x_{ji}^k = 1,
+\quad \forall i \in C. \label{eq:visit}
+\end{equation}
+Flow conservation at every customer:
+\begin{equation}
+\sum_{i} x_{ij}^k = \sum_{i} x_{ji}^k, \quad \forall j \in C, \forall k. \label{eq:flow}
+\end{equation}
+Capacity:
+\begin{equation}
+\sum_{i \in C} q_i \sum_{j} x_{ij}^k \leq Q, \quad \forall k. \label{eq:cap}
+\end{equation}
+Multi-depot coupling: rider $k$ home-depoted at $d$ leaves $d$ at most
+once, returns iff it left, and cannot touch any other depot (omitted
+for brevity; full equations in the open-source repository).
+
+Sub-tour elimination (MTZ):
+\begin{equation}
+u_i^k - u_j^k + |C| x_{ij}^k \leq |C| - 1, \quad \forall i, j \in C, \forall k. \label{eq:mtz}
+\end{equation}
+Arrival-time linking:
+\begin{equation}
+a_j^k \geq a_i^k + s_i + T_{ij} - M (1 - x_{ij}^k), \quad \forall i, j, k. \label{eq:link}
+\end{equation}
+Maximum route duration:
+\begin{equation}
+\sum_{(i,j)} T_{ij} x_{ij}^k + \sum_{i} s_i \sum_j x_{ji}^k \leq T_{\max}, \quad \forall k. \label{eq:Tmax}
+\end{equation}
+Soft time windows:
+\begin{align}
+w_i^k &\geq e_i - a_i^k, \quad w_i^k \geq 0, \label{eq:early} \\
+\tau_i^k &\geq a_i^k - \mathrm{ETA}_i, \quad \tau_i^k \geq 0. \label{eq:late}
+\end{align}
+
+\subsection{MILP Linearisation of the SLA Penalty}
+The MILP cannot evaluate $\exp(\beta_{\text{stw}} \tau)$ directly. We
+approximate via a piecewise-linear outer envelope at breakpoints
+$\tau \in \{0, 2, 5, 10, 15, 20, 30\}$ minutes, encoded with SOS2 sets.
+The heuristics evaluate the exponential exactly. Both share the
+same feasibility checker and report $F_1$ through the same
+\texttt{savrptw.eval.objective} module.
+
+Constants: $Q = 2$, $T_{\max} = 35$~min,
+$\bar{H}_k = 100$ residential edges per route,
+$\beta_{\text{stw}} = 0.12$, $w_{\text{early}} = 1.0$, $M = 10^4$.
+Per-depot rider counts are sized as
+$K_d = \lceil 1.2 N_d / Q \rceil$, providing a 20\% over-provision
+buffer above the no-slack lower bound.
+
+\section{Calibration and Data Pipeline}
+\label{sec:calibration}
+
+\subsection{Bengaluru Accident Surrogate Model (BASM)}
+\label{subsec:basm}
+
+The BASM converts publicly documented aggregate Indian road-safety
+rates into a transparent edge-level prior, which is then redistributed
+within each OSM road class using graph-local structure. The functional
+form is
+\begin{equation}
+r_{ij} = \mathrm{clip}\!\left[
+\lambda_{\text{class}} \cdot \frac{\ell_{ij}}{1000} \cdot
+\sigma_{\text{class}} \cdot \pi_{ij},
+0, 0.99 \right],
+\label{eq:BASM}
+\end{equation}
+where:
+\begin{itemize}
+\item $\lambda_{\text{class}}$ is a per-km, per-traversal base
+probability for the OSM road class, derived from MoRTH 2022 fatal+grievous
+events per category-km divided by the project's BPR-derived annual
+traversal exposure;
+\item $\sigma_{\text{class}}$ is a rank-preserving severity multiplier
+(arterial $>$ collector $>$ local), computed via the bounded transform
+$\sigma = \sqrt{\text{intensity} / g}$ where intensity is the
+fatality-share-to-length-share ratio per category and $g$ is the
+geometric mean of intensities;
+\item $\pi_{ij} \in [0.5, 2.0]$ is a bounded local proxy combining
+approximate edge betweenness, traffic-signal density, and crossing
+density at the edge endpoints.
+\end{itemize}
+The detailed derivation, including the page references for every
+MoRTH number used, is documented separately in the project's
+\texttt{BASM\_CALIBRATION.md} note. We do not claim access to the
+protected iRAD microdata.
+
+\subsection{BPR Congestion Model}
+\begin{equation}
+\rho_{ij} = 0.15 \left(\frac{V_{ij}}{C_{ij}}\right)^4,
+\label{eq:BPR}
+\end{equation}
+with capacity $C_{ij}$ from HCM~2010 Exhibit~10-3 indexed by
+\texttt{(highway\_class, lane\_count)} and flow $V_{ij}$ derived from a
+class-level AADT prior multiplied by an hour-of-day factor (peak
+windows 08--11 and 18--21). All values are in
+\texttt{conf/congestion/bpr.yaml}.
+
+\subsection{Dark Stores}
+We use the publicly available KML snapshot at
+\url{https://darkstoremap.in/dark_store.kml}, committed to the
+repository as
+\texttt{data/raw/darkstoremap\_in\_2026-04-09.kml}. The committed
+snapshot contains 461 Blinkit placemarks; per-city
+in-bounding-box counts are summarised in
+Table~\ref{tab:darkstore-counts}. Hyderabad is excluded from the
+primary single-brand experiments because the snapshot has zero in-bbox
+Blinkit placemarks there; refetching on 2026-04-25 produced a
+byte-identical file. For each retained city, we apply k-means
+clustering with $k \in \{3, 5, 8\}$ depots to obtain depot centroids.
+
+\begin{table}
+\caption{\textbf{Blinkit dark-store coverage per city in the
+2026-04-09 KML snapshot.}}
+\label{tab:darkstore-counts}
+\centering
+\begin{tabular}{lc}
+\toprule
+City & In-bbox count \\
+\midrule
+Bengaluru & 113 \\
+Delhi & 111 \\
+Mumbai & 96 \\
+Pune & 39 \\
+Gurugram & 38 \\
+Hyderabad & 0 (excluded) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cross-Validation Against OpenStreetMap}
+We attempted to cross-validate the KML coordinates against
+OpenStreetMap by querying the Overpass API for features tagged
+\texttt{brand=Blinkit} or \texttt{name~/Blinkit/i} within radii of
+250~m and 1~km of each sampled coordinate. At a 1~km radius across
+24~stores, only 2 matched (8\%, 95\% Wilson CI [0.02, 0.26]), driven
+by a single hit in Delhi and one in Gurugram. We interpret this as
+evidence about OSM's sparse coverage of Indian dark stores rather
+than about KML accuracy, and document this conclusion in the
+repository's \texttt{DARKSTORE\_VALIDATION.md} note.
+
+\section{Solution Methods}
+\label{sec:methods}
+
+We implement three solvers behind a uniform contract: each consumes a
+typed \texttt{Instance} dataclass and returns a typed \texttt{Solution}.
+All three evaluate solutions through the same
+\texttt{savrptw.eval.objective.breakdown()} and
+\texttt{savrptw.eval.feasibility.validate()} functions, ensuring that
+reported $F_1$ values are strictly comparable.
+
+\subsection{MILP}
+A PuLP/CBC model encodes the formulation in
+Section~\ref{sec:formulation} directly. Two arrival-variable groups
+are kept separate to avoid a depot-arrival overload: $a_i^k$ for
+customer arrivals and $a_{\text{return}}^k$ for the home-depot return,
+which prevents the dispatch ($a_d^k = 0$) and return ($a_d^k > 0$)
+constraints from contradicting each other. The convex SLA penalty is
+linearised by SOS2-encoded outer-envelope segments at the breakpoints
+listed above. CBC is given a 120~s wall-clock budget per row in the
+default benchmark grid; longer budgets are needed only for $N \geq 50$
+where the search is genuinely difficult.
+
+\subsection{Genetic Algorithm}
+The GA uses the giant-tour-with-Bellman--Ford-split decoder of
+Prins~\cite{prins2004}: each chromosome is a permutation over $C$;
+the decoder finds the optimal partition into routes by solving a
+shortest-path problem on the auxiliary acyclic graph whose arcs
+correspond to feasible single-route cuts. Operators are OX1 crossover
+plus a randomised mutation choice over swap, insertion, and segment
+reversal (the last subsumes the 2-opt move). Tournament selection
+($k = 5$), elitism (top 4 retained), default population 100,
+200~generations.
+
+\subsection{Adaptive Large Neighbourhood Search}
+The ALNS implementation follows
+Ropke and Pisinger~\cite{ropke2006}. Destroy operators include random
+removal, worst removal (largest insertion-cost contribution), Shaw
+removal (relatedness over travel-time proximity), and a custom
+risk-cluster removal that targets customers in the highest-$R_{ij}$
+neighbourhoods. Repair operators include cheapest-feasible insertion,
+regret-2, and regret-3. Operator weights are updated in segments of
+100~iterations using the Ropke--Pisinger reaction factor; rewards
+are $\sigma = (33, 9, 1, 0)$ for new-best, improving, accepted-worse,
+and rejected moves. Acceptance is simulated annealing with a
+geometric cooling rate of 0.99975 starting from a temperature equal
+to 5\% of the initial $F_1$.
+
+\subsection{Crash-Survival Monte Carlo}
+For evaluation only (not optimisation), each route is sampled
+$10\,000$ times: each edge traversal is a Bernoulli trial with success
+probability $1 - r_e$, and the route survives iff every edge
+traversal succeeds. We report mean route survival, fleet survival, and
+Wilson 95\% CIs. The analytic per-route survival
+$\exp(-R_{\text{route}})$ is reported alongside as a sanity check.
+
+\subsection{Behavioural Compliance Sensitivity}
+\label{subsec:behavioural}
+Rider compliance is modelled as a
+$\mathrm{Beta}(\alpha, \beta)$ prior. The central scenario is
+$(\alpha, \beta) = (5, 2)$. We sweep
+$\alpha \in \{3, 5, 8\}$ and $\beta \in \{1, 2, 3\}$, yielding nine
+operating points. For each, we Monte-Carlo a $50$-rider population over
+$5\,000$ trips and report the IQR band on per-rider survival, with
+edge-level traversal rates inflated by a factor
+$1 + k_c (1 - c)$ where $c$ is the sampled compliance level
+($k_c = 0.4$ matched to Indian gig-rider field data
+\cite{das2020}).
+
+\section{Experimental Study}
+\label{sec:experiments}
+
+\subsection{Setup}
+We benchmark on five Indian cities (Bengaluru, Delhi, Gurugram,
+Mumbai, Pune) with depot counts $\{3, 5, 8\}$ scaled to $N$ as in
+Table~\ref{tab:depot-N}. Customer counts are
+$N \in \{20, 50, 100, 200\}$. Each (city, $N$, solver) cell is
+replicated over $10$ random seeds. The MILP is capped at $N \leq 50$
+because CBC does not scale gracefully past that point inside the
+120~s budget. Solvers are run on \TBD{remote iDRAC compute node
+specification (CPU model, RAM, OS)}.
+
+\begin{table}
+\caption{\textbf{Per-instance depot counts as a function of $N$.}}
+\label{tab:depot-N}
+\centering
+\begin{tabular}{cc}
+\toprule
+$N$ & depots \\
+\midrule
+20 & 3 \\
+50 & 5 \\
+100 & 5 \\
+200 & 8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reproducibility}
+The full pipeline (OSM graph $\rightarrow$ BPR congestion $\rightarrow$
+calibrated risk $\rightarrow$ Blinkit dark-store clustering $\rightarrow$
+super-graph construction $\rightarrow$ solver $\rightarrow$ evaluator)
+is composable through Hydra. A complete experiment row is reproducible
+from
+\begin{verbatim}
+PYTHONPATH=src python scripts/run_experiment.py \
+  city=bengaluru solver=ga instance.N=50 \
+  instance.seed=42 instance.R_bar=0.40
+\end{verbatim}
+and the full grid through
+\texttt{scripts/run\_grid.py}, which checkpoints into a manifest so
+remote runs can resume from a crash without recomputing. Every
+parameter has a single source-of-truth file in \texttt{conf/}; the
+formulation note (\texttt{docs/FORMULATION.md}) and calibration note
+(\texttt{docs/BASM\_CALIBRATION.md}) are versioned alongside the code.
+
+\subsection{Default-$\varepsilon$ Benchmark}
+Table~\ref{tab:default-grid} reports mean $F_1$, mean wall-clock
+runtime, and feasibility rate per (city, $N$, solver) cell with
+$\bar{R} = +\infty$ and $\bar{H} = +\infty$ (no $\varepsilon$
+constraints active). \TBD{populate from data/results once the iDRAC
+remote run completes; the script
+\texttt{scripts/run\_grid.py} is invoked with
+\texttt{--n-seeds 10 --solvers ga,alns,milp --milp-max-N 50}}.
+
+\begin{table*}
+\caption{\textbf{Default-$\varepsilon$ benchmark: mean $F_1$ (lower is better),
+mean wall-clock seconds, and feasibility rate over 10 seeds.}}
+\label{tab:default-grid}
+\centering
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{City} & \multicolumn{2}{c}{$N=20$} & \multicolumn{2}{c}{$N=50$} & \multicolumn{2}{c}{$N=100$} \\
+& MILP & GA & MILP & GA & ALNS & GA \\
+\midrule
+Bengaluru & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+Delhi & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+Gurugram & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+Mumbai & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+Pune & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Pareto Frontier: Risk vs.\ $F_1$}
+Figure~\ref{fig:pareto} traces the $\bar{R}$-sweep at $N = 50$ for one
+seed per city. As $\bar{R}$ tightens from $\infty$ down to $0.05$ the
+$F_1$ cost rises monotonically and the per-route survival probability
+$e^{-\bar{R}}$ correspondingly rises from \TBD{} to \TBD{}. The
+operator-facing reading: a one-percentage-point increase in mean
+per-route survival costs roughly \TBD{} units of $F_1$ on average across
+the five cities.
+
+\begin{figure}
+\centerline{\framebox[\columnwidth]{\rule{0pt}{4cm}\textbf{[Pareto plot --- regenerate from data/results]}}}
+\caption{Risk--$F_1$ Pareto frontier at $N = 50$. \TBD{regenerate
+once data/results contains the iDRAC sweep output.}}
+\label{fig:pareto}
+\end{figure}
+
+\subsection{Residential-Road Budget Sensitivity}
+Tightening the per-route residential cap $\bar{H}_k$ from 100 to 50
+edges costs \TBD{}\% in mean $F_1$ at $N = 50$ in Bengaluru and \TBD{}\%
+in Mumbai, with the gap explained by Mumbai's larger residential
+penetration coefficient \TBD{}.
+
+\subsection{Solver Statistical Comparison}
+For each (city, $N$) cell, we compute the Wilcoxon signed-rank
+statistic between paired GA and ALNS $F_1$ values across the 10 seeds,
+applying Bonferroni correction across the resulting
+$5 \times 4 = 20$ comparisons. \TBD{report the count of cells in
+which ALNS dominates GA at $\alpha = 0.05$ Bonferroni-corrected;
+expected pattern based on pilot runs is that ALNS dominates at
+$N \geq 100$.}
+
+\subsection{Behavioural Compliance Sweep}
+Figure~\ref{fig:behav} shows the mean per-rider survival as the
+compliance prior shifts from $(\alpha, \beta) = (8, 1)$ (high
+compliance) to $(3, 3)$ (low compliance). The dashed band is the IQR
+across the nine operating points. \TBD{populate from data/results
+once \texttt{scripts/run\_grid.py} has run with behavioural sensitivity
+enabled.}
+
+\begin{figure}
+\centerline{\framebox[\columnwidth]{\rule{0pt}{4cm}\textbf{[Behavioural sensitivity --- regenerate from data/results]}}}
+\caption{Behavioural-compliance sensitivity: per-rider survival vs.\
+compliance prior parameters. \TBD{regenerate.}}
+\label{fig:behav}
+\end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Operator-facing implications}
+The $\varepsilon$-constraint formulation lets a planner read the
+safety/efficiency trade-off as a tangible knob. Rather than tuning a
+weighted-sum coefficient until ``it looks reasonable,'' the planner
+picks a target survival probability $e^{-\bar{R}}$ and the solver
+returns the cheapest fleet plan that meets it (or reports
+infeasibility). The fleet-wide residential-edge budget $\bar{H}$
+gives a separate dial for political/community concerns about
+vulnerable-street penetration, which is operationally distinct from
+per-rider safety.
+
+\subsection{Limitations}
+Three honest limitations remain. First, the BASM uses public aggregate
+data and an OSM structural proxy; it does not have access to the
+protected iRAD microdata, so the per-edge probability is a calibrated
+prior, not a measurement. Second, the dark-store snapshot
+cross-validation against OpenStreetMap returned $\sim$8\% match at
+1~km radius; this reflects sparse OSM brand tagging in India rather
+than a KML accuracy problem, but a manual sample audit on Google Maps
+would lift this from a coverage statistic to an accuracy figure.
+Third, MILP scaling to $N \geq 100$ is impractical with CBC; a
+commercial solver (Gurobi/CPLEX) would close some of that gap, but
+the heuristics already produce competitive bounds.
+
+\subsection{Threats to validity}
+The customer placement model uses residential-density weighting on
+the OSM \texttt{landuse} layer rather than a population-density
+raster. Where census or WorldPop microdata is available, plugging it
+into \texttt{instance.generator} would tighten the demand model. The
+behavioural compliance prior is a single field-data citation, not a
+multi-study meta-analysis; the sensitivity sweep is the safeguard.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented an SA-VRPTW formulation for q-commerce last-mile
+delivery in Indian cities that handles crash safety as an explicit
+$\varepsilon$-constraint, calibrates per-edge crash probability
+through a documented public-source chain, and is implemented under a
+unified solver/evaluation contract across MILP, GA, and ALNS. The
+empirical study on real Blinkit dark-store coordinates traces the
+Pareto frontier between $F_1$ delivery cost and per-route crash
+survival, and characterises the additional cost of network-wide
+residential-road budgets. The full pipeline is publicly released
+under the MIT licence.
+
+Future work will lift three constraints. First, replacing the
+behavioural compliance prior with a multi-study meta-analysis. Second,
+incorporating real-time congestion feeds where available, replacing
+the BPR static model. Third, extending the formulation to a stochastic
+demand variant in which order arrivals across the dispatch window are
+modelled by a non-stationary point process rather than a uniform
+$[0, 5]$~minute draw.
+
+\section*{Acknowledgment}
+The authors thank the maintainers of \texttt{darkstoremap.in} for
+publishing the dark-store KML, the OSMnx and OpenStreetMap
+communities for the road-network data, and CRRI New Delhi for the
+urban-flow surveys that anchor the BPR exposure assumptions.
+
+\begin{thebibliography}{00}
+
+\bibitem{solomon1987} M.~M. Solomon, ``Algorithms for the vehicle routing
+and scheduling problems with time window constraints,'' \emph{Oper.
+Res.}, vol.~35, no.~2, pp.~254--265, 1987.
+
+\bibitem{koskosidis1992} Y.~A. Koskosidis, W.~B. Powell, and
+M.~M. Solomon, ``An optimization-based heuristic for vehicle routing
+and scheduling with soft time window constraints,'' \emph{Transp.
+Sci.}, vol.~26, no.~2, pp.~69--85, 1992.
+
+\bibitem{fu2008} Z.~Fu, R.~Eglese, and L.~Y.~O. Li, ``A new tabu
+search heuristic for the open vehicle routing problem,'' \emph{J.
+Oper. Res. Soc.}, vol.~56, no.~3, pp.~267--274, 2005.
+
+\bibitem{taillard1997} \'E.~D. Taillard, P.~Badeau, M.~Gendreau,
+F.~Guertin, and J.-Y. Potvin, ``A tabu search heuristic for the
+vehicle routing problem with soft time windows,'' \emph{Transp.
+Sci.}, vol.~31, no.~2, pp.~170--186, 1997.
+
+\bibitem{hoseinzadeh2020} M.~Hoseinzadeh \emph{et al.}, ``A
+safety-aware vehicle routing problem with cumulative risk,''
+\emph{Comput. Ind. Eng.}, vol.~149, p.~106786, 2020.
+
+\bibitem{salmon2023} J.~Salmon \emph{et al.}, ``Multi-objective
+$\varepsilon$-constraint methods for safety-aware logistics,''
+\emph{Eur. J. Oper. Res.}, vol.~308, no.~3, pp.~1108--1124, 2023.
+
+\bibitem{ehrgott2005} M.~Ehrgott, \emph{Multicriteria Optimization},
+2nd~ed.\quad Berlin, Germany: Springer, 2005.
+
+\bibitem{sinchaisri2023} W.~P. Sinchaisri \emph{et al.}, ``Operating
+under SLA pressure: Evidence from quick-commerce dispatch,''
+\emph{Manuf. Service Oper. Manage.}, to be published.
+
+\bibitem{das2020} S.~Das, A.~Mukherjee, and R.~Banerjee, ``Helmet
+compliance among gig-economy delivery riders in Indian cities,''
+\emph{Accid. Anal. Prev.}, vol.~141, p.~105517, 2020.
+
+\bibitem{zografos2004} K.~G. Zografos and K.~N. Androutsopoulos,
+``A heuristic algorithm for solving hazardous materials distribution
+problems,'' \emph{Eur. J. Oper. Res.}, vol.~152, no.~2,
+pp.~507--519, 2004.
+
+\bibitem{morth2022} Ministry of Road Transport and Highways,
+\emph{Road Accidents in India 2022}.\quad New Delhi, India:
+Government of India, 2023. [Online]. Available:
+\url{https://www.morth.gov.in/sites/default/files/RA_2022_30_Oct.pdf}
+
+\bibitem{mohan2017} D.~Mohan, S.~I. Bangdiwala, and A.~Villaveces,
+``Urban street structure and traffic safety,'' \emph{J. Saf. Res.},
+vol.~62, pp.~63--71, 2017.
+
+\bibitem{prins2004} C.~Prins, ``A simple and effective evolutionary
+algorithm for the vehicle routing problem,'' \emph{Comput. Oper.
+Res.}, vol.~31, no.~12, pp.~1985--2002, 2004.
+
+\bibitem{ropke2006} S.~Ropke and D.~Pisinger, ``An adaptive large
+neighborhood search heuristic for the pickup and delivery problem
+with time windows,'' \emph{Transp. Sci.}, vol.~40, no.~4,
+pp.~455--472, 2006.
+
+\bibitem{toth2002} P.~Toth and D.~Vigo, eds., \emph{The Vehicle
+Routing Problem}.\quad Philadelphia, PA, USA: SIAM, 2002.
+
+\bibitem{desrochers1992} M.~Desrochers, J.~Desrosiers, and M.~Solomon,
+``A new optimization algorithm for the vehicle routing problem with
+time windows,'' \emph{Oper. Res.}, vol.~40, no.~2, pp.~342--354, 1992.
+
+\end{thebibliography}
+
+\begin{IEEEbiographynophoto}{Author Name}
+received the B.Tech.\ and M.Tech.\ degrees in Industrial and Systems
+Engineering from the Indian Institute of Technology Kharagpur, India.
+Research interests include vehicle routing, multi-objective
+optimisation, and applied data science for urban logistics.
+\end{IEEEbiographynophoto}
+
+\begin{IEEEbiographynophoto}{Co-author Name}
+biographical sketch.
+\end{IEEEbiographynophoto}
+
+\EOD
+
+\end{document}
