@@ -26,6 +26,12 @@ data/results/
 data/validation/*.json
 !data/validation/.gitkeep
 
+# Generated OSM caches and pipeline outputs — too large for git, regen via the pipeline.
+data/*.graphml
+data/*.gpkg
+data/*.pkl
+cache/*.json
+
 figures/
 *.aux
 *.fdb_latexmk
