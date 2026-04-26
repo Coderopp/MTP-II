@@ -43,20 +43,46 @@ def _customer_id(idx: int) -> int:
     return idx
 
 
+def _nodes_within_delivery_radius(
+    G: nx.MultiDiGraph,
+    depot_nodes: list[int],
+    radius_min: float,
+) -> set[int]:
+    """Return nodes whose free-flow time to ANY depot is ≤ `radius_min`."""
+    reachable: set[int] = set()
+    for d in depot_nodes:
+        if d not in G:
+            continue
+        lengths = nx.single_source_dijkstra_path_length(
+            G, d, cutoff=radius_min, weight="t_ij_free"
+        )
+        reachable.update(lengths.keys())
+    return reachable
+
+
 def _sample_customers_weighted(
     G: nx.MultiDiGraph,
     n: int,
     rng: random.Random,
+    *,
+    eligible_nodes: set[int] | None = None,
 ) -> list[int]:
     """Sample `n` OSM nodes with residential-land-use weighting.
 
-    Proxy (Task #13 v1): a node gets weight 1 if *any* adjacent edge is
-    residential, else 0.25 (a small background weight so isolated customer
-    nodes can still be sampled on non-residential outliers).  A richer
-    WorldPop-based weighting can plug in here later without changing the
-    Instance contract (FORMULATION.md §10.6).
+    A node gets weight 1 if any adjacent edge is residential, else 0.25
+    (small background weight so isolated nodes can still be sampled). If
+    `eligible_nodes` is provided, sampling is restricted to that set
+    (used for the depot delivery-radius filter).
     """
-    nodes = list(G.nodes())
+    if eligible_nodes is not None:
+        nodes = [nid for nid in G.nodes() if nid in eligible_nodes]
+    else:
+        nodes = list(G.nodes())
+    if len(nodes) < n:
+        raise ValueError(
+            f"only {len(nodes)} eligible nodes for {n} customers — "
+            "increase delivery_radius_min or N"
+        )
     weights: list[float] = []
     for n_id in nodes:
         adj_residential = any(
@@ -66,7 +92,6 @@ def _sample_customers_weighted(
     total = sum(weights)
     if total <= 0.0:
         raise ValueError("no residential-adjacent nodes found in graph")
-    # Reservoir sampling without replacement weighted by `weights`.
     chosen: list[int] = []
     pool = list(zip(nodes, weights, strict=True))
     for _ in range(n):
@@ -130,15 +155,26 @@ def build_instance(cfg: DictConfig) -> Instance:
             )
         )
 
-    # 5) Customers.
-    sampled = _sample_customers_weighted(G, int(cfg.instance.N), rng)
+    # 5) Customers.  Restrict sampling to nodes inside the delivery radius
+    # of any depot — q-commerce instances are not geographically global.
+    radius_min = float(cfg.instance.get("delivery_radius_min", 15.0))
+    eligible = _nodes_within_delivery_radius(
+        G,
+        [d.osm_node for d in depots],
+        radius_min=radius_min,
+    )
+    sampled = _sample_customers_weighted(
+        G, int(cfg.instance.N), rng, eligible_nodes=eligible
+    )
     customers: list[Customer] = []
     for i, osm_id in enumerate(sampled):
         node_data = G.nodes[osm_id]
         # Tight stratified service time — FORMULATION.md §10.5 richer version
         # (OSM building-polygon query) will slot in here later.
         service = 2.0
-        e_i = rng.uniform(0.0, 60.0)  # order arrives in the first hour
+        # Tight order placement window — q-commerce "batch" dispatching
+        # over a 5-min window keeps wait small and routes feasible.
+        e_i = rng.uniform(0.0, 5.0)
         eta = e_i + float(cfg.problem.eta_promise_min)
         demand = rng.randint(1, 2)
         # Home depot = nearest by free-flow time.

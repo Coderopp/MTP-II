@@ -17,7 +17,7 @@ defaults:
 problem:
   Q: 2              # vehicle capacity (items)
   T_max: 35.0       # min — max route duration
-  H_cap_route: 8    # per-route residential-edge cap  H̄_k
+  H_cap_route: 100  # per-route residential-edge cap  H̄_k (realistic urban delivery)
   beta_stw: 0.12    # lateness-penalty exponent
   w_early: 1.0      # idle-wait weight in F₁
   eta_promise_min: 10.0  # q-commerce 10-min delivery promise
