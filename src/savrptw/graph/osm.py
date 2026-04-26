@@ -76,12 +76,14 @@ def load_city_graph(city_cfg: DictConfig, cache_dir: Path | None = None) -> nx.M
     ox.settings.log_console = False
 
     bbox = city_cfg["bbox"]
-    # OSMnx 1.x expects (north, south, east, west).
+    # OSMnx 2.x: graph_from_bbox(bbox=(left, bottom, right, top), ...)
     G = ox.graph_from_bbox(
-        north=float(bbox["lat_max"]),
-        south=float(bbox["lat_min"]),
-        east=float(bbox["lon_max"]),
-        west=float(bbox["lon_min"]),
+        bbox=(
+            float(bbox["lon_min"]),
+            float(bbox["lat_min"]),
+            float(bbox["lon_max"]),
+            float(bbox["lat_max"]),
+        ),
         network_type="drive",
         simplify=True,
         retain_all=False,
