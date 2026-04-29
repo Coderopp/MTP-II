@@ -6,15 +6,22 @@ results back for figure regeneration and the LaTeX paper.
 
 ## Prerequisites on the remote server
 
-Python 3.11+ and the project dependencies. From the repo root on
-the remote node:
+Python 3.10+ and the project dependencies.
+
+### Fresh clone
 
 ```
 git clone https://github.com/Coderopp/MTP-II.git mtp-final
 cd mtp-final
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .          # all deps are in pyproject.toml
+pip install -e .
+```
+
+### Updating an existing clone
+
+```
+cd mtp-final && git fetch origin && git reset --hard origin/main && source .venv/bin/activate && pip install -e .
 ```
 
 The OSMnx cache directory must be writable; first-time cold fetch of
