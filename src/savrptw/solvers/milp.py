@@ -80,11 +80,14 @@ def _pick_solver(mcfg: MILPConfig) -> pulp.LpSolver:
         except Exception:
             if mcfg.backend == "gurobi":
                 raise
+    # CBC fallback — disable aggressive presolve that can declare
+    # big-M formulations spuriously infeasible.
     return pulp.PULP_CBC_CMD(
         msg=int(mcfg.log_to_console),
         timeLimit=mcfg.time_limit_s,
         gapRel=mcfg.mip_gap,
         threads=mcfg.threads,
+        options=["presolve off", "ratioGap 0.05"],
     )
 
 
