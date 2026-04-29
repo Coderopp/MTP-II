@@ -7,7 +7,7 @@ name = "savrptw"
 version = "0.1.0"
 description = "Safety-Aware VRPTW for Indian quick-commerce — reference implementation for Wiley OR submission."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "SA-VRPTW project" }]
 
