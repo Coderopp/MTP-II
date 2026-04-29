@@ -65,29 +65,40 @@ def _cfg_from(cfg) -> MILPConfig:
 
 
 def _pick_solver(mcfg: MILPConfig) -> pulp.LpSolver:
-    """Pick PuLP backend respecting the "gurobi if possible" preference."""
-    prefer_gurobi = mcfg.backend in ("auto", "gurobi")
-    if prefer_gurobi:
-        try:
-            import gurobipy  # noqa: F401
+    """Pick PuLP backend.  Priority: HiGHS (free, fast) → CBC (bundled fallback).
 
-            return pulp.GUROBI_CMD(
+    Gurobi is only used when backend is explicitly set to "gurobi".
+    """
+    if mcfg.backend == "gurobi":
+        import gurobipy  # noqa: F401
+
+        return pulp.GUROBI_CMD(
+            msg=int(mcfg.log_to_console),
+            timeLimit=mcfg.time_limit_s,
+            gapRel=mcfg.mip_gap,
+            threads=mcfg.threads,
+        )
+
+    # HiGHS — state-of-the-art open-source MIP solver.
+    if mcfg.backend in ("auto", "highs"):
+        try:
+            return pulp.HiGHS_CMD(
                 msg=int(mcfg.log_to_console),
                 timeLimit=mcfg.time_limit_s,
                 gapRel=mcfg.mip_gap,
                 threads=mcfg.threads,
             )
         except Exception:
-            if mcfg.backend == "gurobi":
+            if mcfg.backend == "highs":
                 raise
-    # CBC fallback — disable aggressive presolve that can declare
-    # big-M formulations spuriously infeasible.
+
+    # CBC fallback (bundled with PuLP, always available).
     return pulp.PULP_CBC_CMD(
         msg=int(mcfg.log_to_console),
         timeLimit=mcfg.time_limit_s,
         gapRel=mcfg.mip_gap,
         threads=mcfg.threads,
-        options=["presolve off", "ratioGap 0.05"],
+        options=["presolve off"],
     )
 
 
