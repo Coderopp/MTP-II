@@ -2,7 +2,7 @@ name: milp
 
 # Backend: "gurobi" if license present, else PuLP-CBC.  Gurobi academic license
 # is free for research.
-backend: gurobi
+backend: auto
 time_limit_s: 300
 mip_gap: 0.01
 threads: 8
