@@ -26,9 +26,7 @@ each city's bbox graph takes 5--10 minutes. The repo ships an empty
 Before launching the full grid, verify a single row completes:
 
 ```
-PYTHONPATH=src python3 scripts/run_experiment.py \
-  city=bengaluru solver=ga instance.N=20 instance.seed=42 \
-  instance.n_depots=3 instance.R_bar=10000.0 instance.H_bar=1000000
+PYTHONPATH=src python3 scripts/run_experiment.py city=bengaluru solver=ga instance.N=20 instance.seed=42 instance.n_depots=3 instance.R_bar=10000.0 instance.H_bar=1000000
 ```
 
 Expected wall-clock on a modern server with a cold OSMnx cache:
@@ -39,11 +37,7 @@ up to 120 s for MILP.
 ## Full grid
 
 ```
-PYTHONPATH=src nohup python3 scripts/run_grid.py \
-  --n-seeds 10 \
-  --solvers ga,alns,milp \
-  --milp-max-N 50 \
-  > data/results/_grid.log 2>&1 &
+PYTHONPATH=src nohup python3 scripts/run_grid.py --n-seeds 10 --solvers ga,alns,milp --milp-max-N 50 > data/results/_grid.log 2>&1 &
 ```
 
 Grid size: 5 cities $\times$ 4 sizes ($N \in \{20, 50, 100, 200\}$)
@@ -66,8 +60,7 @@ After the default grid completes, regenerate the Pareto frontier at
 $N = 50$ across the $\bar{R} \times \bar{H}$ grid:
 
 ```
-PYTHONPATH=src python3 scripts/run_grid.py \
-  --n-seeds 3 --solvers ga,alns --milp-max-N 0 --pareto
+PYTHONPATH=src python3 scripts/run_grid.py --n-seeds 3 --solvers ga,alns --milp-max-N 0 --pareto
 ```
 
 This adds $5 \times 7 \times 6 \times 3 \times 2 = 1260$ ε-sweep rows.
