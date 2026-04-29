@@ -10,14 +10,11 @@ Python 3.11+ and the project dependencies. From the repo root on
 the remote node:
 
 ```
-git clone <project URL> mtp-final
+git clone https://github.com/Coderopp/MTP-II.git mtp-final
 cd mtp-final
-git checkout refactor/modularize
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
-pip install -r requirements.txt 2>/dev/null || pip install \
-  hydra-core omegaconf osmnx networkx numpy pulp scipy scikit-learn
+pip install -e .          # all deps are in pyproject.toml
 ```
 
 The OSMnx cache directory must be writable; first-time cold fetch of
