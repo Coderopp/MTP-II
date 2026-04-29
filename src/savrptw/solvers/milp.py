@@ -182,7 +182,12 @@ class MILPSolver(Solver):
                         f"x_{i}_{j}_{kidx}", lowBound=0, upBound=1, cat="Binary"
                     )
 
-        bigM = max(instance.T_max * 2.0, 240.0)
+        # Tight big-M: must exceed T_max + largest arc travel time + service.
+        # Using 240 kills CBC's LP relaxation (T_max is only 35 min).
+        max_arc_T = max((a.T_uv for a in instance.super_arcs.values()), default=0.0)
+        max_e = max((cust_by_id[c].e_i for c in cust_ids), default=0.0)
+        bigM = instance.T_max + max_arc_T + 10.0  # tight + small slack
+        bigM = max(bigM, max_e + 10.0)             # cover TW deactivation
         tau_max = float(mcfg.stw_pwl_breakpoints[-1])
 
         # Arrival-time variables.  NOTE: we DO NOT reuse one `a[depot, k]` for
@@ -191,17 +196,18 @@ class MILPSolver(Solver):
         #   * `a[i, k]`  for i ∈ C is arrival at customer i by rider k,
         #   * `a_return[k]` is the return time at rider k's home depot,
         #   * dispatch time is an implicit 0 (not a variable).
+        a_ub = instance.T_max  # no arrival can exceed route duration
         a = {
-            (i, kidx): pulp.LpVariable(f"a_{i}_{kidx}", lowBound=0, upBound=bigM)
+            (i, kidx): pulp.LpVariable(f"a_{i}_{kidx}", lowBound=0, upBound=a_ub)
             for i in cust_ids
             for kidx in riders
         }
         a_return = {
-            kidx: pulp.LpVariable(f"aret_{kidx}", lowBound=0, upBound=bigM)
+            kidx: pulp.LpVariable(f"aret_{kidx}", lowBound=0, upBound=a_ub)
             for kidx in riders
         }
         w = {
-            (i, kidx): pulp.LpVariable(f"w_{i}_{kidx}", lowBound=0, upBound=bigM)
+            (i, kidx): pulp.LpVariable(f"w_{i}_{kidx}", lowBound=0, upBound=a_ub)
             for i in cust_ids
             for kidx in riders
         }
@@ -388,12 +394,10 @@ class MILPSolver(Solver):
         status_str = pulp.LpStatus.get(status, "Unknown")
         mip_gap = None
 
-        if status_str == "Infeasible":
-            raise InfeasibleError(f"MILP proven infeasible for R̄={instance.R_bar}, H̄={instance.H_bar}")
-        if status_str in ("Undefined", "Unbounded", "Not Solved"):
-            # No incumbent to extract — bail out clearly rather than emitting garbage.
+        if status_str in ("Infeasible", "Undefined", "Unbounded", "Not Solved"):
             raise InfeasibleError(
-                f"MILP terminated with status {status_str!r} — no usable incumbent"
+                f"MILP status={status_str!r} (backend={type(solver).__name__}) "
+                f"for R̄={instance.R_bar}, H̄={instance.H_bar}, N={len(cust_ids)}"
             )
 
         # --- extract routes ------------------------------------------------------
