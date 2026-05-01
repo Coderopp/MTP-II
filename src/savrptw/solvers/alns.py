@@ -172,14 +172,11 @@ def _initial_solution(
                 if current:
                     state.routes.append(current)
                     state.route_depots.append(depot_id)
-                # Start a new route with this customer; if even singleton is infeasible,
-                # mark as unassigned.
-                _, f1 = _route_cost(instance, depot, [c])
-                if f1:
-                    current = [c]
-                else:
-                    state.unassigned.append(c)
-                    current = []
+                # Start a new route with this customer; if even a singleton
+                # is infeasible (e.g. depot→customer arc alone exceeds the
+                # residential cap), keep it as a singleton anyway and let SA
+                # try to repair — final validate() is the strict gate.
+                current = [c]
         if current:
             state.routes.append(current)
             state.route_depots.append(depot_id)
@@ -485,13 +482,18 @@ class ALNSSolver(Solver):
         # 1. Initial construction.
         current = _initial_solution(instance, depot_by_id, rng)
         if current.unassigned:
-            # Try regret repair to place leftovers before declaring infeasibility.
+            # Try regret repair to place leftovers before falling back.
             _regret_repair(instance, current, rng, 2)
         if current.unassigned:
-            raise InfeasibleError(
-                f"ALNS could not construct an initial solution "
-                f"({len(current.unassigned)} unplaceable customers)"
-            )
+            # Last resort: drop each remaining customer into its own
+            # singleton route (possibly infeasible).  The SA loop will try
+            # to relocate it, and the strict validate() at the end is the
+            # final gate.  This is preferable to aborting before SA has
+            # any chance to repair pathological seeds.
+            for c in current.unassigned:
+                current.routes.append([c])
+                current.route_depots.append(c.home_depot)
+            current.unassigned = []
         best = current.copy()
         best_cost = _state_cost(instance, best, depot_by_id)
         cur_cost = best_cost

@@ -175,6 +175,11 @@ def bellman_ford_split(
     pen = [0.0] * (n + 1)
     cost[0] = 0.0
 
+    # Hard per-route caps: if any route exceeds these, the strict validator
+    # rejects the whole solution.  We pass them via an additive sentinel so BF
+    # only picks a violating arc when no feasible alternative exists.
+    HARD_VIOLATION = 1e9
+
     for i in range(n):
         if cost[i] == INF:
             continue
@@ -192,6 +197,17 @@ def bellman_ford_split(
             # Even infeasible routes receive a finite cost proportional to
             # violation mass — this makes the GA land on near-feasible splits.
             route_cost = rb.f1_contribution + rb.violation_mass
+            # Hard caps that the strict validator enforces — the small
+            # penalty-weighted soft mass is not enough to keep BF away from
+            # them when the alternative is opening another route.  Add a stiff
+            # additive sentinel so BF only chooses a violating arc when there
+            # is no feasible alternative path through this depot's customers.
+            if rb.total_H > instance.H_cap_route:
+                route_cost += HARD_VIOLATION
+            if rb.total_R > instance.R_bar + 1e-6:
+                route_cost += HARD_VIOLATION
+            if rb.duration > instance.T_max + 1e-6:
+                route_cost += HARD_VIOLATION
             total = cost[i] + route_cost
             if total < cost[j]:
                 cost[j] = total
