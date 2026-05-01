@@ -1,51 +1,70 @@
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Background and Motivation}{1}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Problem Statement}{2}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Research Objectives}{2}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Thesis Organization}{3}{section.1.4}%
+\contentsline {section}{\numberline {1.2}Why the Classical VRPTW is Insufficient}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Problem Statement}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Contributions}{2}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Thesis Organisation}{3}{section.1.5}%
 \contentsline {chapter}{\numberline {2}Literature Review}{4}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Computational Foundations: The VRPTW}{4}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Safety-Aware and Risk-Aware Routing}{5}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Behavioral Logistics and Rider Safety}{6}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Research Gaps}{7}{section.2.4}%
-\contentsline {chapter}{\numberline {3}System Architecture and Mathematical Formulation}{8}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Conceptual Architecture}{8}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Network and Sets}{8}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Parameters}{9}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Pareto Objective Functions}{10}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Constraints}{10}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Standard Routing Constraints}{10}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Novel Cyber-Physical Constraints}{11}{subsection.3.5.2}%
-\contentsline {chapter}{\numberline {4}Data Acquisition and Implementation}{12}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Step 1: Spatial Topology Extraction}{12}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Step 2: iRAD Risk Modelling}{13}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Step 3: Congestion Index}{14}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Step 4: Instance Generation}{14}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Step 5: Validation}{15}{section.4.5}%
-\contentsline {chapter}{\numberline {5}Solution Approaches}{16}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Exact Methods: Mixed-Integer Linear Programming}{16}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Genetic Algorithm}{17}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Deep Reinforcement Learning}{18}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Environment}{18}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}Policy Network}{18}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}Training}{18}{subsection.5.3.3}%
-\contentsline {subsection}{\numberline {5.3.4}Inference Characteristics}{19}{subsection.5.3.4}%
-\contentsline {section}{\numberline {5.4}Comparative Summary}{19}{section.5.4}%
-\contentsline {chapter}{\numberline {6}Experimental Results and Analysis}{20}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Algorithm Scalability}{20}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Optimality Gap Analysis}{21}{section.6.2}%
-\contentsline {section}{\numberline {6.3}GA Convergence Analysis}{22}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Pareto Frontier Analysis}{23}{section.6.4}%
-\contentsline {section}{\numberline {6.5}3D Pareto Surface}{24}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Behavioral Stress Accumulation ($S_{max}$)}{25}{section.6.6}%
-\contentsline {section}{\numberline {6.7}Soft Time Window Penalty Dynamics}{26}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Cross-City Benchmark Analysis}{27}{section.6.8}%
-\contentsline {section}{\numberline {6.9}Urban Risk Vulnerability by City}{28}{section.6.9}%
-\contentsline {section}{\numberline {6.10}Road Hierarchy and Fleet Risk Analysis}{29}{section.6.10}%
-\contentsline {section}{\numberline {6.11}Spatial Risk Distribution}{30}{section.6.11}%
-\contentsline {chapter}{\numberline {7}Conclusion and Future Work}{31}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Summary of Contributions}{31}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Key Findings}{32}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Limitations}{32}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Future Research Directions}{33}{section.7.4}%
-\contentsline {chapter}{Bibliography}{35}{section.7.4}%
+\contentsline {section}{\numberline {2.1}VRPTW with Soft Time Windows}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Safety-Aware Vehicle Routing}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Multi-Objective and $\varepsilon $-Constraint Methods}{5}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Quick-Commerce and Last-Mile Routing}{5}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Crash-Risk Calibration in Routing}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Heuristics for Capacitated Multi-Depot Routing}{6}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Research Gap}{7}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Problem Formulation}{8}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Notation}{8}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Customer and Fleet Parameters}{10}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Decision Variables}{10}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Primary Objective}{10}{section.3.4}%
+\contentsline {section}{\numberline {3.5}$\varepsilon $-Constraints}{11}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Core VRPTW Constraints}{11}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Multi-Depot Coupling}{12}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Sub-Tour Elimination and Arrival Linking}{12}{section.3.8}%
+\contentsline {section}{\numberline {3.9}MILP Linearisation of the SLA Penalty}{13}{section.3.9}%
+\contentsline {section}{\numberline {3.10}Implementation Constants}{13}{section.3.10}%
+\contentsline {chapter}{\numberline {4}Calibration and Data Pipeline}{14}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Road Network Extraction}{14}{section.4.1}%
+\contentsline {section}{\numberline {4.2}BPR Congestion Model}{15}{section.4.2}%
+\contentsline {section}{\numberline {4.3}BASM: Bengaluru Accident Surrogate Model}{15}{section.4.3}%
+\contentsline {paragraph}{Explicit local-proxy formula.}{16}{section*.6}%
+\contentsline {paragraph}{What BASM does not do.}{16}{section*.7}%
+\contentsline {section}{\numberline {4.4}Cross-Validation Against City-Level Aggregates}{16}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Dark Stores}{17}{section.4.5}%
+\contentsline {section}{\numberline {4.6}OpenStreetMap Cross-Validation}{17}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Customer Sampling and Super-Arc Construction}{18}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Reproducibility Guard-Rails}{18}{section.4.8}%
+\contentsline {chapter}{\numberline {5}Solution Methods}{19}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Mixed-Integer Linear Programming}{19}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Genetic Algorithm}{20}{section.5.2}%
+\contentsline {paragraph}{Bellman--Ford split.}{21}{section*.9}%
+\contentsline {section}{\numberline {5.3}Adaptive Large Neighbourhood Search}{21}{section.5.3}%
+\contentsline {paragraph}{Initial construction.}{22}{section*.10}%
+\contentsline {section}{\numberline {5.4}Crash-Survival Monte Carlo}{23}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Behavioural Compliance Sensitivity}{23}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Comparative Summary}{23}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Experimental Protocol and Validation Status}{24}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Setup}{24}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Reproducibility}{25}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Default-$\varepsilon $ Benchmark}{25}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Pareto Sweep: Risk vs.\ $F_1$}{26}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Solver Statistical Comparison}{26}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Behavioural Compliance Sweep}{26}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Validation State of the Branch}{27}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Planned Figure Families}{27}{section.6.8}%
+\contentsline {chapter}{\numberline {7}Discussion, Limitations, and Conclusion}{28}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Operator-Facing Implications}{28}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Limitations}{28}{section.7.2}%
+\contentsline {paragraph}{Public-aggregate calibration.}{28}{section*.14}%
+\contentsline {paragraph}{Super-graph fixes the path.}{29}{section*.15}%
+\contentsline {paragraph}{KML cross-validation against OSM.}{29}{section*.16}%
+\contentsline {section}{\numberline {7.3}Threats to Validity}{29}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Summary of Contributions}{29}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Conclusion}{30}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Future Work}{30}{section.7.6}%
+\contentsline {paragraph}{Behavioural meta-analysis.}{31}{section*.17}%
+\contentsline {paragraph}{Real-time congestion.}{31}{section*.18}%
+\contentsline {paragraph}{Stochastic demand.}{31}{section*.19}%
+\contentsline {paragraph}{Risk-aware path selection.}{31}{section*.20}%
+\contentsline {paragraph}{Direct crash microdata.}{31}{section*.21}%
+\contentsline {chapter}{Bibliography}{32}{section*.21}%

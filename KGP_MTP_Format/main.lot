@@ -1,10 +1,12 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces VRP variants relevant to quick commerce logistics.}}{5}{table.2.1}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Notation used in the SA-VRPTW formulation.}}{9}{table.caption.5}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Codebase architecture: pipeline scripts and their roles.}}{12}{table.4.1}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Blinkit dark-store coverage per city in the 2026-04-09 KML snapshot.}}{17}{table.caption.8}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Comparative analysis of solution approaches for the SA-VRPTW.}}{19}{table.5.1}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Comparative roles of the three solution approaches.}}{23}{table.caption.11}%
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Per-instance depot counts as a function of $N$.}}{24}{table.caption.12}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Default-$\varepsilon $ benchmark: mean $F_1$ (lower is better), mean wall-clock seconds, and feasibility rate over the configured seed set. Empirical values are filled from \texttt {data/results/} after the iDRAC run.}}{25}{table.caption.13}%
 \addvspace {10\p@ }

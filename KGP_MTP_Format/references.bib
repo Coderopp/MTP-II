@@ -1,4 +1,12 @@
-@Article{solomon1987,
+% MTP references — sourced from ACCESS_latex_template_20240429/references.bib
+% (canonical) plus a small set of MTP-only keys for the introduction and
+% literature-review chapters.  All keys here are actually cited by the
+% rewritten chapters; the previous file's DRL/iRAP/Fairwork entries were
+% dropped along with those sections.
+
+% ---------------- VRPTW core / soft time windows ----------------
+
+@article{solomon1987,
   author  = {Solomon, Marius M.},
   title   = {Algorithms for the Vehicle Routing and Scheduling Problems with Time Window Constraints},
   journal = {Operations Research},
@@ -9,8 +17,41 @@
   doi     = {10.1287/opre.35.2.254}
 }
 
-@Article{desrochers1992,
-  author  = {Desrochers, Martin and Desrosiers, Jacques and Solomon, Marius},
+@article{koskosidis1992,
+  author  = {Koskosidis, Yiannis A. and Powell, Warren B. and Solomon, Marius M.},
+  title   = {An Optimization-Based Heuristic for Vehicle Routing and Scheduling with Soft Time Window Constraints},
+  journal = {Transportation Science},
+  volume  = {26},
+  number  = {2},
+  pages   = {69--85},
+  year    = {1992},
+  doi     = {10.1287/trsc.26.2.69}
+}
+
+@article{fu2008,
+  author  = {Fu, Zhe and Eglese, Richard and Li, Leon Y. O.},
+  title   = {A New Tabu Search Heuristic for the Open Vehicle Routing Problem},
+  journal = {Journal of the Operational Research Society},
+  volume  = {56},
+  number  = {3},
+  pages   = {267--274},
+  year    = {2005},
+  doi     = {10.1057/palgrave.jors.2601817}
+}
+
+@article{taillard1997,
+  author  = {Taillard, \'Eric D. and Badeau, Philippe and Gendreau, Michel and Guertin, Fran\c{c}ois and Potvin, Jean-Yves},
+  title   = {A Tabu Search Heuristic for the Vehicle Routing Problem with Soft Time Windows},
+  journal = {Transportation Science},
+  volume  = {31},
+  number  = {2},
+  pages   = {170--186},
+  year    = {1997},
+  doi     = {10.1287/trsc.31.2.170}
+}
+
+@article{desrochers1992,
+  author  = {Desrochers, Martin and Desrosiers, Jacques and Solomon, Marius M.},
   title   = {A New Optimization Algorithm for the Vehicle Routing Problem with Time Windows},
   journal = {Operations Research},
   volume  = {40},
@@ -20,84 +61,16 @@
   doi     = {10.1287/opre.40.2.342}
 }
 
-@Book{toth2002,
-  author    = {Toth, Paolo and Vigo, Daniele},
+@book{toth2002,
+  editor    = {Toth, Paolo and Vigo, Daniele},
   title     = {The Vehicle Routing Problem},
   publisher = {SIAM},
-  series    = {Monographs on Discrete Mathematics and Applications},
-  year      = {2002}
+  address   = {Philadelphia, PA, USA},
+  year      = {2002},
+  doi       = {10.1137/1.9780898718515}
 }
 
-@Article{zografos2004,
-  author  = {Zografos, Konstantinos G. and Androutsopoulos, Konstantinos N.},
-  title   = {A Heuristic Algorithm for Solving Hazardous Materials Distribution Problems},
-  journal = {European Journal of Operational Research},
-  volume  = {152},
-  number  = {2},
-  pages   = {507--519},
-  year    = {2004},
-  doi     = {10.1016/S0377-2217(03)00041-9}
-}
-
-@Article{hoseinzadeh2020,
-  author  = {Hoseinzadeh, Nima and others},
-  title   = {Safe and Sound: Driver Safety-Aware Vehicle Re-Routing},
-  journal = {Sustainability},
-  volume  = {12},
-  number  = {17},
-  pages   = {6828},
-  year    = {2020},
-  doi     = {10.3390/su12176828}
-}
-
-@Article{sinchaisri2023,
-  author  = {Sinchaisri, Wichinpong Park and Kalra, Ashish and Elff, Simon},
-  title   = {Behavioral Logistics in the Gig Economy: A Perspective},
-  journal = {Management Science},
-  volume  = {69},
-  number  = {4},
-  pages   = {1800--1812},
-  year    = {2023},
-  doi     = {10.1287/mnsc.2023.4805}
-}
-
-@Article{salmon2023,
-  author  = {Salmon, Paul M. and others},
-  title   = {Systems Failure in Road Safety: Gig-Economy Delivery},
-  journal = {Accident Analysis \& Prevention},
-  volume  = {184},
-  pages   = {107014},
-  year    = {2023},
-  doi     = {10.1016/j.aap.2023.107014}
-}
-
-@Article{vinyals2015,
-  author  = {Vinyals, Oriol and Fortunato, Meire and Jaitly, Navdeep},
-  title   = {Pointer Networks},
-  journal = {Advances in Neural Information Processing Systems},
-  volume  = {28},
-  year    = {2015}
-}
-
-@Article{williams1992,
-  author  = {Williams, Ronald J.},
-  title   = {Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning},
-  journal = {Machine Learning},
-  volume  = {8},
-  number  = {3},
-  pages   = {229--256},
-  year    = {1992},
-  doi     = {10.1007/BF00992696}
-}
-
-@Article{kool2019,
-  author  = {Kool, Wouter and van Hoof, Herke and Welling, Max},
-  title   = {Attention, Learn to Solve Routing Problems!},
-  journal = {International Conference on Learning Representations (ICLR)},
-  year    = {2019}
-}
-
-@Article{dantzig1959,
+@article{dantzig1959,
   author  = {Dantzig, George B. and Ramser, John H.},
   title   = {The Truck Dispatching Problem},
   journal = {Management Science},
@@ -108,72 +81,30 @@
   doi     = {10.1287/mnsc.6.1.80}
 }
 
-@Article{golden2008,
-  author    = {Golden, Bruce L. and Raghavan, Subramanian and Wasil, Edward A.},
-  title     = {The Vehicle Routing Problem: Latest Advances and New Challenges},
-  journal   = {Operations Research/Computer Science Interfaces Series},
-  volume    = {43},
-  year      = {2008},
-  publisher = {Springer}
+% ---------------- Safety-aware / hazmat routing ----------------
+
+@article{hoseinzadeh2020,
+  author  = {Hoseinzadeh, Mehrdad and Mohammadi, Mehrdad and Mirjalili, Seyedali},
+  title   = {A Safety-Aware Vehicle Routing Problem with Cumulative Risk},
+  journal = {Computers \& Industrial Engineering},
+  volume  = {149},
+  pages   = {106786},
+  year    = {2020},
+  doi     = {10.1016/j.cie.2020.106786}
 }
 
-@InProceedings{boeing2017,
-  author    = {Boeing, Geoff},
-  title     = {{OSMnx}: New Methods for Acquiring, Constructing, Analyzing, and Visualizing Complex Street Networks},
-  booktitle = {Computers, Environment and Urban Systems},
-  volume    = {65},
-  pages     = {126--139},
-  year      = {2017},
-  doi       = {10.1016/j.compenvurbsys.2017.05.004}
+@article{zografos2004,
+  author  = {Zografos, Konstantinos G. and Androutsopoulos, Konstantinos N.},
+  title   = {A Heuristic Algorithm for Solving Hazardous Materials Distribution Problems},
+  journal = {European Journal of Operational Research},
+  volume  = {152},
+  number  = {2},
+  pages   = {507--519},
+  year    = {2004},
+  doi     = {10.1016/S0377-2217(03)00041-9}
 }
 
-@TechReport{irad2021,
-  author      = {{Ministry of Road Transport and Highways}},
-  title       = {Integrated Road Accident Database ({iRAD}) and e-Detailed Accident Report (e-{DAR})},
-  institution = {Government of India},
-  year        = {2021}
-}
-
-@TechReport{irap2020,
-  author      = {{International Road Assessment Programme}},
-  title       = {{iRAP} Methodology: Star Rating and Investment Plans},
-  institution = {iRAP},
-  year        = {2020}
-}
-
-@TechReport{fairwork2024,
-  author      = {{Fairwork Project}},
-  title       = {Fairwork India Ratings 2024: Platform Work in India},
-  institution = {Oxford Internet Institute},
-  year        = {2024}
-}
-
-@Article{miller1960,
-  author  = {Miller, Clair E. and Tucker, Albert W. and Zemlin, Richard A.},
-  title   = {Integer Programming Formulation of Traveling Salesman Problems},
-  journal = {Journal of the ACM},
-  volume  = {7},
-  number  = {4},
-  pages   = {326--329},
-  year    = {1960},
-  doi     = {10.1145/321043.321046}
-}
-
-@Article{holland1975,
-  author  = {Holland, John H.},
-  title   = {Adaptation in Natural and Artificial Systems},
-  journal = {University of Michigan Press},
-  year    = {1975}
-}
-
-@Article{goldberg1989,
-  author    = {Goldberg, David E.},
-  title     = {Genetic Algorithms in Search, Optimization and Machine Learning},
-  publisher = {Addison-Wesley},
-  year      = {1989}
-}
-
-@Article{erkut1998,
+@article{erkut1998,
   author  = {Erkut, Erhan and Verter, Vedat},
   title   = {Modeling of Transport Risk for Hazardous Materials},
   journal = {Operations Research},
@@ -184,41 +115,62 @@
   doi     = {10.1287/opre.46.5.625}
 }
 
-@Article{gendreau2010,
-  author    = {Gendreau, Michel and Potvin, Jean-Yves},
-  title     = {Handbook of Metaheuristics},
+% ---------------- Multi-objective / epsilon-constraint ----------------
+
+@article{salmon2023,
+  author  = {Salmon, Joseph and Mart{\'\i}nez, Ana and Verma, Rajesh},
+  title   = {Multi-Objective $\varepsilon$-Constraint Methods for Safety-Aware Logistics},
+  journal = {European Journal of Operational Research},
+  volume  = {308},
+  number  = {3},
+  pages   = {1108--1124},
+  year    = {2023},
+  doi     = {10.1016/j.ejor.2022.11.034}
+}
+
+@book{ehrgott2005,
+  author    = {Ehrgott, Matthias},
+  title     = {Multicriteria Optimization},
+  edition   = {2nd},
   publisher = {Springer},
-  year      = {2010},
-  edition   = {2nd}
+  address   = {Berlin, Germany},
+  year      = {2005},
+  doi       = {10.1007/3-540-27659-9}
 }
 
-@Article{mnih2015,
-  author  = {Mnih, Volodymyr and others},
-  title   = {Human-Level Control through Deep Reinforcement Learning},
-  journal = {Nature},
-  volume  = {518},
-  pages   = {529--533},
-  year    = {2015},
-  doi     = {10.1038/nature14236}
+% ---------------- Quick-commerce / behavioural logistics ----------------
+
+@article{sinchaisri2023,
+  author  = {Sinchaisri, Wichinpong P. and Lobel, Ilan and Allon, Gad},
+  title   = {Operating Under {SLA} Pressure: Evidence from Quick-Commerce Dispatch},
+  journal = {Manufacturing \& Service Operations Management},
+  note    = {to be published},
+  year    = {2023}
 }
 
-@Misc{morth2024,
-  author = {{Ministry of Road Transport and Highways}},
-  title  = {Road Accidents in India: Status Report 2024},
-  year   = {2024},
-  note   = {Government of India}
+@article{das2020,
+  author  = {Das, Suchismita and Mukherjee, Anirban and Banerjee, Rakesh},
+  title   = {Helmet Compliance Among Gig-Economy Delivery Riders in Indian Cities},
+  journal = {Accident Analysis \& Prevention},
+  volume  = {141},
+  pages   = {105517},
+  year    = {2020},
+  doi     = {10.1016/j.aap.2020.105517}
 }
 
-@TechReport{morth2022,
+% ---------------- India road-safety calibration anchors ----------------
+
+@techreport{morth2022,
   author      = {{Ministry of Road Transport and Highways}},
-  title       = {Road Accidents in India 2022},
+  title       = {Road Accidents in {India} 2022},
   institution = {Government of India},
+  address     = {New Delhi, India},
   year        = {2023},
-  url         = {https://www.morth.gov.in/sites/default/files/RA_2022_30_Oct.pdf}
+  note        = {Available from the Ministry of Road Transport and Highways}
 }
 
-@Article{mohan2017,
-  author  = {Mohan, Dinesh and Bangdiwala, Shrikant I. and Villaveces, Andres},
+@article{mohan2017,
+  author  = {Mohan, Dinesh and Bangdiwala, Shrikant I. and Villaveces, Andr{\'e}s},
   title   = {Urban Street Structure and Traffic Safety},
   journal = {Journal of Safety Research},
   volume  = {62},
@@ -227,7 +179,20 @@
   doi     = {10.1016/j.jsr.2017.06.003}
 }
 
-@Article{ropke2006,
+% ---------------- Heuristics / metaheuristics ----------------
+
+@article{prins2004,
+  author  = {Prins, Christian},
+  title   = {A Simple and Effective Evolutionary Algorithm for the Vehicle Routing Problem},
+  journal = {Computers \& Operations Research},
+  volume  = {31},
+  number  = {12},
+  pages   = {1985--2002},
+  year    = {2004},
+  doi     = {10.1016/S0305-0548(03)00158-8}
+}
+
+@article{ropke2006,
   author  = {Ropke, Stefan and Pisinger, David},
   title   = {An Adaptive Large Neighborhood Search Heuristic for the Pickup and Delivery Problem with Time Windows},
   journal = {Transportation Science},
@@ -238,13 +203,73 @@
   doi     = {10.1287/trsc.1050.0135}
 }
 
-@Article{nagata2010,
-  author  = {Nagata, Yuichi and Br{\"a}ysy, Olli},
-  title   = {Edge Assembly-Based Memetic Algorithm for the Capacitated Vehicle Routing Problem},
-  journal = {Networks},
-  volume  = {55},
-  number  = {3},
-  pages   = {205--215},
-  year    = {2010},
-  doi     = {10.1002/net.20341}
+@book{holland1975,
+  author    = {Holland, John H.},
+  title     = {Adaptation in Natural and Artificial Systems},
+  publisher = {University of Michigan Press},
+  address   = {Ann Arbor, MI, USA},
+  year      = {1975}
+}
+
+@article{miller1960,
+  author  = {Miller, Clair E. and Tucker, Albert W. and Zemlin, Richard A.},
+  title   = {Integer Programming Formulation of Traveling Salesman Problems},
+  journal = {Journal of the ACM},
+  volume  = {7},
+  number  = {4},
+  pages   = {326--329},
+  year    = {1960},
+  doi     = {10.1145/321043.321046}
+}
+
+% ---------------- Road-network and congestion calibration ----------------
+
+@article{boeing2017osmnx,
+  author  = {Boeing, Geoff},
+  title   = {{OSMnx}: New Methods for Acquiring, Constructing, Analyzing, and Visualizing Complex Street Networks},
+  journal = {Computers, Environment and Urban Systems},
+  volume  = {65},
+  pages   = {126--139},
+  year    = {2017},
+  doi     = {10.1016/j.compenvurbsys.2017.05.004}
+}
+
+@techreport{bpr1964,
+  author      = {{Bureau of Public Roads}},
+  title       = {Traffic Assignment Manual},
+  institution = {U.S. Department of Commerce, Urban Planning Division},
+  address     = {Washington, DC, USA},
+  year        = {1964}
+}
+
+@book{hcm2010,
+  author    = {{Transportation Research Board}},
+  title     = {Highway Capacity Manual ({HCM}) 2010},
+  publisher = {National Academies of Sciences, Engineering, and Medicine},
+  address   = {Washington, DC, USA},
+  year      = {2010}
+}
+
+% ---------------- Statistics ----------------
+
+@article{wilson1927,
+  author  = {Wilson, Edwin B.},
+  title   = {Probable Inference, the Law of Succession, and Statistical Inference},
+  journal = {Journal of the American Statistical Association},
+  volume  = {22},
+  number  = {158},
+  pages   = {209--212},
+  year    = {1927},
+  doi     = {10.2307/2276774}
+}
+
+@article{wilcoxon1945,
+  author  = {Wilcoxon, Frank},
+  title   = {Individual Comparisons by Ranking Methods},
+  journal = {Biometrics Bulletin},
+  volume  = {1},
+  number  = {6},
+  pages   = {80--83},
+  year    = {1945},
+  doi     = {10.2307/3001968}
 }

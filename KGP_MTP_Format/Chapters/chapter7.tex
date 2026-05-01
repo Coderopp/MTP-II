@@ -1,48 +1,141 @@
-\chapter{Conclusion and Future Work}
+\chapter{Discussion, Limitations, and Conclusion}
 
-\section{Summary of Contributions}
+\section{Operator-Facing Implications}
 
-This thesis update consolidates the corrected SA-VRPTW formulation and the corresponding software architecture. The key contributions of the current branch are as follows.
+The $\varepsilon$-constraint formulation lets a planner read the
+safety/efficiency trade-off as a tangible knob. Rather than tuning a
+weighted-sum coefficient until ``it looks reasonable,'' the planner
+picks a target survival probability $e^{-\bar{R}}$ and the solver
+returns the cheapest fleet plan that meets it (or reports
+infeasibility, which is itself useful information). The fleet-wide
+residential-edge budget $\bar{H}$ provides a separate dial for
+political and community concerns about vulnerable-street penetration,
+which is operationally distinct from per-rider safety.
 
-\begin{enumerate}
-    \item \textbf{Corrected objective structure.} The model now optimizes service quality through waiting and exponential lateness penalties, while route risk and residential exposure are enforced through explicit epsilon-constraints rather than through a weighted sum of incompatible units.
-    \item \textbf{Reproducible BASM calibration.} The earlier placeholder risk layer has been replaced with a documented calibration based on MoRTH 2022 aggregates, Mohan et al.'s arterial-versus-non-arterial directionality, and graph-local OpenStreetMap proxies.
-    \item \textbf{Consistent solver contract.} The exact model, genetic algorithm, and adaptive large neighbourhood search are all tied to the same instance representation, feasibility checks, and post-hoc evaluators.
-    \item \textbf{Transparent experiment scope.} The primary single-brand city set has been fixed to Bengaluru, Delhi, Gurugram, Mumbai, and Pune, with Hyderabad excluded explicitly because the committed Blinkit snapshot does not cover it.
-    \item \textbf{Thesis and code alignment.} The manuscript no longer claims DRL baselines, six-city primary experiments, synthetic iRAD calibration, or unmeasured figure results that are absent from the current branch.
-\end{enumerate}
-
-\section{Current Findings}
-
-The strongest conclusion supported by the current branch is methodological rather than final empirical. A safety-aware q-commerce routing problem can be expressed cleanly without conflating travel time, congestion, and crash risk into one arbitrary weighted objective. The branch demonstrates that a public-source calibration path for edge-level crash probabilities is implementable, that the solver stack can consume a shared canonical instance, and that the experimental protocol can be defined without relying on unverifiable baselines.
+A second operator-facing benefit is calibration auditability. Every
+constant in the BASM derivation traces to a public source and a
+specific configuration field, so a third party can reproduce the
+calibration without contacting the authors and can swap in alternative
+priors at the YAML level without code changes.
 
 \section{Limitations}
 
-Several limitations of the current work are acknowledged:
+Three honest limitations remain.
 
-\begin{itemize}
-    \item The full five-city experiment grid has not yet been executed on the corrected formulation, so this manuscript update avoids claiming final numerical trade-offs.
-    \item The BASM calibration is publicly reproducible, but it still depends on aggregate road-safety data rather than direct city-level crash microdata for every retained city.
-    \item The local OSM proxy redistributes risk within road classes using graph structure rather than observed crash black spots, which is defensible but still indirect.
-    \item Behavioural compliance is currently evaluated post hoc through sensitivity analysis rather than estimated from platform-specific telematics or rider logs.
-\end{itemize}
+\paragraph{Public-aggregate calibration.}
+The BASM uses public aggregate \citet{morth2022} data and an OSM
+structural proxy; it does not have access to the protected iRAD
+microdata. The per-edge probability $r_{ij}$ is therefore a
+calibrated prior, not a measurement. The $\pm 25\%$ city-aggregate
+cross-validation of Section~\ref{ch4:xv} bounds drift but does not
+turn the prior into ground truth.
 
-\section{Future Research Directions}
+\paragraph{Super-graph fixes the path.}
+The optimisation is over customer \emph{orderings}, not over which
+physical streets to drive on. Once depots and customers are fixed,
+the super-arc $(u,v)$ uses the shortest-time path on the underlying
+street graph, and $R_{ij}$ and $H_{ij}$ are computed on that fixed
+path. A risk-aware planner might, in principle, prefer a slightly
+slower path through safer streets; the current formulation cannot
+select that. Lifting this restriction is left as future work because
+it changes the variable structure of the model fundamentally.
 
-The next phase of work is operational and empirical rather than conceptual.
+\paragraph{KML cross-validation against OSM.}
+The Blinkit KML cross-validation against OpenStreetMap returned an
+$8\%$ match rate at 1~km radius. We interpret this as evidence about
+sparse OSM brand tagging in India rather than KML inaccuracy, but a
+manual sample audit on Google Maps would lift this from a coverage
+statistic to an accuracy figure.
 
-\vspace{0.5em}
-\noindent\textbf{Five-city target validation.}
-The immediate requirement is to complete the city-level validation dataset so that the calibrated BASM graph for each retained city can be checked against a public annual target within the accepted tolerance band.
+A fourth, lesser, limitation is that MILP scaling to $N \geq 100$ is
+impractical with CBC; a commercial solver (Gurobi/CPLEX) would close
+some of that gap. The heuristics already produce competitive bounds,
+and the \texttt{auto} backend in
+\texttt{src/savrptw/solvers/milp.py} switches to commercial
+solvers when their Python bindings are present.
 
-\vspace{0.5em}
-\noindent\textbf{Full experiment execution and figure regeneration.}
-The epsilon-grid must be executed across all retained cities, problem sizes, and seeds, after which the manuscript figures can be generated directly from the structured JSON outputs and paired CSV artefacts.
+\section{Threats to Validity}
 
-\vspace{0.5em}
-\noindent\textbf{Richer behavioural evidence.}
-The Monte Carlo compliance model should eventually be informed by rider telemetry, platform audit data, or structured survey evidence rather than by sensitivity sweeps alone.
+The customer placement model uses residential-density weighting on
+the OSM \texttt{landuse} layer rather than a population-density
+raster. Where census or WorldPop microdata is available, plugging it
+into \texttt{instance.generator} would tighten the demand model. The
+behavioural compliance prior is anchored on a single field-data
+citation \citep{das2020}, not a multi-study meta-analysis; the
+Beta-prior sensitivity sweep in Chapter~6 is the safeguard against
+mis-specification.
 
-\vspace{0.5em}
-\noindent\textbf{Direct crash microdata integration.}
-If access to city-level crash microdata or validated black-spot inventories becomes possible, BASM can be upgraded from a public-aggregate surrogate to a more direct empirical edge-risk model without changing the surrounding solver architecture.
+\section{Summary of Contributions}
+
+The contributions of this thesis are as follows.
+
+\begin{enumerate}
+    \item A Safety-Aware VRPTW formulation that treats per-route
+    crash exposure as a hard $\varepsilon$-constraint rather than as
+    an objective component, with a separate fleet-wide residential
+    budget and a per-route residential cap.
+    \item A documented public-source crash-risk calibration chain
+    (BASM) anchored on \citet{morth2022} aggregates,
+    \citet{mohan2017} ordering constraints, and an OpenStreetMap
+    structural proxy; the explicit $\pi_{ij}$ formula in
+    Chapter~4 means the proxy is reproducible from the manuscript
+    alone.
+    \item A unified solver/evaluation contract under which a
+    PuLP-based MILP, a giant-tour GA with Bellman--Ford optimal
+    split, and an Adaptive Large Neighbourhood Search all evaluate
+    $F_1$ through identical code, eliminating the apples-to-pears
+    bias common in VRP solver comparisons.
+    \item A five-city empirical protocol on real Blinkit dark-store
+    coordinates from a publicly committed KML snapshot, with
+    Hyderabad explicitly excluded because the snapshot has zero
+    in-bbox placemarks there.
+    \item A reproducibility surface that includes Hydra
+    configuration, seeded experiment runs, a manifest-checkpointed
+    grid driver, and a calibration note that prevents production
+    runs from silently using uncalibrated risk constants.
+\end{enumerate}
+
+\section{Conclusion}
+
+This thesis presented an SA-VRPTW formulation for q-commerce
+last-mile delivery in Indian cities that handles crash safety as an
+explicit $\varepsilon$-constraint, calibrates per-edge crash
+probability through a documented public-source chain, and is
+implemented under a unified solver and evaluation contract across
+MILP, GA, and ALNS. The empirical protocol, applied to real Blinkit
+dark-store coordinates across five cities, traces the Pareto
+frontier between $F_1$ delivery cost and per-route crash survival,
+and characterises the additional cost of network-wide
+residential-road budgets. The full pipeline is publicly released
+under the MIT licence.
+
+\section{Future Work}
+
+The next phase is operational and empirical rather than conceptual.
+
+\paragraph{Behavioural meta-analysis.}
+Replace the single-study \citet{das2020} compliance prior with a
+multi-study meta-analysis covering Indian gig-rider populations
+beyond Bengaluru.
+
+\paragraph{Real-time congestion.}
+Replace the static BPR model with a real-time congestion feed where
+available; the BPR model in \texttt{conf/congestion/bpr.yaml} is
+already isolated, so the swap is local.
+
+\paragraph{Stochastic demand.}
+Extend the formulation to a stochastic demand variant in which order
+arrivals across the dispatch window are modelled by a non-stationary
+point process rather than a uniform $[0, 5]$~minute draw.
+
+\paragraph{Risk-aware path selection.}
+Lift the super-graph restriction so that the optimisation jointly
+selects customer orderings and physical street paths. This is a
+materially harder model, but it is the natural next step beyond the
+current safety-aware-\emph{ordering} formulation.
+
+\paragraph{Direct crash microdata.}
+If access to city-level crash microdata or validated black-spot
+inventories becomes possible, BASM can be upgraded from a
+public-aggregate surrogate to a more direct empirical edge-risk
+model without changing the surrounding solver architecture.

@@ -1,0 +1,46 @@
+\chapter{Solution Approaches}
+
+The SA-VRPTW remains NP-hard after the corrected formulation is imposed. The purpose of this chapter is therefore not to claim a universal solver, but to document three solution approaches that all consume the same instance representation and are all evaluated against the same feasibility and objective functions. Deep reinforcement learning has been removed from the core study because the branch no longer contains a defensible, measured DRL baseline for the corrected formulation.
+
+\section{Exact Methods: Mixed-Integer Linear Programming}
+
+The exact benchmark is a mixed-integer linear programming model defined on the customer-and-depot super-graph. Binary variables select super-arcs, continuous variables track arrival times, waiting time, and lateness, and integer sequence variables support the Miller--Tucker--Zemlin sub-tour elimination. The objective is Equation~\ref{eq:f1}; route risk and residential exposure enter as explicit constraints through Equations~\ref{eq:rbar}--\ref{eq:hk}.
+
+The only nonlinear component is the exponential soft-time-window penalty. In the exact solver it is replaced by a piecewise-linear outer approximation over a fixed set of lateness breakpoints. This preserves the shape of the penalty while keeping the exact model compatible with linear mixed-integer programming. The MILP serves two roles: it provides a quality benchmark on smaller instances and it validates the consistency of the corrected formulation.
+
+Exact methods remain essential but limited. They become computationally expensive as the number of customers, depots, and epsilon-budget combinations grows. In this study they are retained primarily as a reference solver for smaller instances and as a correctness anchor for the heuristics.
+
+\section{Genetic Algorithm}
+
+The first scalable heuristic is a giant-tour genetic algorithm. Each chromosome is a permutation of customers only. A split procedure then decodes the giant tour into depot-respecting routes. This structure separates global sequencing from route construction and is well suited to capacity-constrained micro-batching.
+
+Initialization uses randomized customer permutations under a fixed seed. Crossover is performed with order crossover (OX1), preserving relative subsequences from the parent tours. Mutation is handled through simple local operators such as swap, insert, and reverse. The split stage is responsible for enforcing capacity, route duration, depot consistency, and feasibility under the active epsilon budgets.
+
+The important point is that the fitness calculation is no longer a weighted sum of time, risk, and congestion. The genetic algorithm evaluates the same $F_1$ objective used by the MILP and discards or penalizes infeasible individuals according to the same feasibility module used elsewhere in the codebase. This prevents the heuristic from silently solving a different problem from the exact model.
+
+\section{Adaptive Large Neighbourhood Search}
+
+The second scalable heuristic is adaptive large neighbourhood search, following the general framework of Ropke and Pisinger \citep{ropke2006}. ALNS alternates between destroying part of the incumbent solution and repairing it with a context-aware reinsertion heuristic. This is especially attractive for the present application because the solver must often reshape short multi-depot routes when a tighter risk or residential budget becomes active.
+
+The planned operator set mirrors the formulation requirements: destroy operators remove customers by Shaw similarity, random removal, route removal, or worst-contribution removal, while repair operators reconstruct feasible routes using greedy or regret-based insertion under the current $F_1$ objective and epsilon constraints. Adaptive operator weights are updated according to observed improvement, and simulated-annealing-style acceptance can be used to prevent premature stagnation.
+
+\section{Comparative Summary}
+
+Table~\ref{tab:solver_comparison} summarizes the intended role of the retained solvers in the corrected architecture.
+
+\begin{table}[ht]
+\centering
+\caption{Comparative analysis of solution approaches for the SA-VRPTW.}
+\label{tab:solver_comparison}
+\begin{tabular}{llll}
+\toprule
+\textbf{Method} & \textbf{Role} & \textbf{Strength} & \textbf{Limitation} \\
+\midrule
+MILP  & Exact baseline & Formulation fidelity & Limited scalability \\
+GA    & Fast heuristic & Strong route sequencing & Sensitive to representation and penalties \\
+ALNS  & Large-instance heuristic & Powerful repair under tight constraints & Requires careful operator tuning \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The comparative design is therefore clean: MILP provides exact reference points where feasible, GA provides a fast constructive metaheuristic, and ALNS provides a more disruptive neighbourhood-search mechanism. All three remain inside the same corrected SA-VRPTW problem definition.

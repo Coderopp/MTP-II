@@ -1,116 +1,256 @@
-\chapter{System Architecture and Mathematical Formulation}
+\chapter{Problem Formulation}
+\label{ch3}
 
-This chapter presents the corrected mathematical formulation used by the software implementation on the \texttt{refactor/modularize} branch. The formulation follows the canonical specification in \texttt{docs/FORMULATION.md}. In particular, the model no longer treats crash risk as a second weighted objective, no longer includes congestion as a separate objective, and no longer relies on a behavioural fatigue budget inside the optimizer. Instead, service quality is optimized directly, while route safety and neighbourhood protection are enforced through explicit epsilon-constraints.
+This chapter states the Safety-Aware Vehicle Routing Problem with
+Soft Time Windows (SA-VRPTW) in full. The formulation matches the
+canonical specification in \texttt{docs/FORMULATION.md} and the
+software contract in \texttt{src/savrptw/types.py} on the project
+repository. Service quality is optimised directly; route safety and
+neighbourhood protection are enforced through explicit
+$\varepsilon$-constraints. Crash risk is not a weighted objective
+term, congestion is not a separate objective, and there is no
+behavioural-fatigue budget inside the optimiser.
 
-\section{Street Graph and Super-Graph}
+\section{Notation}
 
-Let the urban street network be represented by a directed graph $G=(V,E)$ derived from OpenStreetMap. Dark stores are represented by a subset of depot nodes $D \subset V$, and customer requests by a subset $C \subset V$. The optimization itself is executed on a complete customer-and-depot super-graph whose arc $(i,j)$ represents the shortest-time path between the corresponding street nodes on $G$. This design ensures that the mixed-integer program, the genetic algorithm, and the adaptive large neighbourhood search evaluate the same travel-time, risk, and residential-exposure quantities.
+Let $G = (V, E)$ be the directed street graph for a city, extracted
+via OSMnx \citep{boeing2017osmnx} with the drive-network filter. Let
+$D \subset V$ be the set of depot nodes (k-means cluster centroids of
+the city's Blinkit dark stores, snapped to the nearest OSM nodes),
+and $C \subset V$ the set of customer nodes (sampled with
+residential-density weighting, constrained to a delivery radius
+around depots). Let $K = \bigcup_{d \in D} K_d$ be the rider fleet,
+partitioned by home depot $d$.
 
-For each street edge $(i,j)\in E$, the model stores free-flow travel time $t^{free}_{ij}$, congestion-inflated travel time $t_{ij}$, crash probability $r_{ij}$, and a residential indicator $h_{ij} \in \{0,1\}$. If $P_{uv}$ denotes the shortest-time street path used by super-arc $(u,v)$, then the super-arc quantities are
+Table~\ref{tab:notation} summarises every symbol used in the
+formulation.
+
+\begin{table}[ht]
+\centering
+\caption{Notation used in the SA-VRPTW formulation.}
+\label{tab:notation}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Source} \\
+\midrule
+$\ell_{ij}$         & street-edge length (m) & OSMnx \\
+$v_{ij}^{free}$     & free-flow speed (km/h) & OSMnx imputed \\
+$t_{ij}^{free}$     & free-flow travel time (min) & derived \\
+$\rho_{ij}$         & BPR congestion factor & \texttt{conf/congestion/bpr.yaml} \\
+$t_{ij}$            & congestion-inflated travel time (min) & derived \\
+$r_{ij}$            & per-traversal crash probability & BASM (Ch.~4) \\
+$h_{ij}$            & 1 if residential edge, else 0 & OSM \texttt{highway} tag \\
+$T_{uv}$            & cumulative travel time on super-arc & sum on shortest path \\
+$R_{uv}$            & cumulative log-survival on super-arc & $\sum -\ln(1-r_e)$ \\
+$H_{uv}$            & residential-edge count on super-arc & sum on shortest path \\
+$q_i$               & demand at customer $i \in \{1,2\}$ & sampled \\
+$e_i$               & order release time (min) & sampled $\sim \mathcal{U}(0,5)$ \\
+$\mathrm{ETA}_i$    & promised arrival $= e_i + 10$ (min) & ten-minute promise \\
+$s_i$               & service time at customer $i \in \{2,4\}$ (min) & high-rise flag \\
+$Q$                 & rider capacity (items) & $=2$ \\
+$T_{\max}$          & maximum route duration (min) & $=35$ \\
+$\bar{R}$           & per-route survival budget & swept (Ch.~6) \\
+$\bar{H}_k$         & per-route residential-edge cap & $=100$ \\
+$\bar{H}$           & fleet-wide residential-edge budget & swept (Ch.~6) \\
+$\beta_{\text{stw}}$ & SLA-penalty curvature & $=0.12$ \\
+$w_{\text{early}}$  & early-arrival idle weight & $=1.0$ \\
+$M$                 & big-M constant & $\geq T_{\max}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For each street-graph edge $(i,j) \in E$, the model stores
+$\ell_{ij}$, $v_{ij}^{free}$,
+$t_{ij}^{free} = 60\ell_{ij}/(1000 v_{ij}^{free})$, the BPR
+congestion factor $\rho_{ij}$, the congestion-inflated travel time
+$t_{ij} = t_{ij}^{free}(1 + \rho_{ij})$, the per-traversal crash
+probability $r_{ij} \in [0, 0.99]$ (Section~\ref{ch4:basm}), and the
+residential indicator $h_{ij} \in \{0,1\}$.
+
+For each pair $(u, v)$ with $u, v \in C \cup D$, the super-graph arc
+$(u, v)$ is the shortest-time path on $G$. The cumulative quantities
+along that path are
 \begin{align}
-    T_{uv} &= \sum_{e \in P_{uv}} t_e \\
-    R_{uv} &= \sum_{e \in P_{uv}} -\ln(1-r_e) \\
-    H_{uv} &= \sum_{e \in P_{uv}} h_e
+T_{uv} &= \sum_{e \in P_{uv}} t_e, \label{eq:Tuv} \\
+R_{uv} &= \sum_{e \in P_{uv}} -\ln(1-r_e), \label{eq:Ruv} \\
+H_{uv} &= \sum_{e \in P_{uv}} h_e. \label{eq:Huv}
 \end{align}
-where $R_{uv}$ is an additive log-survival quantity and $H_{uv}$ counts residential edges used along that shortest-time path.
+$R_{uv}$ is additive in log-survival because per-traversal crashes
+are treated as independent events along the path. The super-graph
+fixes the underlying street-graph path for each super-arc at instance
+generation time, which means the optimisation is over customer
+\emph{orderings}, not over which physical streets to drive on. This
+restriction is intentional and is discussed in the limitations
+(Chapter~7).
 
-\section{Customer, Fleet, and Time Parameters}
+\section{Customer and Fleet Parameters}
 
-Each customer $i \in C$ has demand $q_i \in \{1,2\}$, order release time $e_i$, promised arrival time $\mathrm{ETA}_i=e_i+10$, and service time $s_i \in \{2,4\}$ minutes. The service time equals 2 minutes by default and increases to 4 minutes for high-rise residential contexts identified from OpenStreetMap building attributes. The rider fleet is homogeneous, with vehicle capacity $Q=2$ items and maximum route duration $T_{max}=35$ minutes.
+Each customer $i \in C$ has demand $q_i \in \{1,2\}$, an order
+release time $e_i \in [0, 5]$~min, a promised arrival
+$\mathrm{ETA}_i = e_i + 10$ (the q-commerce ten-minute promise), and
+a service time $s_i \in \{2, 4\}$~min (4~min for high-rise buildings,
+otherwise 2). Time windows are soft. The rider fleet is homogeneous
+with capacity $Q = 2$ items and maximum route duration
+$T_{\max} = 35$~min. Per-depot rider counts are sized as
+$|K_d| = \lceil 1.2 N_d / Q \rceil$, providing a 20\% over-provision
+buffer above the no-slack lower bound.
 
-Time windows are soft. If a rider reaches a customer before the order is ready, the route incurs waiting time. If the rider arrives after the promised time, the route incurs an exponential lateness penalty. Let $a_i^k$ be the arrival time of rider $k$ at customer $i$, $w_i^k$ the non-negative waiting variable, and $\tau_i^k$ the non-negative lateness variable. The model enforces
-\begin{align}
-    w_i^k &\ge e_i-a_i^k \\
-    \tau_i^k &\ge a_i^k-\mathrm{ETA}_i
-\end{align}
-with both variables constrained to be non-negative.
+\section{Decision Variables}
+
+For rider $k \in K$ and super-arc $(i, j)$:
+\begin{itemize}
+    \item $x_{ij}^k \in \{0, 1\}$: rider $k$ traverses super-arc $(i, j)$;
+    \item $a_i^k \geq 0$: arrival time of rider $k$ at node $i$ (defined only when $i$ is visited);
+    \item $w_i^k \geq 0$: idle wait at $i$ (early arrival);
+    \item $\tau_i^k \geq 0$: lateness at $i$;
+    \item $u_i^k \in \mathbb{Z}_{\geq 1}$: Miller--Tucker--Zemlin
+    sequence variable for sub-tour elimination \citep{miller1960}.
+\end{itemize}
 
 \section{Primary Objective}
 
-The primary objective is the service-quality function
+The primary objective $F_1$ minimises early-arrival waiting plus the
+convex SLA lateness penalty across the fleet:
 \begin{equation}
-    \min F_1 = \sum_{k \in K}\sum_{i \in C}\left[w_{early}\,w_i^k + \left(\exp(\beta_{stw}\tau_i^k)-1\right)\right]
-    \label{eq:f1}
+    F_1 = \sum_{k \in K} \sum_{i \in C}
+    \left[ w_{\text{early}} \cdot w_i^k +
+    \big(\exp(\beta_{\text{stw}} \tau_i^k) - 1\big) \right].
+    \label{eq:F1}
 \end{equation}
-where $w_{early}=1.0$ and $\beta_{stw}=0.12$ in the current implementation. This formulation differs materially from the earlier proposal draft. Raw travel time is not added as a separate term in the objective because travel time is already embedded in the arrival-time recursion. Congestion is not a separate optimization objective either; it enters the model only through the congestion-inflated edge travel time $t_{ij}$.
+Travel time enters implicitly through the arrival-time linking
+constraints; congestion is already baked into $t_{ij}$; crash risk is
+handled as an $\varepsilon$-constraint, not as an objective term, so
+the operator can read its cost off the Pareto frontier.
 
-\section{Safety and Neighbourhood Epsilon-Constraints}
+\section{$\varepsilon$-Constraints}
+\label{ch3:eps}
 
-Route safety is imposed as an epsilon-constraint rather than as a weighted-sum objective. For each rider $k$,
+Per-route crash-survival budget:
 \begin{equation}
-    \sum_{(u,v)} R_{uv}\,x_{uv}^k \le \bar{R}
-    \label{eq:rbar}
+    \sum_{(i,j)} R_{ij} \, x_{ij}^k \leq \bar{R}, \quad \forall k \in K.
+    \label{eq:Rbar}
 \end{equation}
-where $\bar{R}$ is the active route-level risk budget. Because $R_{uv}$ is defined through log survival, Equation~\ref{eq:rbar} has a clear interpretation: the route survival probability must remain at least $\exp(-\bar{R})$.
+Equation~\eqref{eq:Rbar} has a clear operational interpretation: the
+route survival probability must be at least $\exp(-\bar{R})$.
 
-Neighbourhood protection is represented by two separate constraints. First, the fleet-wide residential-edge budget is
+Fleet-wide residential-edge budget:
 \begin{equation}
-    \sum_{k \in K}\sum_{(u,v)} H_{uv}\,x_{uv}^k \le \bar{H}
-    \label{eq:hbar}
-\end{equation}
-and second, each individual route must satisfy
-\begin{equation}
-    \sum_{(u,v)} H_{uv}\,x_{uv}^k \le \bar{H}_k
-    \label{eq:hk}
-\end{equation}
-with $\bar{H}_k=8$ in the current implementation. These constraints prevent the optimization from avoiding arterial risk by systematically pushing riders onto local residential streets.
-
-\section{Core Routing Constraints}
-
-Let binary variable $x_{uv}^k$ equal 1 when rider $k$ traverses super-arc $(u,v)$. The standard routing constraints are retained. Each customer must be visited exactly once,
-\begin{equation}
-    \sum_{k \in K}\sum_{v \in C \cup D,\; v\neq i} x_{vi}^k = 1 \qquad \forall i \in C
-    \label{eq:visitonce}
-\end{equation}
-and flow must be conserved for each rider at each customer node,
-\begin{equation}
-    \sum_{u \in C \cup D,\; u\neq j} x_{uj}^k =
-    \sum_{v \in C \cup D,\; v\neq j} x_{jv}^k
-    \qquad \forall j \in C,\; \forall k \in K.
-    \label{eq:flow}
+    \sum_{k \in K} \sum_{(i,j)} H_{ij} \, x_{ij}^k \leq \bar{H}.
+    \label{eq:Hbar}
 \end{equation}
 
-Capacity is imposed on realized customer demand rather than on a fixed unit demand assumption:
+Per-route residential cap:
 \begin{equation}
-    \sum_{i \in C} q_i \sum_{v \in C \cup D,\; v\neq i} x_{iv}^k \le Q
-    \qquad \forall k \in K.
-    \label{eq:capacity}
+    \sum_{(i,j)} H_{ij} \, x_{ij}^k \leq \bar{H}_k, \quad \forall k \in K.
+    \label{eq:Hk}
+\end{equation}
+The implementation uses $\bar{H}_k = 100$ residential-edge
+traversals per route. The pair $(\bar{R}, \bar{H})$ is swept on a
+finite grid (Chapter~6) to trace the Pareto frontier; non-dominated
+points are retained.
+
+\section{Core VRPTW Constraints}
+
+Each customer is visited exactly once:
+\begin{equation}
+    \sum_{k \in K} \sum_{j \in C \cup D,\, j \neq i} x_{ji}^k = 1,
+    \quad \forall i \in C. \label{eq:visit}
+\end{equation}
+Flow conservation at every customer:
+\begin{equation}
+    \sum_{i} x_{ij}^k = \sum_{i} x_{ji}^k, \quad \forall j \in C, \forall k \in K. \label{eq:flow}
+\end{equation}
+Capacity:
+\begin{equation}
+    \sum_{i \in C} q_i \sum_{j} x_{ij}^k \leq Q, \quad \forall k \in K. \label{eq:cap}
 \end{equation}
 
-The current architecture is multi-depot. Riders are partitioned by home depot, and a rider assigned to depot $d$ cannot use any other depot. For a rider $k \in K_d$,
+\section{Multi-Depot Coupling}
+
+Riders are partitioned by home depot. A rider $k \in K_d$ assigned to
+depot $d$ leaves $d$ at most once, returns iff it left, and cannot
+touch any other depot. Formally, for every $k \in K_d$:
 \begin{align}
-    \sum_{j \in C} x_{dj}^k &\le 1 \\
-    \sum_{j \in C} x_{jd}^k &= \sum_{j \in C} x_{dj}^k \\
-    x_{uv}^k &= 0 \qquad \forall u \in D\setminus \{d\} \text{ or } v \in D\setminus \{d\}.
+    \sum_{j \in C} x_{dj}^k &\leq 1, \label{eq:depot-leave} \\
+    \sum_{j \in C} x_{jd}^k &= \sum_{j \in C} x_{dj}^k, \label{eq:depot-return} \\
+    x_{uj}^k = 0 \quad &\forall u \in D \setminus \{d\}, \forall j, \label{eq:no-other-depot-out} \\
+    x_{ju}^k = 0 \quad &\forall u \in D \setminus \{d\}, \forall j. \label{eq:no-other-depot-in}
+\end{align}
+Equation~\eqref{eq:depot-leave} bounds the dispatch count to one;
+\eqref{eq:depot-return} couples dispatch and return; and the two
+constraints~\eqref{eq:no-other-depot-out}--\eqref{eq:no-other-depot-in}
+forbid touching any depot other than the home depot.
+
+\section{Sub-Tour Elimination and Arrival Linking}
+
+Sub-tour elimination follows the Miller--Tucker--Zemlin construction
+\citep{miller1960}, with coefficient $|C|$ rather than vehicle
+capacity:
+\begin{align}
+    u_i^k - u_j^k + |C| \, x_{ij}^k &\leq |C| - 1,
+    \quad \forall i, j \in C, i \neq j, \forall k, \label{eq:mtz} \\
+    1 \leq u_i^k &\leq |C|, \quad \forall i \in C, \forall k.
 \end{align}
 
-Sub-tour elimination is handled with the Miller--Tucker--Zemlin construction \citep{miller1960}, but the coefficient is the number of customers rather than vehicle capacity:
+Arrival times are linked by big-$M$ constraints:
+\begin{equation}
+    a_j^k \geq a_i^k + s_i + T_{ij} - M(1 - x_{ij}^k),
+    \quad \forall i, j, k. \label{eq:link}
+\end{equation}
+The big-$M$ is set to a tight value derived from $T_{\max}$ rather
+than a hard-coded 240; this materially reduces the LP relaxation
+gap for CBC and prevents the spurious infeasibility observed in
+earlier drafts of the implementation.
+
+The maximum route-duration constraint is
+\begin{equation}
+    \sum_{(i,j)} T_{ij} \, x_{ij}^k +
+    \sum_{i} s_i \sum_{j} x_{ji}^k \leq T_{\max}, \quad \forall k. \label{eq:Tmax}
+\end{equation}
+
+Soft-window slack variables are linked via
 \begin{align}
-    u_i^k-u_j^k + |C|\,x_{ij}^k &\le |C|-1 \qquad \forall i,j \in C,\; i\neq j,\; \forall k \in K \\
-    1 \le u_i^k &\le |C| \qquad \forall i \in C,\; \forall k \in K.
+    w_i^k &\geq e_i - a_i^k, \quad w_i^k \geq 0, \label{eq:early} \\
+    \tau_i^k &\geq a_i^k - \mathrm{ETA}_i, \quad \tau_i^k \geq 0. \label{eq:late}
 \end{align}
 
-Arrival times are linked by
-\begin{equation}
-    a_j^k \ge a_i^k + s_i + T_{ij} - M(1-x_{ij}^k)
-    \qquad \forall i \in C \cup D,\; \forall j \in C,\; i\neq j,
-    \label{eq:arrival}
-\end{equation}
-and every route must satisfy
-\begin{equation}
-    \sum_{(u,v)} T_{uv}\,x_{uv}^k + \sum_{i \in C} s_i \sum_v x_{vi}^k \le T_{max}
-    \qquad \forall k \in K.
-    \label{eq:tmax}
-\end{equation}
+\section{MILP Linearisation of the SLA Penalty}
+\label{ch3:pwl}
 
-\section{Pareto Sweep}
+The mixed-integer linear program cannot evaluate
+$\exp(\beta_{\text{stw}}\tau)$ directly. The convex term
+$\exp(\beta_{\text{stw}}\tau) - 1$ is approximated via a
+piecewise-linear outer envelope at breakpoints
+\[
+    \tau \in \{0, 2, 5, 10, 15, 20, 30\} \text{ minutes},
+\]
+encoded with SOS2 sets so that at most two adjacent breakpoints are
+active per constraint. The breakpoints were chosen by a
+curvature-density heuristic to keep the relative approximation error
+below 5\% over $\tau \in [0, 30]$ for the calibrated curvature
+$\beta_{\text{stw}} = 0.12$. The heuristic concentrates breakpoints
+where the second derivative is largest (small $\tau$) and spaces them
+out in the long-tail region.
 
-The empirical Pareto frontier is generated by sweeping the budgets $\bar{R}$ and $\bar{H}$ over a fixed grid rather than by weighting objectives directly. The current experiment design uses
-\[
-\bar{R} \in \{0.05, 0.10, 0.20, 0.40, 0.80, 1.60, \infty\}
-\]
-and
-\[
-\bar{H} \in \{0,4,8,16,32,\infty\}.
-\]
-For each budget pair, the solver returns an optimal or incumbent value of $F_1$. Dominance filtering is then applied before any Pareto figure is plotted. This is the mathematically consistent way to expose trade-offs in the present formulation.
+The heuristics evaluate the exponential exactly. Both the MILP and
+the heuristics share the same feasibility checker
+(\texttt{savrptw.eval.feasibility}) and report $F_1$ through the same
+\texttt{savrptw.eval.objective} module.
+
+\section{Implementation Constants}
+
+The default constants in
+\texttt{conf/config.yaml} and \texttt{conf/instance/default.yaml} are:
+$Q = 2$ items;
+$T_{\max} = 35$~min;
+$\bar{H}_k = 100$ residential-edge traversals per route;
+$\beta_{\text{stw}} = 0.12$;
+$w_{\text{early}} = 1.0$;
+$M$ tight to $T_{\max}$ plus the longest super-arc.
+The fleet-wide residential budget $\bar{H}$ defaults to $10^6$
+(an effective $+\infty$ sentinel) and is tightened in the
+$\varepsilon$-sweep of Chapter~6. The per-route survival budget
+$\bar{R}$ similarly defaults to $+\infty$ in the unconstrained
+benchmark and is swept across $\{0.05, 0.10, 0.20, 0.40, 0.80, 1.60,
+\infty\}$ for the Pareto study.

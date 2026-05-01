@@ -1,46 +1,210 @@
-\chapter{Solution Approaches}
+\chapter{Solution Methods}
+\label{ch5}
 
-The SA-VRPTW remains NP-hard after the corrected formulation is imposed. The purpose of this chapter is therefore not to claim a universal solver, but to document three solution approaches that all consume the same instance representation and are all evaluated against the same feasibility and objective functions. Deep reinforcement learning has been removed from the core study because the branch no longer contains a defensible, measured DRL baseline for the corrected formulation.
+The SA-VRPTW remains NP-hard after the
+$\varepsilon$-constraint correction is imposed. This chapter
+documents three solution approaches that all consume the same
+\texttt{Instance} dataclass, all evaluate $F_1$ through
+\texttt{savrptw.eval.objective.breakdown()}, and all satisfy or fail
+the same \texttt{savrptw.eval.feasibility.validate()} contract. The
+deep-reinforcement-learning solver discussed in earlier proposal
+drafts has been removed because the current branch does not contain a
+defensible, measured DRL baseline for the corrected formulation.
 
-\section{Exact Methods: Mixed-Integer Linear Programming}
+\section{Mixed-Integer Linear Programming}
+\label{ch5:milp}
 
-The exact benchmark is a mixed-integer linear programming model defined on the customer-and-depot super-graph. Binary variables select super-arcs, continuous variables track arrival times, waiting time, and lateness, and integer sequence variables support the Miller--Tucker--Zemlin sub-tour elimination. The objective is Equation~\ref{eq:f1}; route risk and residential exposure enter as explicit constraints through Equations~\ref{eq:rbar}--\ref{eq:hk}.
+A PuLP/HiGHS-or-CBC model encodes the formulation in Chapter~3
+directly. The implementation detail worth flagging is that two
+arrival-variable groups are kept separate---$a_i^k$ for customer
+arrivals and $a_{\text{return}}^k$ for the home-depot return---to
+prevent the dispatch ($a_d^k = 0$) and return ($a_d^k > 0$)
+constraints from contradicting each other for routes that visit at
+least one customer. The convex SLA penalty is linearised by SOS2
+outer-envelope segments at the breakpoints
+$\tau \in \{0, 2, 5, 10, 15, 20, 30\}$~min listed in
+Section~\ref{ch3:pwl}.
 
-The only nonlinear component is the exponential soft-time-window penalty. In the exact solver it is replaced by a piecewise-linear outer approximation over a fixed set of lateness breakpoints. This preserves the shape of the penalty while keeping the exact model compatible with linear mixed-integer programming. The MILP serves two roles: it provides a quality benchmark on smaller instances and it validates the consistency of the corrected formulation.
+The default backend is HiGHS, with CBC as a free fallback when HiGHS
+is unavailable. The solver is given a 120~s wall-clock budget per
+instance in the default benchmark grid; longer budgets are needed
+only for $N \geq 50$, where the branch-and-cut search is genuinely
+difficult. Crucially, the big-$M$ in the arrival-linking
+constraints~\eqref{eq:link} is set tight to $T_{\max}$ plus the
+longest super-arc rather than to a hard-coded loose value, and CBC
+presolve is disabled by default. Both choices were necessary to
+eliminate spurious infeasibility observed during early calibration.
 
-Exact methods remain essential but limited. They become computationally expensive as the number of customers, depots, and epsilon-budget combinations grows. In this study they are retained primarily as a reference solver for smaller instances and as a correctness anchor for the heuristics.
+The MILP serves two roles: a quality benchmark on smaller instances
+($N \leq 50$) and a correctness anchor for the heuristics. Where the
+MILP returns a proven optimum, the heuristics' incumbents are
+expected to lie within a small known gap.
 
 \section{Genetic Algorithm}
+\label{ch5:ga}
 
-The first scalable heuristic is a giant-tour genetic algorithm. Each chromosome is a permutation of customers only. A split procedure then decodes the giant tour into depot-respecting routes. This structure separates global sequencing from route construction and is well suited to capacity-constrained micro-batching.
+The genetic algorithm uses the giant-tour-with-Bellman--Ford-split
+decoder of \citet{prins2004} embedded inside the standard genetic
+operator framework \citep{holland1975}. Each chromosome is a
+permutation over the customer set $C$. Decoding partitions the giant
+tour into depot-respecting routes by solving a shortest-path problem
+on an auxiliary acyclic graph whose arcs correspond to feasible
+single-route cuts.
 
-Initialization uses randomized customer permutations under a fixed seed. Crossover is performed with order crossover (OX1), preserving relative subsequences from the parent tours. Mutation is handled through simple local operators such as swap, insert, and reverse. The split stage is responsible for enforcing capacity, route duration, depot consistency, and feasibility under the active epsilon budgets.
+Operators are OX1 ordered crossover plus a randomised mutation choice
+over swap, insertion, and segment reversal (the last subsumes the
+2-opt move). Tournament selection uses $k = 5$, elitism retains the
+top four individuals each generation, the default population size is
+100, and the search runs for 200 generations.
 
-The important point is that the fitness calculation is no longer a weighted sum of time, risk, and congestion. The genetic algorithm evaluates the same $F_1$ objective used by the MILP and discards or penalizes infeasible individuals according to the same feasibility module used elsewhere in the codebase. This prevents the heuristic from silently solving a different problem from the exact model.
+The fitness evaluation uses $F_1$ plus a finite penalty mass for
+infeasible routes. The penalty weights are tuned so that capacity,
+duration, the per-route survival budget, and the per-route
+residential cap each carry a stiff additive sentinel in the
+Bellman--Ford split: a candidate split that violates any of those
+caps is selected only if no feasible split exists for the same depot
+sequence. This guarantees that, when the instance is feasible, the
+GA returns a feasible incumbent.
+
+\begin{pseudocode}{Giant-tour GA with Bellman--Ford split for SA-VRPTW.}
+\label{alg:ga}
+\textbf{Input:} \> Instance $\mathcal{I}$; population size $P$;
+generations $G$; \\
+\>\> crossover prob.\ $p_x$; mutation prob.\ $p_m$; \\
+\>\> tournament size $k$; elite size $e$. \\
+\textbf{Output:}\> Best feasible solution $s^\star$. \\[2pt]
+\textbf{1.}\> Initialise population $\mathcal{P}_0$ with $P$ random
+customer permutations. \\
+\textbf{2.}\> Decode each chromosome via Bellman--Ford split; evaluate $F_1$ + penalty mass. \\
+\textbf{3.}\> \textbf{for} $g = 1$ \textbf{to} $G$ \textbf{do} \\
+\textbf{4.}\>\> Carry top-$e$ elites into next generation. \\
+\textbf{5.}\>\> \textbf{while} offspring count $< P - e$ \textbf{do} \\
+\textbf{6.}\>\>\> $p_1, p_2 \gets$ tournament selection of size $k$. \\
+\textbf{7.}\>\>\> Child $c \gets$ OX1 crossover of $(p_1, p_2)$ with prob.\ $p_x$. \\
+\textbf{8.}\>\>\> Apply random mutation (swap / insert / reverse) with prob.\ $p_m$. \\
+\textbf{9.}\>\>\> Decode $c$ via Bellman--Ford split; evaluate fitness. \\
+\textbf{10.}\>\> \textbf{end while} \\
+\textbf{11.}\>\> Sort by fitness; truncate to $P$. \\
+\textbf{12.}\> \textbf{end for} \\
+\textbf{13.}\> Decode incumbent best chromosome; \\
+\>\> validate strictly via \texttt{eval.feasibility.validate}. \\
+\textbf{14.}\> \textbf{return} $s^\star$.
+\end{pseudocode}
+
+\paragraph{Bellman--Ford split.}
+Given a chromosome $\sigma = (\sigma_1, \dots, \sigma_n)$, the
+decoder computes, for every prefix index $j$, the cheapest cost
+$F_1(0..j)$ to cover customers $\sigma_1..\sigma_j$ as a sequence of
+routes ending at the home depot, by minimising over split points $i$
+of $F_1(0..i) + \mathrm{routeCost}(\sigma_{i+1..j})$. Capacity bounds
+the inner loop, so the decoder runs in $O(n^2)$ time. The route-cost
+function shares the arrival-time recurrence with the MILP, so the GA
+and MILP cannot disagree on a route's $F_1$.
 
 \section{Adaptive Large Neighbourhood Search}
+\label{ch5:alns}
 
-The second scalable heuristic is adaptive large neighbourhood search, following the general framework of Ropke and Pisinger \citep{ropke2006}. ALNS alternates between destroying part of the incumbent solution and repairing it with a context-aware reinsertion heuristic. This is especially attractive for the present application because the solver must often reshape short multi-depot routes when a tighter risk or residential budget becomes active.
+The ALNS implementation follows \citet{ropke2006}. Destroy operators
+include random removal, worst removal (largest insertion-cost
+contribution), Shaw removal (relatedness over travel-time
+proximity), and a custom risk-cluster removal that targets customers
+in the highest-$R_{ij}$ neighbourhoods. Repair operators include
+cheapest-feasible insertion, regret-2, and regret-3.
 
-The planned operator set mirrors the formulation requirements: destroy operators remove customers by Shaw similarity, random removal, route removal, or worst-contribution removal, while repair operators reconstruct feasible routes using greedy or regret-based insertion under the current $F_1$ objective and epsilon constraints. Adaptive operator weights are updated according to observed improvement, and simulated-annealing-style acceptance can be used to prevent premature stagnation.
+Operator weights are updated in segments of 100 iterations using the
+Ropke--Pisinger reaction factor; rewards are
+$\sigma = (33, 9, 1, 0)$ for new-best, improving, accepted-worse, and
+rejected moves. Acceptance is simulated annealing with a geometric
+cooling rate of $0.99975$, starting from a temperature equal to $5\%$
+of the initial $F_1$.
+
+\begin{pseudocode}{Adaptive Large Neighbourhood Search for SA-VRPTW.}
+\label{alg:alns}
+\textbf{Input:}\> Instance $\mathcal{I}$; iterations $T$; segment $L$; \\
+\>\> reaction factor $r$; reward weights $\sigma$; \\
+\>\> cooling rate $\eta$; init.\ temperature ratio $\theta$. \\
+\textbf{Output:}\> Best feasible solution $s^\star$. \\[2pt]
+\textbf{1.}\> $s_0 \gets \mathrm{GreedyConstruct}(\mathcal{I})$. \\
+\textbf{2.}\> $s \gets s_0$;\ $s^\star \gets s_0$;\ $F^\star \gets F_1(s_0)$. \\
+\textbf{3.}\> $T_{\mathrm{SA}} \gets \theta \cdot F^\star$. \\
+\textbf{4.}\> $w^d_o, w^r_o \gets 1$ for every operator $o$. \\
+\textbf{5.}\> \textbf{for} $t = 1$ \textbf{to} $T$ \textbf{do} \\
+\textbf{6.}\>\> $q \gets \lceil n \cdot \mathcal{U}(0.15, 0.45) \rceil$. \\
+\textbf{7.}\>\> $D \gets$ destroy operator sampled $\propto w^d$. \\
+\textbf{8.}\>\> $R \gets$ repair operator sampled $\propto w^r$. \\
+\textbf{9.}\>\> $s' \gets R(D(s, q))$;\ $\Delta \gets F_1(s') - F_1(s)$. \\
+\textbf{10.}\>\> \textbf{if} $F_1(s') < F^\star$ \textbf{then} \\
+\>\>\> $s^\star \gets s'$;\ $F^\star \gets F_1(s')$;\ $\rho \gets \sigma_1$. \\
+\textbf{11.}\>\> \textbf{else if} $\Delta < 0$ \textbf{then} $\rho \gets \sigma_2$. \\
+\textbf{12.}\>\> \textbf{else if} $\mathcal{U}(0,1) < \exp(-\Delta/T_{\mathrm{SA}})$
+\textbf{then} $\rho \gets \sigma_3$. \\
+\textbf{13.}\>\> \textbf{else} $\rho \gets \sigma_4$. \\
+\textbf{14.}\>\> \textbf{if} $\rho > \sigma_4$ \textbf{then} $s \gets s'$. \\
+\textbf{15.}\>\> $\pi^d_D \mathrel{+}= \rho$;\ $\pi^r_R \mathrel{+}= \rho$. \\
+\textbf{16.}\>\> \textbf{if} $t \bmod L = 0$ \textbf{then} \\
+\>\>\> $w^*_o \gets (1{-}r)\, w^*_o + r\, \pi^*_o / n^*_o$;\ reset $\pi^*$. \\
+\textbf{17.}\>\> $T_{\mathrm{SA}} \gets \eta \cdot T_{\mathrm{SA}}$. \\
+\textbf{18.}\> \textbf{return} $s^\star$.
+\end{pseudocode}
+
+\paragraph{Initial construction.}
+The greedy constructor processes customers in random order per home
+depot, appending each to the current route while feasibility holds.
+When a singleton route is itself infeasible (e.g.\ the depot-to-customer
+super-arc alone exceeds the residential cap), the customer is kept as
+a singleton anyway and the SA loop is given a chance to relocate it.
+The strict \texttt{validate()} call at the end remains the final
+feasibility gate, so genuinely infeasible instances surface as a
+clear infeasibility error rather than as a silent failure.
+
+\section{Crash-Survival Monte Carlo}
+
+For evaluation only (not optimisation), each route is sampled
+$10\,000$ times: each edge traversal is a Bernoulli trial with
+success probability $1 - r_e$, and the route survives iff every edge
+traversal succeeds. The reported summary contains mean route survival,
+fleet survival, and Wilson 95\% confidence intervals
+\citep{wilson1927}. The analytic per-route survival
+$\exp(-R_{\text{route}})$ is reported alongside the Monte Carlo
+estimate as a sanity check.
+
+\section{Behavioural Compliance Sensitivity}
+\label{ch5:behav}
+
+Rider compliance is modelled as a $\mathrm{Beta}(\alpha, \beta)$
+prior. The central scenario is $(\alpha, \beta) = (5, 2)$. The
+sensitivity sweep covers $\alpha \in \{3, 5, 8\}$ and
+$\beta \in \{1, 2, 3\}$, yielding nine operating points. For each
+point, the evaluator Monte-Carlos a 50-rider population over 5{,}000
+trips and reports the inter-quartile-range band on per-rider
+survival. Edge-level traversal rates are inflated by a factor
+$1 + k_c (1 - c)$, where $c$ is the sampled compliance level and
+$k_c = 0.4$ is matched to the Indian gig-rider field data of
+\citet{das2020}. The behavioural evaluator is a diagnostic layer
+only; it does not modify the optimisation objective or the solver
+comparison itself.
 
 \section{Comparative Summary}
 
-Table~\ref{tab:solver_comparison} summarizes the intended role of the retained solvers in the corrected architecture.
+Table~\ref{tab:solver_comparison} summarises the role each solver
+plays in the corrected architecture.
 
 \begin{table}[ht]
 \centering
-\caption{Comparative analysis of solution approaches for the SA-VRPTW.}
+\caption{Comparative roles of the three solution approaches.}
 \label{tab:solver_comparison}
+\small
 \begin{tabular}{llll}
 \toprule
 \textbf{Method} & \textbf{Role} & \textbf{Strength} & \textbf{Limitation} \\
 \midrule
-MILP  & Exact baseline & Formulation fidelity & Limited scalability \\
-GA    & Fast heuristic & Strong route sequencing & Sensitive to representation and penalties \\
-ALNS  & Large-instance heuristic & Powerful repair under tight constraints & Requires careful operator tuning \\
+MILP & Exact baseline ($N \leq 50$) & Formulation fidelity & Limited scalability \\
+GA   & Fast heuristic     & Strong giant-tour sequencing & Sensitive to penalty calibration \\
+ALNS & Large-instance heuristic & Powerful repair under tight budgets & Operator-tuning sensitivity \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The comparative design is therefore clean: MILP provides exact reference points where feasible, GA provides a fast constructive metaheuristic, and ALNS provides a more disruptive neighbourhood-search mechanism. All three remain inside the same corrected SA-VRPTW problem definition.
+The three solvers are kept inside a single $F_1$/feasibility contract.
+This is the methodological move that makes apples-to-apples
+comparison possible across exact and metaheuristic results.

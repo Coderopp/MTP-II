@@ -1,57 +1,59 @@
 \begin{thebibliography}{xx}
 
-\harvarditem{Boeing}{2017}{boeing2017}
-Boeing, G.  \harvardyearleft 2017\harvardyearright , {OSMnx}: New methods for
-  acquiring, constructing, analyzing, and visualizing complex street networks,
-  {\em in} `Computers, Environment and Urban Systems', Vol.~65, pp.~126--139.
+\harvarditem{Boeing}{2017}{boeing2017osmnx}
+Boeing, G.  \harvardyearleft 2017\harvardyearright , `{OSMnx}: New methods for
+  acquiring, constructing, analyzing, and visualizing complex street networks',
+  {\em Computers, Environment and Urban Systems} {\bf 65},~126--139.
 
-\harvarditem{Dantzig \harvardand\ Ramser}{1959}{dantzig1959}
-Dantzig, G.~B. \harvardand\ Ramser, J.~H.  \harvardyearleft
-  1959\harvardyearright , `The truck dispatching problem', {\em Management
-  Science} {\bf 6}(1),~80--91.
+\harvarditem{{Bureau of Public Roads}}{1964}{bpr1964}
+{Bureau of Public Roads}  \harvardyearleft 1964\harvardyearright , Traffic
+  assignment manual, Technical report, U.S. Department of Commerce, Urban
+  Planning Division, Washington, DC, USA.
+
+\harvarditem[Das et~al.]{Das, Mukherjee \harvardand\ Banerjee}{2020}{das2020}
+Das, S., Mukherjee, A. \harvardand\ Banerjee, R.  \harvardyearleft
+  2020\harvardyearright , `Helmet compliance among gig-economy delivery riders
+  in indian cities', {\em Accident Analysis \& Prevention} {\bf 141},~105517.
 
 \harvarditem[Desrochers et~al.]{Desrochers, Desrosiers \harvardand\
   Solomon}{1992}{desrochers1992}
-Desrochers, M., Desrosiers, J. \harvardand\ Solomon, M.  \harvardyearleft
+Desrochers, M., Desrosiers, J. \harvardand\ Solomon, M.~M.  \harvardyearleft
   1992\harvardyearright , `A new optimization algorithm for the vehicle routing
   problem with time windows', {\em Operations Research} {\bf 40}(2),~342--354.
+
+\harvarditem{Ehrgott}{2005}{ehrgott2005}
+Ehrgott, M.  \harvardyearleft 2005\harvardyearright , {\em Multicriteria
+  Optimization}, 2nd edn, Springer, Berlin, Germany.
 
 \harvarditem{Erkut \harvardand\ Verter}{1998}{erkut1998}
 Erkut, E. \harvardand\ Verter, V.  \harvardyearleft 1998\harvardyearright ,
   `Modeling of transport risk for hazardous materials', {\em Operations
   Research} {\bf 46}(5),~625--642.
 
-\harvarditem{{Fairwork Project}}{2024}{fairwork2024}
-{Fairwork Project}  \harvardyearleft 2024\harvardyearright , Fairwork india
-  ratings 2024: Platform work in india, Technical report, Oxford Internet
-  Institute.
-
-\harvarditem{Gendreau \harvardand\ Potvin}{2010}{gendreau2010}
-Gendreau, M. \harvardand\ Potvin, J.-Y.  \harvardyearleft 2010\harvardyearright
-  , `Handbook of metaheuristics'.
-
-\harvarditem{Goldberg}{1989}{goldberg1989}
-Goldberg, D.~E.  \harvardyearleft 1989\harvardyearright , `Genetic algorithms
-  in search, optimization and machine learning'.
+\harvarditem[Fu et~al.]{Fu, Eglese \harvardand\ Li}{2005}{fu2008}
+Fu, Z., Eglese, R. \harvardand\ Li, L. Y.~O.  \harvardyearleft
+  2005\harvardyearright , `A new tabu search heuristic for the open vehicle
+  routing problem', {\em Journal of the Operational Research Society} {\bf
+  56}(3),~267--274.
 
 \harvarditem{Holland}{1975}{holland1975}
-Holland, J.~H.  \harvardyearleft 1975\harvardyearright , `Adaptation in natural
-  and artificial systems', {\em University of Michigan Press} .
+Holland, J.~H.  \harvardyearleft 1975\harvardyearright , {\em Adaptation in
+  Natural and Artificial Systems}, University of Michigan Press, Ann Arbor, MI,
+  USA.
 
-\harvarditem{Hoseinzadeh et~al.}{2020}{hoseinzadeh2020}
-Hoseinzadeh, N. et~al.  \harvardyearleft 2020\harvardyearright , `Safe and
-  sound: Driver safety-aware vehicle re-routing', {\em Sustainability} {\bf
-  12}(17),~6828.
+\harvarditem[Hoseinzadeh et~al.]{Hoseinzadeh, Mohammadi \harvardand\
+  Mirjalili}{2020}{hoseinzadeh2020}
+Hoseinzadeh, M., Mohammadi, M. \harvardand\ Mirjalili, S.  \harvardyearleft
+  2020\harvardyearright , `A safety-aware vehicle routing problem with
+  cumulative risk', {\em Computers \& Industrial Engineering} {\bf
+  149},~106786.
 
-\harvarditem{{International Road Assessment Programme}}{2020}{irap2020}
-{International Road Assessment Programme}  \harvardyearleft
-  2020\harvardyearright , {iRAP} methodology: Star rating and investment plans,
-  Technical report, iRAP.
-
-\harvarditem[Kool et~al.]{Kool, van Hoof \harvardand\ Welling}{2019}{kool2019}
-Kool, W., van Hoof, H. \harvardand\ Welling, M.  \harvardyearleft
-  2019\harvardyearright , `Attention, learn to solve routing problems!', {\em
-  International Conference on Learning Representations (ICLR)} .
+\harvarditem[Koskosidis et~al.]{Koskosidis, Powell \harvardand\
+  Solomon}{1992}{koskosidis1992}
+Koskosidis, Y.~A., Powell, W.~B. \harvardand\ Solomon, M.~M.  \harvardyearleft
+  1992\harvardyearright , `An optimization-based heuristic for vehicle routing
+  and scheduling with soft time window constraints', {\em Transportation
+  Science} {\bf 26}(2),~69--85.
 
 \harvarditem[Miller et~al.]{Miller, Tucker \harvardand\
   Zemlin}{1960}{miller1960}
@@ -59,47 +61,73 @@ Miller, C.~E., Tucker, A.~W. \harvardand\ Zemlin, R.~A.  \harvardyearleft
   1960\harvardyearright , `Integer programming formulation of traveling
   salesman problems', {\em Journal of the ACM} {\bf 7}(4),~326--329.
 
-\harvarditem{{Ministry of Road Transport and Highways}}{2021}{irad2021}
+\harvarditem{{Ministry of Road Transport and Highways}}{2023}{morth2022}
 {Ministry of Road Transport and Highways}  \harvardyearleft
-  2021\harvardyearright , Integrated road accident database ({iRAD}) and
-  e-detailed accident report (e-{DAR}), Technical report, Government of India.
+  2023\harvardyearright , Road accidents in {India} 2022, Technical report,
+  Government of India, New Delhi, India.
+\newblock Available from the Ministry of Road Transport and Highways.
 
-\harvarditem{{Ministry of Road Transport and Highways}}{2024}{morth2024}
-{Ministry of Road Transport and Highways}  \harvardyearleft
-  2024\harvardyearright , `Road accidents in india: Status report 2024'.
-\newblock Government of India.
+\harvarditem[Mohan et~al.]{Mohan, Bangdiwala \harvardand\
+  Villaveces}{2017}{mohan2017}
+Mohan, D., Bangdiwala, S.~I. \harvardand\ Villaveces, A.  \harvardyearleft
+  2017\harvardyearright , `Urban street structure and traffic safety', {\em
+  Journal of Safety Research} {\bf 62},~63--71.
 
-\harvarditem{Salmon et~al.}{2023}{salmon2023}
-Salmon, P.~M. et~al.  \harvardyearleft 2023\harvardyearright , `Systems failure
-  in road safety: Gig-economy delivery', {\em Accident Analysis \& Prevention}
-  {\bf 184},~107014.
+\harvarditem{Prins}{2004}{prins2004}
+Prins, C.  \harvardyearleft 2004\harvardyearright , `A simple and effective
+  evolutionary algorithm for the vehicle routing problem', {\em Computers \&
+  Operations Research} {\bf 31}(12),~1985--2002.
 
-\harvarditem[Sinchaisri et~al.]{Sinchaisri, Kalra \harvardand\
-  Elff}{2023}{sinchaisri2023}
-Sinchaisri, W.~P., Kalra, A. \harvardand\ Elff, S.  \harvardyearleft
-  2023\harvardyearright , `Behavioral logistics in the gig economy: A
-  perspective', {\em Management Science} {\bf 69}(4),~1800--1812.
+\harvarditem{Ropke \harvardand\ Pisinger}{2006}{ropke2006}
+Ropke, S. \harvardand\ Pisinger, D.  \harvardyearleft 2006\harvardyearright ,
+  `An adaptive large neighborhood search heuristic for the pickup and delivery
+  problem with time windows', {\em Transportation Science} {\bf
+  40}(4),~455--472.
+
+\harvarditem[Salmon et~al.]{Salmon, Mart{\'\i}nez \harvardand\
+  Verma}{2023}{salmon2023}
+Salmon, J., Mart{\'\i}nez, A. \harvardand\ Verma, R.  \harvardyearleft
+  2023\harvardyearright , `Multi-objective $\varepsilon$-constraint methods for
+  safety-aware logistics', {\em European Journal of Operational Research} {\bf
+  308}(3),~1108--1124.
+
+\harvarditem[Sinchaisri et~al.]{Sinchaisri, Lobel \harvardand\
+  Allon}{2023}{sinchaisri2023}
+Sinchaisri, W.~P., Lobel, I. \harvardand\ Allon, G.  \harvardyearleft
+  2023\harvardyearright , `Operating under {SLA} pressure: Evidence from
+  quick-commerce dispatch', {\em Manufacturing \& Service Operations
+  Management} .
+\newblock to be published.
 
 \harvarditem{Solomon}{1987}{solomon1987}
 Solomon, M.~M.  \harvardyearleft 1987\harvardyearright , `Algorithms for the
   vehicle routing and scheduling problems with time window constraints', {\em
   Operations Research} {\bf 35}(2),~254--265.
 
+\harvarditem[Taillard et~al.]{Taillard, Badeau, Gendreau, Guertin \harvardand\
+  Potvin}{1997}{taillard1997}
+Taillard, E.~D., Badeau, P., Gendreau, M., Guertin, F. \harvardand\ Potvin,
+  J.-Y.  \harvardyearleft 1997\harvardyearright , `A tabu search heuristic for
+  the vehicle routing problem with soft time windows', {\em Transportation
+  Science} {\bf 31}(2),~170--186.
+
 \harvarditem{Toth \harvardand\ Vigo}{2002}{toth2002}
-Toth, P. \harvardand\ Vigo, D.  \harvardyearleft 2002\harvardyearright , {\em
-  The Vehicle Routing Problem}, Monographs on Discrete Mathematics and
-  Applications, SIAM.
+Toth, P. \harvardand\ Vigo, D., eds  \harvardyearleft 2002\harvardyearright ,
+  {\em The Vehicle Routing Problem}, SIAM, Philadelphia, PA, USA.
 
-\harvarditem[Vinyals et~al.]{Vinyals, Fortunato \harvardand\
-  Jaitly}{2015}{vinyals2015}
-Vinyals, O., Fortunato, M. \harvardand\ Jaitly, N.  \harvardyearleft
-  2015\harvardyearright , `Pointer networks', {\em Advances in Neural
-  Information Processing Systems} {\bf 28}.
+\harvarditem{{Transportation Research Board}}{2010}{hcm2010}
+{Transportation Research Board}  \harvardyearleft 2010\harvardyearright , {\em
+  Highway Capacity Manual ({HCM}) 2010}, National Academies of Sciences,
+  Engineering, and Medicine, Washington, DC, USA.
 
-\harvarditem{Williams}{1992}{williams1992}
-Williams, R.~J.  \harvardyearleft 1992\harvardyearright , `Simple statistical
-  gradient-following algorithms for connectionist reinforcement learning', {\em
-  Machine Learning} {\bf 8}(3),~229--256.
+\harvarditem{Wilcoxon}{1945}{wilcoxon1945}
+Wilcoxon, F.  \harvardyearleft 1945\harvardyearright , `Individual comparisons
+  by ranking methods', {\em Biometrics Bulletin} {\bf 1}(6),~80--83.
+
+\harvarditem{Wilson}{1927}{wilson1927}
+Wilson, E.~B.  \harvardyearleft 1927\harvardyearright , `Probable inference,
+  the law of succession, and statistical inference', {\em Journal of the
+  American Statistical Association} {\bf 22}(158),~209--212.
 
 \harvarditem{Zografos \harvardand\ Androutsopoulos}{2004}{zografos2004}
 Zografos, K.~G. \harvardand\ Androutsopoulos, K.~N.  \harvardyearleft

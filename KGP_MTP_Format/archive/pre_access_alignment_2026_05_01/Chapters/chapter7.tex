@@ -1,0 +1,48 @@
+\chapter{Conclusion and Future Work}
+
+\section{Summary of Contributions}
+
+This thesis update consolidates the corrected SA-VRPTW formulation and the corresponding software architecture. The key contributions of the current branch are as follows.
+
+\begin{enumerate}
+    \item \textbf{Corrected objective structure.} The model now optimizes service quality through waiting and exponential lateness penalties, while route risk and residential exposure are enforced through explicit epsilon-constraints rather than through a weighted sum of incompatible units.
+    \item \textbf{Reproducible BASM calibration.} The earlier placeholder risk layer has been replaced with a documented calibration based on MoRTH 2022 aggregates, Mohan et al.'s arterial-versus-non-arterial directionality, and graph-local OpenStreetMap proxies.
+    \item \textbf{Consistent solver contract.} The exact model, genetic algorithm, and adaptive large neighbourhood search are all tied to the same instance representation, feasibility checks, and post-hoc evaluators.
+    \item \textbf{Transparent experiment scope.} The primary single-brand city set has been fixed to Bengaluru, Delhi, Gurugram, Mumbai, and Pune, with Hyderabad excluded explicitly because the committed Blinkit snapshot does not cover it.
+    \item \textbf{Thesis and code alignment.} The manuscript no longer claims DRL baselines, six-city primary experiments, synthetic iRAD calibration, or unmeasured figure results that are absent from the current branch.
+\end{enumerate}
+
+\section{Current Findings}
+
+The strongest conclusion supported by the current branch is methodological rather than final empirical. A safety-aware q-commerce routing problem can be expressed cleanly without conflating travel time, congestion, and crash risk into one arbitrary weighted objective. The branch demonstrates that a public-source calibration path for edge-level crash probabilities is implementable, that the solver stack can consume a shared canonical instance, and that the experimental protocol can be defined without relying on unverifiable baselines.
+
+\section{Limitations}
+
+Several limitations of the current work are acknowledged:
+
+\begin{itemize}
+    \item The full five-city experiment grid has not yet been executed on the corrected formulation, so this manuscript update avoids claiming final numerical trade-offs.
+    \item The BASM calibration is publicly reproducible, but it still depends on aggregate road-safety data rather than direct city-level crash microdata for every retained city.
+    \item The local OSM proxy redistributes risk within road classes using graph structure rather than observed crash black spots, which is defensible but still indirect.
+    \item Behavioural compliance is currently evaluated post hoc through sensitivity analysis rather than estimated from platform-specific telematics or rider logs.
+\end{itemize}
+
+\section{Future Research Directions}
+
+The next phase of work is operational and empirical rather than conceptual.
+
+\vspace{0.5em}
+\noindent\textbf{Five-city target validation.}
+The immediate requirement is to complete the city-level validation dataset so that the calibrated BASM graph for each retained city can be checked against a public annual target within the accepted tolerance band.
+
+\vspace{0.5em}
+\noindent\textbf{Full experiment execution and figure regeneration.}
+The epsilon-grid must be executed across all retained cities, problem sizes, and seeds, after which the manuscript figures can be generated directly from the structured JSON outputs and paired CSV artefacts.
+
+\vspace{0.5em}
+\noindent\textbf{Richer behavioural evidence.}
+The Monte Carlo compliance model should eventually be informed by rider telemetry, platform audit data, or structured survey evidence rather than by sensitivity sweeps alone.
+
+\vspace{0.5em}
+\noindent\textbf{Direct crash microdata integration.}
+If access to city-level crash microdata or validated black-spot inventories becomes possible, BASM can be upgraded from a public-aggregate surrogate to a more direct empirical edge-risk model without changing the surrounding solver architecture.

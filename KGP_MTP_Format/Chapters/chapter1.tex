@@ -2,28 +2,109 @@
 
 \section{Background and Motivation}
 
-Quick commerce has reconfigured urban logistics around extreme response times. Orders are released in small batches from dark stores, riders are assigned under tight promised arrival times, and dispatch systems repeatedly trade between route length, traffic, and reliability. In practice, these systems are usually optimized for speed first and safety later. That design choice is operationally convenient but ethically incomplete in dense Indian cities, where the fastest route may coincide with the highest arterial exposure, the most aggressive congestion, and the strongest pressure to cut through residential streets.
+Quick-commerce (q-commerce) platforms such as Blinkit, Zepto, and
+Instamart have rewired Indian urban delivery by promising arrival
+times measured in minutes rather than hours. The operating pattern is
+a network of small ``dark stores''---also called depots or
+forward-deployed micro-warehouses---each serving a 2--3~km radius
+through a fleet of two-wheeler riders. Order batches are dispatched
+every few minutes, with each rider typically carrying one to two
+items per route to keep the delivery promise realistic.
 
-The classical vehicle routing problem, beginning with \citet{dantzig1959} and extended by the vehicle routing problem with time windows literature summarized by \citet{solomon1987}, \citet{desrochers1992}, and \citet{toth2002}, was not built for this setting. Traditional formulations minimize distance, time, or fleet size under hard feasibility constraints. For quick commerce, those objectives are too narrow. Delivery quality depends on promised and realized arrival times, while public risk depends on the streets through which the algorithm repeatedly sends riders. A safety-aware routing model therefore has to represent not only timeliness but also where the traffic burden is shifted and how route choice changes under risk budgets.
+The combination of strict service-level agreements (SLAs), high
+dispatch frequency, narrow residential-street penetration, and a
+vulnerable rider population (helmeted but exposed two-wheelers in
+mixed traffic) creates a routing problem in which safety is not an
+optional refinement. India's road-safety burden makes this concrete:
+the Ministry of Road Transport and Highways reported $4{,}61{,}312$
+road accidents and $1{,}68{,}491$ fatalities in 2022
+\citep{morth2022}, with \citet{mohan2017} showing that fatalities are
+disproportionately concentrated on higher-order roads despite their
+relatively small share of total network length.
 
-India's road safety burden makes the problem concrete rather than hypothetical. The Ministry of Road Transport and Highways reported 4,61,312 road accidents, 1,68,491 fatalities, and 4,43,366 injuries in 2022 \citep{morth2022}. The same report shows that fatalities are disproportionately concentrated on higher-order roads despite their relatively small share of total network length. At the same time, Mohan, Bangdiwala, and Villaveces argue that a larger share of highways and main arterial roads is associated with higher urban fatality rates, whereas denser junction structure is associated with lower mortality \citep{mohan2017}. These observations suggest that routing should not treat all street kilometres as operationally interchangeable.
+\section{Why the Classical VRPTW is Insufficient}
+
+The classical Vehicle Routing Problem with Time Windows
+\citep{solomon1987,desrochers1992,toth2002} captures none of the
+q-commerce setting. It minimises a weighted sum of travel time,
+distance, or vehicle count subject to capacity and time windows.
+Crash risk, when modelled \citep{hoseinzadeh2020}, is typically
+embedded as an additional weighted term in the objective using a
+constant ``risk-per-edge'' coefficient that has no calibration
+story. Several works in safety-aware routing penalise hazardous arcs
+implicitly via inflated travel times, which conflates two distinct
+phenomena (slow vs.\ dangerous) and gives the operator no explicit
+knob.
+
+Two structural problems follow. First, weighted-sum aggregation
+collapses incompatible quantities (minutes, expected crash counts,
+counts of residential-edge traversals) into one scalar; a route can
+appear optimal merely because the chosen weights hide the safety
+cost. Second, treating risk as exogenous and uncalibrated means a
+practitioner cannot interpret the resulting plan as ``safe'' in any
+defensible operational sense.
 
 \section{Problem Statement}
 
-Current q-commerce routing engines rarely expose an explicit mathematical mechanism for limiting per-route crash exposure or for protecting local streets from systematic cut-through traffic. Weighted-sum formulations also obscure trade-offs by collapsing incompatible quantities into one scalar. A route may appear optimal simply because a chosen weight vector hides the safety cost. The central problem of this thesis is therefore to formulate a dispatch model in which service quality remains the primary optimization target, but crash-survival risk and residential exposure are enforced as explicit, auditable constraints.
+This thesis develops an SA-VRPTW formulation in which service quality
+is the primary optimisation target, while crash-survival risk and
+residential exposure are enforced as explicit, auditable
+$\varepsilon$-constraints. The associated software pipeline materialises
+realistic instances from public geographic and road-safety data, and
+the solver stack reports $F_1$ through a single evaluation contract
+shared across exact and heuristic methods.
 
-\section{Research Objectives}
+\section{Contributions}
 
-This thesis develops the \textbf{Safety-Aware Vehicle Routing Problem with Time Windows (SA-VRPTW)} with the following objectives:
+The contributions of this thesis are:
 
 \begin{enumerate}
-    \item Formulate a canonical objective in which service quality is measured by early-arrival waiting and an exponential soft-time-window lateness penalty instead of raw travel time alone.
-    \item Represent safety through a per-route crash-survival budget and represent neighbourhood protection through fleet-wide and route-level residential-road caps.
-    \item Build a reproducible data pipeline that combines OpenStreetMap road networks, BPR congestion inflation, and BASM edge-level crash probabilities calibrated from public sources.
-    \item Implement three solution approaches consistent with the same formulation: exact MILP, a depot-aware genetic algorithm, and adaptive large neighbourhood search.
-    \item Define a five-city empirical protocol for Bengaluru, Delhi, Gurugram, Mumbai, and Pune, with post-hoc crash and behavioural Monte Carlo evaluation.
+    \item A Safety-Aware VRPTW formulation that treats per-route
+    crash exposure as a hard $\varepsilon$-constraint
+    (survival probability $\geq e^{-\bar{R}}$) rather than as an
+    objective component, so the safety/efficiency trade-off is traced
+    \emph{explicitly} as a Pareto frontier
+    \citep{salmon2023,ehrgott2005} rather than implicitly through a
+    weighted sum.
+    \item A fleet-wide budget on residential-street penetration plus
+    a per-route residential cap, so a planner can constrain
+    network-level use of vulnerable streets even when individual
+    routes are safe.
+    \item A documented public-source crash-risk calibration chain
+    based on \citet{morth2022} category-level fatality totals,
+    \citet{mohan2017} ordering constraints, and an OpenStreetMap
+    structural proxy, avoiding the protected Integrated Road Accident
+    Database microdata.
+    \item A convex SLA penalty $\exp(\beta_{\text{stw}}\tau)-1$
+    replacing the linear lateness term common in soft-time-window
+    formulations \citep{koskosidis1992,fu2008,taillard1997},
+    approximated via piecewise-linear outer envelope in the MILP and
+    evaluated exactly in the heuristics.
+    \item A unified solver/evaluation contract under which an exact
+    MILP, a giant-tour genetic algorithm with Bellman--Ford optimal
+    split decoding \citep{prins2004}, and an Adaptive Large
+    Neighbourhood Search \citep{ropke2006} all evaluate solutions
+    through identical $F_1$ and feasibility code, eliminating the
+    apples-to-pears bias common in VRP solver comparisons.
+    \item A five-city empirical protocol on real Blinkit dark-store
+    coordinates extracted from a publicly committed KML snapshot,
+    rather than synthetic uniform-disk depots, so that the geometric
+    difficulty of the instances reflects the actual topology
+    operators face.
 \end{enumerate}
 
-\section{Thesis Organization}
+\section{Thesis Organisation}
 
-The remainder of this thesis is organized as follows. Chapter~2 reviews the literature on VRPTW optimization, safety-aware routing, and behavioural logistics. Chapter~3 presents the corrected SA-VRPTW formulation. Chapter~4 documents the data pipeline, including congestion and BASM calibration. Chapter~5 describes the exact and metaheuristic solution approaches. Chapter~6 defines the experimental protocol and the current validation status of the software pipeline. Chapter~7 concludes with contributions, limitations, and the immediate next empirical steps.
+The remainder of this thesis is organised as follows. Chapter~2
+reviews related work on VRPTW with soft time windows, safety-aware
+routing, multi-objective $\varepsilon$-constraint methods,
+quick-commerce dispatch, and crash-risk calibration. Chapter~3 states
+the SA-VRPTW formulation in full, including the multi-depot coupling
+and the MILP linearisation of the convex SLA penalty. Chapter~4
+documents the calibration and data pipeline---the BASM crash-risk
+chain, the BPR congestion model, the dark-store snapshot, and the
+OpenStreetMap cross-validation. Chapter~5 details the three solvers
+together with formal pseudocode. Chapter~6 defines the experimental
+protocol, the Pareto sweep, and the post-hoc Monte Carlo evaluators.
+Chapter~7 concludes with operator-facing implications, limitations,
+and directions for future work.

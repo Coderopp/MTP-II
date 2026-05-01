@@ -1,19 +1,7 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Socio-technical conceptual architecture integrating environmental data, platform operations, and behavioral dynamics into the SA-VRPTW routing engine.}}{9}{figure.3.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Algorithm scalability: CPU execution time (log scale) versus problem size $N$. The MILP solver exhibits exponential intractability past $N=20$, while the DRL agent maintains near-constant inference time.}}{21}{figure.6.1}%
-\contentsline {figure}{\numberline {6.2}{\ignorespaces Objective cost comparison across problem sizes. The GA and DRL agent achieve near-optimal quality with an 8--12\% optimality gap relative to the MILP solution.}}{22}{figure.6.2}%
-\contentsline {figure}{\numberline {6.3}{\ignorespaces GA convergence over 50 generations for three $\lambda _1$ weight configurations. Safety-priority configurations converge more slowly but reach substantially different equilibria, confirming the multi-objective nature of the problem.}}{23}{figure.6.3}%
-\contentsline {figure}{\numberline {6.4}{\ignorespaces Pareto efficiency versus route safety tradeoffs (New Delhi). The colour gradient indicates the efficiency weight $\lambda _1$. The clear trade-off curve demonstrates non-linear relationships between time and risk.}}{24}{figure.6.4}%
-\contentsline {figure}{\numberline {6.5}{\ignorespaces 3D Pareto surface (New Delhi) mapping the interaction between travel time, crash risk (neg-log survival), and congestion density. No single configuration dominates across all three objectives.}}{25}{figure.6.5}%
-\contentsline {figure}{\numberline {6.6}{\ignorespaces Cumulative rider stress accumulation ($S_{max}$): high-velocity routing versus SA-VRPTW regulated configuration in Bengaluru. The SA-VRPTW engine actively reroutes riders to maintain fatigue within operational bounds.}}{26}{figure.6.6}%
-\contentsline {figure}{\numberline {6.7}{\ignorespaces Soft Time Window overages versus platform SLA penalty. Colour indicates risk avoided. The exponential growth demonstrates that rigid 10-minute SLAs disproportionately penalize riders choosing safer routes.}}{27}{figure.6.7}%
-\contentsline {figure}{\numberline {6.8}{\ignorespaces Algorithm optimization quality by metropolitan topography ($N = 50$). ALNS consistently achieves the lowest penalty scores, while Mumbai exhibits the highest absolute costs due to dense arterial networks.}}{28}{figure.6.8}%
-\contentsline {figure}{\numberline {6.9}{\ignorespaces Urban routing baseline vulnerability by city ($N = 25$). Hyderabad and Bengaluru exhibit the highest baseline risk penalties, reflecting their radial road network patterns with concentrated arterial risk.}}{29}{figure.6.9}%
-\contentsline {figure}{\numberline {6.10}{\ignorespaces Road hierarchy utilization in Delhi across speed-only, balanced, and safety-only profiles.}}{30}{figure.6.10}%
-\contentsline {figure}{\numberline {6.11}{\ignorespaces Fleet-wide risk distribution across riders in Mumbai.}}{30}{figure.6.11}%
 \addvspace {10\p@ }

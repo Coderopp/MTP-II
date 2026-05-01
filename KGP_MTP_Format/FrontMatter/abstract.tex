@@ -3,12 +3,56 @@
     \Large \textbf{\uppercase{Abstract}}
 \end{center}
 
-\vspace{3\baselineskip}
+\vspace{2\baselineskip}
 
 \noindent
-Quick commerce routing in dense Indian cities is usually optimized for speed, even though the operational environment is shaped by congestion, crash risk, and narrow residential streets. This thesis reformulates that dispatch problem as the Safety-Aware Vehicle Routing Problem with Time Windows (SA-VRPTW). The proposed model minimizes a primary service-quality objective consisting of early-arrival waiting and an exponential soft-time-window lateness penalty, while treating route safety and residential-street exposure as epsilon-constraints rather than weighted-sum objectives. The street network is built from OpenStreetMap, travel times are inflated with a Bureau of Public Roads congestion model, and per-edge crash probabilities are attached using a reproducible Bengaluru and Indian-city Accident Surrogate Model (BASM). BASM combines aggregate road-safety statistics from the Ministry of Road Transport and Highways, directionality from Mohan et al.\ on arterial versus non-arterial safety, and graph-local OpenStreetMap proxies such as intersection centrality, signal density, and crossing density. The retained single-brand experiment design covers five cities---Bengaluru, Delhi, Gurugram, Mumbai, and Pune---because the committed Blinkit snapshot used in this study contains no Hyderabad placemarks. Three solution approaches are retained in the final architecture: an exact mixed-integer linear program with piecewise-linear soft-time-window approximation, a giant-tour genetic algorithm with depot-aware split decoding, and an adaptive large neighbourhood search. A post-hoc Monte Carlo evaluator quantifies expected crash events and behavioural compliance sensitivity without contaminating the optimization objective. The current branch delivers the corrected formulation, reproducible calibration, executable software pipeline, and thesis-ready methodology; full figure generation and the final five-city experiment grid are defined as the next empirical step.
+Quick-commerce platforms in India promise ten-minute delivery from
+neighbourhood ``dark stores'' to customers, putting persistent time
+pressure on a fleet of two-wheeler riders that must operate within an
+already hazardous urban traffic environment. Conventional vehicle
+routing formulations minimise travel time and treat safety as a
+post-hoc concern. This thesis proposes a Safety-Aware Vehicle Routing
+Problem with Soft Time Windows (SA-VRPTW) that explicitly bounds
+per-route crash exposure and fleet-wide use of vulnerable residential
+roads via $\varepsilon$-constraints, while minimising a convex
+soft-time-window penalty as the primary objective.
+
+The crash risk per road segment is calibrated through a documented
+public-source chain---the Ministry of Road Transport and Highways
+\citep{morth2022} aggregate fatality counts, the
+\citet{mohan2017} arterial-versus-non-arterial directionality, and a
+bounded OpenStreetMap structural proxy combining edge betweenness,
+traffic-signal density, and crossing density---without requiring
+access to the protected Integrated Road Accident Database microdata.
+Travel times are inflated by a Bureau of Public Roads
+\citep{bpr1964} congestion model with class-level capacities indexed
+into the Highway Capacity Manual \citep{hcm2010}.
+
+Three solvers are implemented behind a unified evaluation contract:
+a piecewise-linear MILP, a giant-tour genetic algorithm with
+Bellman--Ford optimal split decoding \citep{prins2004}, and an
+Adaptive Large Neighbourhood Search with Ropke--Pisinger adaptive
+operator weights \citep{ropke2006}. All three consume a typed
+\texttt{Instance} dataclass and report $F_1$ through identical
+evaluation code, eliminating the apples-to-pears bias common in VRP
+solver comparisons.
+
+The empirical study benchmarks five Indian cities (Bengaluru, Delhi,
+Gurugram, Mumbai, Pune) with real Blinkit dark-store coordinates
+extracted from a publicly committed KML snapshot, sweeping
+$N \in \{20, 50, 100, 200\}$ over multiple seeds. The protocol traces
+Pareto frontiers between $F_1$ delivery performance and per-route
+crash survival, quantifies the cost of the residential-road
+constraint, and verifies behavioural sensitivity through a Beta-prior
+compliance Monte Carlo. The contribution is a fully reproducible,
+calibration-honest framework that lets a quick-commerce operator dial
+the safety/efficiency trade-off explicitly rather than implicitly.
 
 \vspace{\baselineskip}
 
 \noindent
-\textbf{Keywords}: Vehicle Routing Problem, Time Windows, Quick Commerce, Road Safety, Soft Time Windows, Epsilon-Constraint Method, Genetic Algorithm, Adaptive Large Neighbourhood Search, OpenStreetMap, MoRTH
+\textbf{Keywords}: Safety-aware vehicle routing, soft time windows,
+$\varepsilon$-constraint multi-objective optimisation,
+quick-commerce, last-mile delivery, mixed-integer linear programming,
+genetic algorithms, adaptive large neighbourhood search, crash-risk
+calibration, OpenStreetMap.

@@ -14,44 +14,44 @@ A level-1 auxiliary file: ./Chapters/chapter6.aux
 A level-1 auxiliary file: ./Chapters/chapter7.aux
 The style file: agsm.bst
 Database file #1: references.bib
-You've used 21 entries,
+You've used 24 entries,
             2909 wiz_defined-function locations,
-            771 strings with 7757 characters,
-and the built_in function-call counts, 84914 in all, are:
-= -- 13985
-> -- 895
-< -- 1
-+ -- 6590
-- -- 266
-* -- 7245
-:= -- 17099
-add.period$ -- 22
-call.type$ -- 21
-change.case$ -- 296
-chr.to.int$ -- 21
-cite$ -- 21
-duplicate$ -- 320
-empty$ -- 653
-format.name$ -- 337
-if$ -- 15222
+            799 strings with 8726 characters,
+and the built_in function-call counts, 100048 in all, are:
+= -- 16383
+> -- 1174
+< -- 0
++ -- 7767
+- -- 350
+* -- 8647
+:= -- 20081
+add.period$ -- 26
+call.type$ -- 24
+change.case$ -- 335
+chr.to.int$ -- 24
+cite$ -- 24
+duplicate$ -- 373
+empty$ -- 792
+format.name$ -- 424
+if$ -- 17932
 int.to.chr$ -- 5
 int.to.str$ -- 0
-missing$ -- 18
-newline$ -- 67
-num.names$ -- 215
-pop$ -- 87
+missing$ -- 25
+newline$ -- 77
+num.names$ -- 254
+pop$ -- 80
 preamble$ -- 1
-purify$ -- 315
+purify$ -- 360
 quote$ -- 0
-skip$ -- 276
+skip$ -- 302
 stack$ -- 0
-substring$ -- 19777
-swap$ -- 51
-text.length$ -- 295
+substring$ -- 23248
+swap$ -- 57
+text.length$ -- 336
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 82
+type$ -- 88
 warning$ -- 0
-while$ -- 462
+while$ -- 536
 width$ -- 0
-write$ -- 269
+write$ -- 323

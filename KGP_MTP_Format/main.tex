@@ -8,6 +8,21 @@
 \usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{float}
+\usepackage{multirow}
+\usepackage{caption}
+
+% Lightweight pseudocode environment using only base packages (no algorithm.sty).
+% Matches the spirit of the ACCESS template's savpseudocode env so captions and
+% \ref{} cross-references work without TeXLive's algorithm package.
+\newcounter{pseudocounter}
+\newenvironment{pseudocode}[1]
+  {\par\addvspace{6pt}\refstepcounter{pseudocounter}\noindent
+   \begin{minipage}{\textwidth}\hrule\smallskip
+   \noindent\textbf{Algorithm \arabic{pseudocounter}.\ #1}
+   \par\smallskip\hrule\smallskip
+   \begin{tabbing}
+   xx\=xx\=xx\=xx\=xx\=xx\=\kill}
+  {\end{tabbing}\hrule\end{minipage}\par\addvspace{6pt}}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{tikz}

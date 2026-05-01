@@ -1,0 +1,33 @@
+\chapter{Experimental Protocol and Current Validation Status}
+
+This chapter records the empirical protocol attached to the corrected SA-VRPTW formulation and distinguishes it from claims that were present in earlier drafts but are not yet supported by measured artefacts on the current branch. The purpose is to keep the manuscript aligned with the state of the software and the committed data.
+
+\section{Primary Experiment Scope}
+
+The primary single-brand experiment set contains five cities: Bengaluru, Delhi, Gurugram, Mumbai, and Pune. Hyderabad is excluded because the committed Blinkit KML snapshot dated 2026-04-09 has zero Hyderabad placemarks after the city bounding-box filter is applied. This is not a modelling preference but a reproducibility decision. The city list is therefore fixed in configuration rather than left implicit.
+
+For each retained city, the intended grid is defined by customer counts
+\[
+N \in \{20, 50, 100, 200\},
+\]
+ten random seeds, and the epsilon-grid over $\bar{R}$ and $\bar{H}$ described in Chapter~3. Depot counts depend on problem size, with three depots for $N=20$, five depots for $N=50$ and $N=100$, and eight depots for $N=200$.
+
+\section{Measured Outputs}
+
+Each experimental run emits a structured JSON record containing the composed configuration, objective breakdown, feasibility report, wall-clock solve time, crash Monte Carlo summary, and behavioural sensitivity summary. This output contract is important because all downstream figures are generated from these JSON rows rather than from ad hoc notebooks or manually adjusted spreadsheets.
+
+The post-hoc crash evaluator reports expected crash events by repeatedly sampling Bernoulli outcomes on the realized route edges. The behavioural evaluator applies a beta-distributed compliance parameter and reports sensitivity across a small grid of $(\alpha,\beta)$ settings. These evaluators are diagnostic layers only; they do not modify the optimization objective or the solver comparison itself.
+
+\section{Validation State of the Branch}
+
+At the time of this thesis update, the refactored branch has reached a stable software baseline. The test suite is green, the synthetic end-to-end pipeline is runnable, and the previously blocking BASM placeholder has been replaced with a documented public-source calibration. The code now refuses to run production BASM attachment when the source is marked uncalibrated, which protects the experiment pipeline from silently using arbitrary constants.
+
+What has not yet been claimed on this branch is equally important. The complete five-city experiment grid, the final dominance-filtered Pareto figures, and the manuscript-ready statistical comparisons are still pending the remaining run-and-plot stage. Earlier claims about DRL performance, six-city empirical comparisons, or figure-level percentage gains are therefore intentionally omitted from this rewritten thesis text.
+
+\section{Planned Figure Families}
+
+Once the full five-city experiment grid is executed, the manuscript will report eight figure families driven directly by the emitted JSON rows: solver scalability, epsilon-swept Pareto frontiers, heuristic convergence traces, crash-survival box plots, behavioural sensitivity grids, route-level $S_{max}$ or route-risk trade-off views, residential-hop spatial overlays, and normalized cross-city comparisons. A key methodological rule is that every Pareto plot must be dominance-filtered before display and every figure must be paired with a committed CSV export to preserve reviewer reproducibility.
+
+\section{Statistical Comparison}
+
+The intended inferential analysis is paired across seeds and instances. Solver comparisons will use the Wilcoxon signed-rank test with Bonferroni correction for multiple comparisons. This is consistent with the experiment design because each solver is evaluated on the same instance realization under the same seed, budget pair, and city. The corresponding statistical outputs will be attached only after the full run matrix exists; they are not fabricated in advance in this manuscript.
