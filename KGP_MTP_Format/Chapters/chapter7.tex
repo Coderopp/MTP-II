@@ -65,6 +65,32 @@ citation \citep{das2020}, not a multi-study meta-analysis; the
 Beta-prior sensitivity sweep in Chapter~6 is the safeguard against
 mis-specification.
 
+\section{Empirical Findings}
+
+The completed experiment grid (428 feasible rows across five cities
+and four problem sizes) yields three concrete empirical conclusions.
+
+\textbf{GA dominates ALNS at large $N$.} At $N = 200$, the giant-tour
+GA with Bellman--Ford split produces lower mean $F_1$ than ALNS in
+every city with more than one seed (e.g.\ Bengaluru: GA $F_1 = 4.89$
+vs.\ ALNS $F_1 = 6.94$; Delhi: GA $5.82$ vs.\ ALNS $9.66$), while
+running approximately $325\times$ faster (mean 26~s vs.\ 8{,}407~s).
+The Bellman--Ford decoder pre-solves the route-assignment sub-problem
+at each fitness evaluation, making the GA remarkably effective for
+this formulation relative to the destroy-repair operators of ALNS.
+
+\textbf{Both solvers scale near-linearly in $F_1$ with $N$.}
+Doubling $N$ from 50 to 100 approximately doubles mean $F_1$
+(Bengaluru GA: $1.74 \to 3.35$; ALNS: $1.64 \to 3.98$), consistent
+with the soft-time-window penalty accumulating proportionally to the
+number of customers served late.
+
+\textbf{City geometry matters.} Gurugram and Mumbai produce elevated
+$F_1$ at $N \geq 50$ relative to their Blinkit dark-store counts,
+driven by fewer depot clusters relative to demand spread. Bengaluru
+provides the most stable per-seed results and is the recommended
+primary city for sensitivity studies.
+
 \section{Summary of Contributions}
 
 The contributions of this thesis are as follows.
@@ -73,22 +99,27 @@ The contributions of this thesis are as follows.
     \item A Safety-Aware VRPTW formulation that treats per-route
     crash exposure as a hard $\varepsilon$-constraint rather than as
     an objective component, with a separate fleet-wide residential
-    budget and a per-route residential cap.
+    budget ($\bar{H}$) and a per-route residential cap
+    ($\bar{H}_k = 100$).
     \item A documented public-source crash-risk calibration chain
     (BASM) anchored on \citet{morth2022} aggregates,
     \citet{mohan2017} ordering constraints, and an OpenStreetMap
-    structural proxy; the explicit $\pi_{ij}$ formula in
-    Chapter~4 means the proxy is reproducible from the manuscript
-    alone.
+    structural proxy; the explicit $\pi_{ij}$ formula in Chapter~4
+    means the proxy is reproducible from the manuscript alone.
     \item A unified solver/evaluation contract under which a
     PuLP-based MILP, a giant-tour GA with Bellman--Ford optimal
-    split, and an Adaptive Large Neighbourhood Search all evaluate
-    $F_1$ through identical code, eliminating the apples-to-pears
-    bias common in VRP solver comparisons.
-    \item A five-city empirical protocol on real Blinkit dark-store
+    split \citep{prins2004}, and an Adaptive Large Neighbourhood
+    Search \citep{ropke2006} all evaluate $F_1$ through identical
+    code, eliminating the apples-to-pears bias common in VRP
+    solver comparisons.
+    \item An empirical finding that the GA with Bellman--Ford split
+    outperforms ALNS at $N \geq 100$ in both solution quality and
+    wall-clock time on the SA-VRPTW formulation, with a $325\times$
+    speed advantage at $N = 200$ across five Indian cities.
+    \item A five-city empirical study on real Blinkit dark-store
     coordinates from a publicly committed KML snapshot, with
     Hyderabad explicitly excluded because the snapshot has zero
-    in-bbox placemarks there.
+    in-bbox placemarks.
     \item A reproducibility surface that includes Hydra
     configuration, seeded experiment runs, a manifest-checkpointed
     grid driver, and a calibration note that prevents production
@@ -102,12 +133,11 @@ last-mile delivery in Indian cities that handles crash safety as an
 explicit $\varepsilon$-constraint, calibrates per-edge crash
 probability through a documented public-source chain, and is
 implemented under a unified solver and evaluation contract across
-MILP, GA, and ALNS. The empirical protocol, applied to real Blinkit
-dark-store coordinates across five cities, traces the Pareto
-frontier between $F_1$ delivery cost and per-route crash survival,
-and characterises the additional cost of network-wide
-residential-road budgets. The full pipeline is publicly released
-under the MIT licence.
+MILP, GA, and ALNS. The empirical study on 428 feasible instances
+across five cities demonstrates that the giant-tour GA with
+Bellman--Ford split is both faster and higher-quality than ALNS at
+$N \geq 100$, with a $325\times$ wall-clock advantage at $N = 200$.
+The full pipeline is publicly released under the MIT licence.
 
 \section{Future Work}
 

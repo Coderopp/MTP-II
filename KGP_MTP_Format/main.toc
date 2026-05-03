@@ -43,28 +43,31 @@
 \contentsline {section}{\numberline {5.4}Crash-Survival Monte Carlo}{23}{section.5.4}%
 \contentsline {section}{\numberline {5.5}Behavioural Compliance Sensitivity}{23}{section.5.5}%
 \contentsline {section}{\numberline {5.6}Comparative Summary}{23}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Experimental Protocol and Validation Status}{24}{chapter.6}%
+\contentsline {chapter}{\numberline {6}Experimental Results and Validation}{24}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Setup}{24}{section.6.1}%
 \contentsline {section}{\numberline {6.2}Reproducibility}{25}{section.6.2}%
 \contentsline {section}{\numberline {6.3}Default-$\varepsilon $ Benchmark}{25}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Pareto Sweep: Risk vs.\ $F_1$}{26}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Solver Statistical Comparison}{26}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Behavioural Compliance Sweep}{26}{section.6.6}%
-\contentsline {section}{\numberline {6.7}Validation State of the Branch}{27}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Planned Figure Families}{27}{section.6.8}%
+\contentsline {section}{\numberline {6.4}Key Findings}{26}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Solver Comparison}{26}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Scalability}{26}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}City Variation}{26}{subsection.6.4.3}%
+\contentsline {section}{\numberline {6.5}Pareto Sweep: Risk vs.\ $F_1$}{26}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Statistical Comparison}{27}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Validation State}{27}{section.6.7}%
 \contentsline {chapter}{\numberline {7}Discussion, Limitations, and Conclusion}{28}{chapter.7}%
 \contentsline {section}{\numberline {7.1}Operator-Facing Implications}{28}{section.7.1}%
 \contentsline {section}{\numberline {7.2}Limitations}{28}{section.7.2}%
-\contentsline {paragraph}{Public-aggregate calibration.}{28}{section*.14}%
-\contentsline {paragraph}{Super-graph fixes the path.}{29}{section*.15}%
-\contentsline {paragraph}{KML cross-validation against OSM.}{29}{section*.16}%
+\contentsline {paragraph}{Public-aggregate calibration.}{28}{section*.15}%
+\contentsline {paragraph}{Super-graph fixes the path.}{29}{section*.16}%
+\contentsline {paragraph}{KML cross-validation against OSM.}{29}{section*.17}%
 \contentsline {section}{\numberline {7.3}Threats to Validity}{29}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Summary of Contributions}{29}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Conclusion}{30}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Future Work}{30}{section.7.6}%
-\contentsline {paragraph}{Behavioural meta-analysis.}{31}{section*.17}%
-\contentsline {paragraph}{Real-time congestion.}{31}{section*.18}%
-\contentsline {paragraph}{Stochastic demand.}{31}{section*.19}%
-\contentsline {paragraph}{Risk-aware path selection.}{31}{section*.20}%
-\contentsline {paragraph}{Direct crash microdata.}{31}{section*.21}%
-\contentsline {chapter}{Bibliography}{32}{section*.21}%
+\contentsline {section}{\numberline {7.4}Empirical Findings}{29}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Summary of Contributions}{30}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Conclusion}{31}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Future Work}{31}{section.7.7}%
+\contentsline {paragraph}{Behavioural meta-analysis.}{31}{section*.18}%
+\contentsline {paragraph}{Real-time congestion.}{31}{section*.19}%
+\contentsline {paragraph}{Stochastic demand.}{32}{section*.20}%
+\contentsline {paragraph}{Risk-aware path selection.}{32}{section*.21}%
+\contentsline {paragraph}{Direct crash microdata.}{32}{section*.22}%
+\contentsline {chapter}{Bibliography}{33}{section*.22}%

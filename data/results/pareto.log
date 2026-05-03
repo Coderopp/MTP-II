@@ -1,0 +1,172 @@
+nohup: ignoring input
+Results -> data/results/
+Cities: ['bengaluru', 'delhi', 'gurugram', 'mumbai', 'pune']
+N values: [20, 50, 100, 200]
+Seeds (3): [42, 101, 202]
+Solvers: ['ga', 'alns'] (MILP capped at N≤0)
+[1/120] bengaluru N=20 seed=42 solver=ga
+   ok  F1=0.000 feasible=True (296.6s)
+[2/120] bengaluru N=20 seed=42 solver=alns
+   ok  F1=0.000 feasible=True (348.6s)
+[3/120] bengaluru N=20 seed=101 solver=ga
+   ok  F1=0.000 feasible=True (300.1s)
+[4/120] bengaluru N=20 seed=101 solver=alns
+   ok  F1=0.000 feasible=True (333.2s)
+[5/120] bengaluru N=20 seed=202 solver=ga
+   ok  F1=0.299 feasible=True (309.3s)
+[6/120] bengaluru N=20 seed=202 solver=alns
+   ok  F1=0.299 feasible=True (337.8s)
+[7/120] bengaluru N=50 seed=42 solver=ga
+   ok  F1=5.501 feasible=True (448.1s)
+[8/120] bengaluru N=50 seed=42 solver=alns
+   ok  F1=3.039 feasible=True (659.6s)
+[9/120] bengaluru N=50 seed=101 solver=ga
+   ok  F1=1.060 feasible=True (451.0s)
+[10/120] bengaluru N=50 seed=101 solver=alns
+   ok  F1=1.060 feasible=True (659.2s)
+[11/120] bengaluru N=50 seed=202 solver=ga
+   ok  F1=1.077 feasible=True (445.2s)
+[12/120] bengaluru N=50 seed=202 solver=alns
+   ok  F1=1.077 feasible=True (673.0s)
+[13/120] bengaluru N=100 seed=42 solver=ga
+   ok  F1=0.278 feasible=True (630.0s)
+[14/120] bengaluru N=100 seed=42 solver=alns
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/alns.py", line 491, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: ALNS could not construct an initial solution (1 unplaceable customers)
+   FAIL ALNS could not construct an initial solution (1 unplaceable customers)
+[14/120] bengaluru N=100 seed=101 solver=ga
+   ok  F1=3.539 feasible=True (637.3s)
+[15/120] bengaluru N=100 seed=101 solver=alns
+   ok  F1=3.539 feasible=True (2150.7s)
+[16/120] bengaluru N=100 seed=202 solver=ga
+   ok  F1=5.390 feasible=True (649.3s)
+[17/120] bengaluru N=100 seed=202 solver=alns
+   ok  F1=7.250 feasible=True (2431.1s)
+[18/120] bengaluru N=200 seed=42 solver=ga
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/ga.py", line 202, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: GA produced no feasible incumbent — 4 violations: RESIDENTIAL_CAP_ROUTE: [route 79] Σ H_uv=122 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 80] Σ H_uv=104 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 86] Σ H_uv=114 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 87] Σ H_uv=114 > H̄_k=100
+   FAIL GA produced no feasible incumbent — 4 violations: RESIDENTIAL_CAP_ROUTE: [route 79] Σ H_uv=122 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 80] Σ H_uv=104 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 86] Σ H_uv=114 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 87] Σ H_uv=114 > H̄_k=100
+[18/120] bengaluru N=200 seed=42 solver=alns
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/alns.py", line 491, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: ALNS could not construct an initial solution (5 unplaceable customers)
+   FAIL ALNS could not construct an initial solution (5 unplaceable customers)
+[18/120] bengaluru N=200 seed=101 solver=ga
+   ok  F1=3.378 feasible=True (1289.6s)
+[19/120] bengaluru N=200 seed=101 solver=alns
+   ok  F1=3.421 feasible=True (9464.6s)
+[20/120] bengaluru N=200 seed=202 solver=ga
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/ga.py", line 202, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: GA produced no feasible incumbent — 2 violations: RESIDENTIAL_CAP_ROUTE: [route 30] Σ H_uv=118 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 40] Σ H_uv=118 > H̄_k=100
+   FAIL GA produced no feasible incumbent — 2 violations: RESIDENTIAL_CAP_ROUTE: [route 30] Σ H_uv=118 > H̄_k=100; RESIDENTIAL_CAP_ROUTE: [route 40] Σ H_uv=118 > H̄_k=100
+[20/120] bengaluru N=200 seed=202 solver=alns
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/alns.py", line 491, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: ALNS could not construct an initial solution (4 unplaceable customers)
+   FAIL ALNS could not construct an initial solution (4 unplaceable customers)
+== bengaluru done in 470.9min (cumulative ok=19, fail=5)
+[20/120] delhi N=20 seed=42 solver=ga
+   ok  F1=0.125 feasible=True (338.0s)
+[21/120] delhi N=20 seed=42 solver=alns
+   ok  F1=0.125 feasible=True (356.8s)
+[22/120] delhi N=20 seed=101 solver=ga
+   ok  F1=4.586 feasible=True (338.9s)
+[23/120] delhi N=20 seed=101 solver=alns
+   ok  F1=3.281 feasible=True (362.0s)
+[24/120] delhi N=20 seed=202 solver=ga
+   ok  F1=0.000 feasible=True (336.9s)
+[25/120] delhi N=20 seed=202 solver=alns
+   ok  F1=0.000 feasible=True (363.7s)
+[26/120] delhi N=50 seed=42 solver=ga
+   ok  F1=1.573 feasible=True (464.3s)
+[27/120] delhi N=50 seed=42 solver=alns
+   ok  F1=1.573 feasible=True (681.7s)
+[28/120] delhi N=50 seed=101 solver=ga
+   ok  F1=1.366 feasible=True (467.8s)
+[29/120] delhi N=50 seed=101 solver=alns
+   ok  F1=1.366 feasible=True (683.1s)
+[30/120] delhi N=50 seed=202 solver=ga
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/ga.py", line 202, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: GA produced no feasible incumbent — 1 violations: RESIDENTIAL_CAP_ROUTE: [route 42] Σ H_uv=102 > H̄_k=100
+   FAIL GA produced no feasible incumbent — 1 violations: RESIDENTIAL_CAP_ROUTE: [route 42] Σ H_uv=102 > H̄_k=100
+[30/120] delhi N=50 seed=202 solver=alns
+Traceback (most recent call last):
+  File "/home/admins/mtp-final/scripts/run_grid.py", line 144, in run_default_grid
+    row = run_one(cfg)
+          ^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/runner.py", line 62, in run_one
+    solution: Solution = solver.solve(instance)
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/admins/mtp-final/src/savrptw/solvers/alns.py", line 491, in solve
+    raise InfeasibleError(
+savrptw.solvers.base.InfeasibleError: ALNS could not construct an initial solution (1 unplaceable customers)
+   FAIL ALNS could not construct an initial solution (1 unplaceable customers)
+[30/120] delhi N=100 seed=42 solver=ga
+   ok  F1=5.184 feasible=True (653.5s)
+[31/120] delhi N=100 seed=42 solver=alns
+   ok  F1=5.658 feasible=True (2380.8s)
+[32/120] delhi N=100 seed=101 solver=ga
+   ok  F1=7.295 feasible=True (649.1s)
+[33/120] delhi N=100 seed=101 solver=alns
+   ok  F1=7.295 feasible=True (2216.7s)
+[34/120] delhi N=100 seed=202 solver=ga
+   ok  F1=7.331 feasible=True (643.6s)
+[35/120] delhi N=100 seed=202 solver=alns
+   ok  F1=7.331 feasible=True (1936.9s)
+[36/120] delhi N=200 seed=42 solver=ga
+   ok  F1=7.612 feasible=True (1245.8s)
+[37/120] delhi N=200 seed=42 solver=alns
+   ok  F1=16.112 feasible=True (9319.8s)
+[38/120] delhi N=200 seed=101 solver=ga
+   ok  F1=4.654 feasible=True (1259.6s)
+[39/120] delhi N=200 seed=101 solver=alns
+   ok  F1=9.109 feasible=True (9437.0s)
+[40/120] delhi N=200 seed=202 solver=ga
+   ok  F1=5.907 feasible=True (1214.4s)
+[41/120] delhi N=200 seed=202 solver=alns

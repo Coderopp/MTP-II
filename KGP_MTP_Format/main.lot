@@ -8,5 +8,6 @@
 \contentsline {table}{\numberline {5.1}{\ignorespaces Comparative roles of the three solution approaches.}}{23}{table.caption.11}%
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {6.1}{\ignorespaces Per-instance depot counts as a function of $N$.}}{24}{table.caption.12}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces Default-$\varepsilon $ benchmark: mean $F_1$ (lower is better), mean wall-clock seconds, and feasibility rate over the configured seed set. Empirical values are filled from \texttt {data/results/} after the iDRAC run.}}{25}{table.caption.13}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Default-$\varepsilon $ benchmark: mean $F_1$ (lower is better) and mean wall-clock time. GA and ALNS only; MILP deferred to a subsequent run. $^\dagger $single seed.}}{25}{table.caption.13}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces Mean wall-clock time (seconds) per solver and $N$. Averaged across all cities and seeds with data.}}{25}{table.caption.14}%
 \addvspace {10\p@ }

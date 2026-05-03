@@ -1,0 +1,512 @@
+{
+  "run_id": "daaa2cb9",
+  "config": {
+    "problem": {
+      "Q": 2,
+      "T_max": 35.0,
+      "H_cap_route": 100,
+      "beta_stw": 0.12,
+      "w_early": 1.0,
+      "eta_promise_min": 10.0
+    },
+    "paths": {
+      "raw_data": "data/raw",
+      "processed": "data/processed",
+      "results": "data/results",
+      "validation": "data/validation",
+      "osmnx_cache": "cache"
+    },
+    "repro": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ]
+    },
+    "city": {
+      "slug": "bengaluru",
+      "display_name": "Bengaluru",
+      "osm_place": "Bengaluru, Karnataka, India",
+      "center": [
+        12.9716,
+        77.5946
+      ],
+      "bbox": {
+        "lat_min": 12.834,
+        "lat_max": 13.144,
+        "lon_min": 77.46,
+        "lon_max": 77.784
+      },
+      "kml_folders": [
+        "Blinkit Bangalore Dark store"
+      ]
+    },
+    "risk": {
+      "source": "morth_mohan_osm_proxy_v1",
+      "source_detail": "morth2022_p8+p25+p89__mohan2017_pp63_71__osm_proxy",
+      "lambda_class": {
+        "motorway": 3.88e-08,
+        "trunk": 6.13e-08,
+        "primary": 6.11e-08,
+        "secondary": 8.65e-08,
+        "tertiary": 6.53e-09,
+        "residential": 2.61e-08,
+        "living_street": 1.04e-07,
+        "unclassified": 9.41e-09,
+        "service": 5.87e-08
+      },
+      "severity_multiplier": {
+        "motorway": 2.086,
+        "trunk": 2.086,
+        "primary": 2.086,
+        "secondary": 1.481,
+        "tertiary": 1.481,
+        "residential": 0.324,
+        "living_street": 0.324,
+        "unclassified": 0.324,
+        "service": 0.324
+      },
+      "proxy": {
+        "betweenness_k": 64,
+        "max_betweenness_reference": 0.1,
+        "max_signal_count": 6,
+        "max_crossing_count": 6,
+        "w_betweenness": 0.4,
+        "w_signal_density": 0.3,
+        "w_crossing_density": 0.3,
+        "min_weight": 0.5,
+        "max_weight": 2.0
+      },
+      "cross_validation": {
+        "annual_edge_traversals_reference": {
+          "motorway": 22896450,
+          "trunk": 14501085,
+          "primary": 14545980,
+          "secondary": 5050688,
+          "tertiary": 3232440,
+          "residential": 808110,
+          "living_street": 202028,
+          "unclassified": 2244750,
+          "service": 359160
+        },
+        "acceptance_relative_error_max": 0.25
+      },
+      "r_max_clip": 0.99
+    },
+    "congestion": {
+      "alpha": 0.15,
+      "beta": 4,
+      "capacity_per_lane": {
+        "motorway": 2000,
+        "trunk": 1900,
+        "primary": 1800,
+        "secondary": 1500,
+        "tertiary": 1200,
+        "residential": 600,
+        "living_street": 300,
+        "unclassified": 1000,
+        "service": 400
+      },
+      "default_lanes": {
+        "motorway": 3,
+        "trunk": 2,
+        "primary": 2,
+        "secondary": 1,
+        "tertiary": 1,
+        "residential": 1,
+        "living_street": 1,
+        "unclassified": 1,
+        "service": 1
+      },
+      "hour_profile": {
+        "peak_hours": [
+          8,
+          9,
+          10,
+          18,
+          19,
+          20
+        ],
+        "peak_multiplier": 1.0,
+        "offpeak_multiplier": 0.35
+      },
+      "vc_class_peak": {
+        "motorway": 0.85,
+        "trunk": 0.85,
+        "primary": 0.9,
+        "secondary": 0.75,
+        "tertiary": 0.6,
+        "residential": 0.3,
+        "living_street": 0.15,
+        "unclassified": 0.5,
+        "service": 0.2
+      },
+      "dispatch_hour": 19
+    },
+    "solver": {
+      "name": "ga",
+      "pop_size": 100,
+      "generations": 200,
+      "cx_prob": 0.85,
+      "mut_prob": 0.2,
+      "elite_size": 4,
+      "tournament_k": 5,
+      "split": "bellman_ford",
+      "penalties": {
+        "tw_late": 50.0,
+        "tw_early": 5.0,
+        "capacity": 1000.0,
+        "risk_budget": 1000.0,
+        "residential_route_cap": 500.0
+      }
+    },
+    "experiment": {
+      "name": "default",
+      "brand": "Blinkit",
+      "cities": [
+        "bengaluru",
+        "delhi",
+        "gurugram",
+        "mumbai",
+        "pune"
+      ],
+      "N_values": [
+        20,
+        50,
+        100,
+        200
+      ],
+      "depot_count_by_N": {
+        "20": 3,
+        "50": 5,
+        "100": 5,
+        "200": 8
+      },
+      "R_bar_values": [
+        0.05,
+        0.1,
+        0.2,
+        0.4,
+        0.8,
+        1.6,
+        Infinity
+      ],
+      "H_bar_values": [
+        0,
+        4,
+        8,
+        16,
+        32,
+        1000000
+      ],
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ]
+    },
+    "instance": {
+      "N": 20,
+      "n_depots": 3,
+      "R_bar": 10000.0,
+      "H_bar": 1000000,
+      "seed": 505,
+      "delivery_radius_min": 10.0
+    }
+  },
+  "objective_breakdown": {
+    "early_wait": 0.0,
+    "late_stw_exp": 0.0,
+    "F1": 0.0
+  },
+  "instance_meta": {
+    "n_stores_raw": 113,
+    "n_depots": 3,
+    "city_slug": "bengaluru"
+  },
+  "N": 20,
+  "n_depots": 3,
+  "Q": 2,
+  "T_max": 35.0,
+  "R_bar": 10000.0,
+  "H_bar": 1000000,
+  "solver": "ga",
+  "F1": 0.0,
+  "n_routes": 19,
+  "feasible": true,
+  "violations": [],
+  "solve_wallclock_s": 2.539982180000152,
+  "instance_build_s": 324.836524852999,
+  "solution_run_meta": {
+    "wall_clock_s": 2.5394013179993635,
+    "generations": 200,
+    "pop_size": 100,
+    "seed": 467,
+    "surrogate": 0.0
+  },
+  "crash_mc": {
+    "n_trips": 10000,
+    "fleet_R": 7.398108017714698e-06,
+    "fleet_p_crash": 7.398080651754846e-06,
+    "fleet_expected_crashes": 0.07398080651754846,
+    "fleet_ci95": [
+      0.0013723422046478919,
+      3.9866572293902247
+    ],
+    "per_route": [
+      {
+        "rider_id": 0,
+        "depot_id": -1,
+        "R_route": 2.2811698886222113e-07,
+        "p_crash": 2.2811696287483585e-07
+      },
+      {
+        "rider_id": 1,
+        "depot_id": -1,
+        "R_route": 6.912549607947418e-07,
+        "p_crash": 6.912547219073417e-07
+      },
+      {
+        "rider_id": 2,
+        "depot_id": -1,
+        "R_route": 5.703093814534074e-07,
+        "p_crash": 5.703092188502623e-07
+      },
+      {
+        "rider_id": 3,
+        "depot_id": -1,
+        "R_route": 6.240252509502636e-07,
+        "p_crash": 6.240250562949967e-07
+      },
+      {
+        "rider_id": 4,
+        "depot_id": -1,
+        "R_route": 8.11077519960475e-07,
+        "p_crash": 8.110771910763148e-07
+      },
+      {
+        "rider_id": 5,
+        "depot_id": -1,
+        "R_route": 4.2184462402108087e-07,
+        "p_crash": 4.218445350812061e-07
+      },
+      {
+        "rider_id": 6,
+        "depot_id": -1,
+        "R_route": 1.0185593769386011e-07,
+        "p_crash": 1.0185593246614388e-07
+      },
+      {
+        "rider_id": 7,
+        "depot_id": -1,
+        "R_route": 5.865579585886626e-07,
+        "p_crash": 5.865577865638016e-07
+      },
+      {
+        "rider_id": 8,
+        "depot_id": -1,
+        "R_route": 9.309398053150429e-08,
+        "p_crash": 9.309397619450266e-08
+      },
+      {
+        "rider_id": 9,
+        "depot_id": -1,
+        "R_route": 1.0116753738762508e-06,
+        "p_crash": 1.0116748621058491e-06
+      },
+      {
+        "rider_id": 10,
+        "depot_id": -3,
+        "R_route": 4.061750204751734e-07,
+        "p_crash": 4.0617493801686777e-07
+      },
+      {
+        "rider_id": 11,
+        "depot_id": -3,
+        "R_route": 1.498645716394094e-07,
+        "p_crash": 1.4986456042809237e-07
+      },
+      {
+        "rider_id": 12,
+        "depot_id": -3,
+        "R_route": 5.020058405467353e-07,
+        "p_crash": 5.020057145532775e-07
+      },
+      {
+        "rider_id": 13,
+        "depot_id": -3,
+        "R_route": 6.879998315218396e-07,
+        "p_crash": 6.879995948505524e-07
+      },
+      {
+        "rider_id": 14,
+        "depot_id": -3,
+        "R_route": 4.441179547327038e-08,
+        "p_crash": 4.4411794464238596e-08
+      },
+      {
+        "rider_id": 15,
+        "depot_id": -3,
+        "R_route": 5.5165655740077414e-08,
+        "p_crash": 5.516565426688658e-08
+      },
+      {
+        "rider_id": 16,
+        "depot_id": -3,
+        "R_route": 9.557618920611142e-09,
+        "p_crash": 9.557618918520916e-09
+      },
+      {
+        "rider_id": 17,
+        "depot_id": -3,
+        "R_route": 1.555518294269558e-07,
+        "p_crash": 1.5555181731574663e-07
+      },
+      {
+        "rider_id": 18,
+        "depot_id": -3,
+        "R_route": 2.4756387723815613e-07,
+        "p_crash": 2.47563846644816e-07
+      }
+    ],
+    "seed": null,
+    "mode": "analytic"
+  },
+  "behavioral_mc": {
+    "base_fleet_R": 7.398108017714696e-06,
+    "k_c": 2.0,
+    "points": [
+      {
+        "alpha": 3.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.7572656436711754,
+        "fleet_expected_crashes": 0.05487314621508421,
+        "fleet_ci95": [
+          0.0007621815191122248,
+          3.9504243332466875
+        ],
+        "seed": 505
+      },
+      {
+        "alpha": 3.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.5992908915465288,
+        "fleet_expected_crashes": 0.06653480512579524,
+        "fleet_ci95": [
+          0.0011140854370029853,
+          3.973394804042485
+        ],
+        "seed": 506
+      },
+      {
+        "alpha": 3.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.5036818039851747,
+        "fleet_expected_crashes": 0.07392314248853005,
+        "fleet_ci95": [
+          0.0013702424459882008,
+          3.9879147242455137
+        ],
+        "seed": 507
+      },
+      {
+        "alpha": 5.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.835893132518068,
+        "fleet_expected_crashes": 0.04913544012954407,
+        "fleet_ci95": [
+          0.0006128797584739701,
+          3.93909868685899
+        ],
+        "seed": 1505
+      },
+      {
+        "alpha": 5.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.7207697486646548,
+        "fleet_expected_crashes": 0.058542517596715804,
+        "fleet_ci95": [
+          0.0008659381120809974,
+          3.957659022665674
+        ],
+        "seed": 1506
+      },
+      {
+        "alpha": 5.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.6155010137324335,
+        "fleet_expected_crashes": 0.06589776528272973,
+        "fleet_ci95": [
+          0.0010931986426829855,
+          3.972141662669691
+        ],
+        "seed": 1507
+      },
+      {
+        "alpha": 8.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.8892527519997905,
+        "fleet_expected_crashes": 0.04514147462452156,
+        "fleet_ci95": [
+          0.000518332167229446,
+          3.931205626442242
+        ],
+        "seed": 2505
+      },
+      {
+        "alpha": 8.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.7931009732215418,
+        "fleet_expected_crashes": 0.052467281219104045,
+        "fleet_ci95": [
+          0.0006976506327390818,
+          3.9456773287094626
+        ],
+        "seed": 2506
+      },
+      {
+        "alpha": 8.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 95000,
+        "mean_compliance": 0.7273109946079881,
+        "fleet_expected_crashes": 0.05746988843611245,
+        "fleet_ci95": [
+          0.0008349430111111431,
+          3.9555448461916596
+        ],
+        "seed": 2507
+      }
+    ]
+  }
+}
