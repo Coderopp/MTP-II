@@ -98,15 +98,64 @@ ALNS &  30.6 & 213.0 & 1669.0 & 8407.0 \\
 \end{tabular}
 \end{table}
 
+\section{Figures}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../figures/fig_f1_vs_N.pdf}
+\caption{Mean $F_1$ vs instance size $N$ for GA and ALNS across five
+cities. Shaded band shows min–max range across seeds. GA and ALNS are
+competitive at $N \leq 50$; GA pulls ahead at $N \geq 100$.}
+\label{fig:f1-vs-N}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/fig_wallclock.pdf}
+\caption{Mean wall-clock time (log scale) averaged across all cities
+and seeds. GA runs in 3–26~s regardless of $N$; ALNS reaches over
+8{,}000~s at $N=200$.}
+\label{fig:wallclock}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/fig_f1_N200_cities.pdf}
+\caption{Mean $F_1$ at $N=200$ broken down by city. GA consistently
+outperforms ALNS; Gurugram and Mumbai show elevated values due to fewer
+depot clusters relative to demand spread.}
+\label{fig:f1-N200-cities}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../figures/fig_heatmap_f1.pdf}
+\caption{Mean $F_1$ heatmap across all (city, $N$) cells for GA
+(left) and ALNS (right). Darker colour indicates higher lateness cost.
+Grey dashes indicate cells with no data (Pune at $N \geq 50$).}
+\label{fig:heatmap}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/fig_speedup.pdf}
+\caption{Speed-up ratio (ALNS wall-time / GA wall-time, log scale).
+The ratio grows with $N$, reaching $200\times$–$400\times$ at $N=200$
+across all five cities. The dashed line marks equal speed.}
+\label{fig:speedup}
+\end{figure}
+
 \section{Key Findings}
 
 \subsection{Solver Comparison}
 
 The most striking result is that the GA dominates the ALNS on both
-solution quality and wall-clock time at $N \geq 100$. At $N = 200$
+solution quality and wall-clock time at $N \geq 100$
+(Figures~\ref{fig:f1-vs-N} and~\ref{fig:speedup}). At $N = 200$
 the GA is approximately $325\times$ faster than ALNS (mean 26~s
-vs.\ 8{,}407~s) and produces consistently lower mean $F_1$ across
-all five cities. This outcome is consistent with the algorithmic
+vs.\ 8{,}407~s; Figure~\ref{fig:wallclock}) and produces consistently
+lower mean $F_1$ across all five cities
+(Figure~\ref{fig:f1-N200-cities}). This outcome is consistent with the algorithmic
 design: the Bellman--Ford split decoder provides a high-quality
 deterministic partition at each GA evaluation, effectively
 pre-solving the route-assignment sub-problem and leaving the GA to
@@ -122,8 +171,8 @@ operators are most effective.
 
 \subsection{Scalability}
 
-$F_1$ grows roughly linearly with $N$: doubling $N$ from 50 to 100
-roughly doubles the mean $F_1$ in Bengaluru (GA: 1.74 $\rightarrow$
+$F_1$ grows roughly linearly with $N$ (Figure~\ref{fig:heatmap}):
+doubling $N$ from 50 to 100 roughly doubles the mean $F_1$ in Bengaluru (GA: 1.74 $\rightarrow$
 3.35; ALNS: 1.64 $\rightarrow$ 3.98). Wall-clock time for the GA
 grows near-linearly with $N$ as expected for the $O(n^2)$ BF decoder,
 while ALNS wall-clock grows super-linearly (dominated by the 5{,}000

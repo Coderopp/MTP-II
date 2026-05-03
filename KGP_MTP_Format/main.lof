@@ -4,4 +4,9 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Mean $F_1$ vs instance size $N$ for GA and ALNS across five cities. Shaded band shows min–max range across seeds. GA and ALNS are competitive at $N \leq 50$; GA pulls ahead at $N \geq 100$.}}{26}{figure.caption.15}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Mean wall-clock time (log scale) averaged across all cities and seeds. GA runs in 3–26~s regardless of $N$; ALNS reaches over 8{,}000~s at $N=200$.}}{27}{figure.caption.16}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Mean $F_1$ at $N=200$ broken down by city. GA consistently outperforms ALNS; Gurugram and Mumbai show elevated values due to fewer depot clusters relative to demand spread.}}{28}{figure.caption.17}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Mean $F_1$ heatmap across all (city, $N$) cells for GA (left) and ALNS (right). Darker colour indicates higher lateness cost. Grey dashes indicate cells with no data (Pune at $N \geq 50$).}}{28}{figure.caption.18}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces Speed-up ratio (ALNS wall-time / GA wall-time, log scale). The ratio grows with $N$, reaching $200\times $–$400\times $ at $N=200$ across all five cities. The dashed line marks equal speed.}}{29}{figure.caption.19}%
 \addvspace {10\p@ }
