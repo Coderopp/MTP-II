@@ -1,0 +1,974 @@
+{
+  "run_id": "98d3d33b",
+  "config": {
+    "problem": {
+      "Q": 2,
+      "T_max": 35.0,
+      "H_cap_route": 100,
+      "beta_stw": 0.12,
+      "w_early": 1.0,
+      "eta_promise_min": 10.0
+    },
+    "paths": {
+      "raw_data": "data/raw",
+      "processed": "data/processed",
+      "results": "data/results",
+      "validation": "data/validation",
+      "osmnx_cache": "cache"
+    },
+    "repro": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ]
+    },
+    "city": {
+      "slug": "bengaluru",
+      "display_name": "Bengaluru",
+      "osm_place": "Bengaluru, Karnataka, India",
+      "center": [
+        12.9716,
+        77.5946
+      ],
+      "bbox": {
+        "lat_min": 12.834,
+        "lat_max": 13.144,
+        "lon_min": 77.46,
+        "lon_max": 77.784
+      },
+      "kml_folders": [
+        "Blinkit Bangalore Dark store"
+      ]
+    },
+    "risk": {
+      "source": "morth_mohan_osm_proxy_v1",
+      "source_detail": "morth2022_p8+p25+p89__mohan2017_pp63_71__osm_proxy",
+      "lambda_class": {
+        "motorway": 3.88e-08,
+        "trunk": 6.13e-08,
+        "primary": 6.11e-08,
+        "secondary": 8.65e-08,
+        "tertiary": 6.53e-09,
+        "residential": 2.61e-08,
+        "living_street": 1.04e-07,
+        "unclassified": 9.41e-09,
+        "service": 5.87e-08
+      },
+      "severity_multiplier": {
+        "motorway": 2.086,
+        "trunk": 2.086,
+        "primary": 2.086,
+        "secondary": 1.481,
+        "tertiary": 1.481,
+        "residential": 0.324,
+        "living_street": 0.324,
+        "unclassified": 0.324,
+        "service": 0.324
+      },
+      "proxy": {
+        "betweenness_k": 64,
+        "max_betweenness_reference": 0.1,
+        "max_signal_count": 6,
+        "max_crossing_count": 6,
+        "w_betweenness": 0.4,
+        "w_signal_density": 0.3,
+        "w_crossing_density": 0.3,
+        "min_weight": 0.5,
+        "max_weight": 2.0
+      },
+      "cross_validation": {
+        "annual_edge_traversals_reference": {
+          "motorway": 22896450,
+          "trunk": 14501085,
+          "primary": 14545980,
+          "secondary": 5050688,
+          "tertiary": 3232440,
+          "residential": 808110,
+          "living_street": 202028,
+          "unclassified": 2244750,
+          "service": 359160
+        },
+        "acceptance_relative_error_max": 0.25
+      },
+      "r_max_clip": 0.99
+    },
+    "congestion": {
+      "alpha": 0.15,
+      "beta": 4,
+      "capacity_per_lane": {
+        "motorway": 2000,
+        "trunk": 1900,
+        "primary": 1800,
+        "secondary": 1500,
+        "tertiary": 1200,
+        "residential": 600,
+        "living_street": 300,
+        "unclassified": 1000,
+        "service": 400
+      },
+      "default_lanes": {
+        "motorway": 3,
+        "trunk": 2,
+        "primary": 2,
+        "secondary": 1,
+        "tertiary": 1,
+        "residential": 1,
+        "living_street": 1,
+        "unclassified": 1,
+        "service": 1
+      },
+      "hour_profile": {
+        "peak_hours": [
+          8,
+          9,
+          10,
+          18,
+          19,
+          20
+        ],
+        "peak_multiplier": 1.0,
+        "offpeak_multiplier": 0.35
+      },
+      "vc_class_peak": {
+        "motorway": 0.85,
+        "trunk": 0.85,
+        "primary": 0.9,
+        "secondary": 0.75,
+        "tertiary": 0.6,
+        "residential": 0.3,
+        "living_street": 0.15,
+        "unclassified": 0.5,
+        "service": 0.2
+      },
+      "dispatch_hour": 19
+    },
+    "solver": {
+      "name": "ga",
+      "pop_size": 100,
+      "generations": 200,
+      "cx_prob": 0.85,
+      "mut_prob": 0.2,
+      "elite_size": 4,
+      "tournament_k": 5,
+      "split": "bellman_ford",
+      "penalties": {
+        "tw_late": 50.0,
+        "tw_early": 5.0,
+        "capacity": 1000.0,
+        "risk_budget": 1000.0,
+        "residential_route_cap": 500.0
+      }
+    },
+    "experiment": {
+      "name": "default",
+      "brand": "Blinkit",
+      "cities": [
+        "bengaluru",
+        "delhi",
+        "gurugram",
+        "mumbai",
+        "pune"
+      ],
+      "N_values": [
+        20,
+        50,
+        100,
+        200
+      ],
+      "depot_count_by_N": {
+        "20": 3,
+        "50": 5,
+        "100": 5,
+        "200": 8
+      },
+      "R_bar_values": [
+        0.05,
+        0.1,
+        0.2,
+        0.4,
+        0.8,
+        1.6,
+        Infinity
+      ],
+      "H_bar_values": [
+        0,
+        4,
+        8,
+        16,
+        32,
+        1000000
+      ],
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ]
+    },
+    "instance": {
+      "N": 100,
+      "n_depots": 5,
+      "R_bar": 10000.0,
+      "H_bar": 1000000,
+      "seed": 505,
+      "delivery_radius_min": 10.0
+    }
+  },
+  "objective_breakdown": {
+    "early_wait": 1.6274148319596873,
+    "late_stw_exp": 0.010412069246709788,
+    "F1": 1.637826901206397
+  },
+  "instance_meta": {
+    "n_stores_raw": 113,
+    "n_depots": 5,
+    "city_slug": "bengaluru"
+  },
+  "N": 100,
+  "n_depots": 5,
+  "Q": 2,
+  "T_max": 35.0,
+  "R_bar": 10000.0,
+  "H_bar": 1000000,
+  "solver": "ga",
+  "F1": 1.637826901206397,
+  "n_routes": 96,
+  "feasible": true,
+  "violations": [],
+  "solve_wallclock_s": 12.510586934004095,
+  "instance_build_s": 634.3917101360057,
+  "solution_run_meta": {
+    "wall_clock_s": 12.509810383002332,
+    "generations": 200,
+    "pop_size": 100,
+    "seed": 467,
+    "surrogate": 14.090833144888311
+  },
+  "crash_mc": {
+    "n_trips": 10000,
+    "fleet_R": 5.064737397112296e-05,
+    "fleet_p_crash": 5.064609141458565e-05,
+    "fleet_expected_crashes": 0.5064609141458565,
+    "fleet_ci95": [
+      0.05342608601292413,
+      4.799231545323134
+    ],
+    "per_route": [
+      {
+        "rider_id": 0,
+        "depot_id": -1,
+        "R_route": 2.7984023638968593e-07,
+        "p_crash": 2.798401972370357e-07
+      },
+      {
+        "rider_id": 1,
+        "depot_id": -1,
+        "R_route": 8.64950952701973e-07,
+        "p_crash": 8.649505786051392e-07
+      },
+      {
+        "rider_id": 2,
+        "depot_id": -1,
+        "R_route": 1.4929845587078492e-07,
+        "p_crash": 1.4929844471822662e-07
+      },
+      {
+        "rider_id": 3,
+        "depot_id": -1,
+        "R_route": 7.022790019545026e-07,
+        "p_crash": 7.022787553712107e-07
+      },
+      {
+        "rider_id": 4,
+        "depot_id": -1,
+        "R_route": 3.351986208618817e-07,
+        "p_crash": 3.351985646826705e-07
+      },
+      {
+        "rider_id": 5,
+        "depot_id": -1,
+        "R_route": 2.290562326157416e-07,
+        "p_crash": 2.2905620633562052e-07
+      },
+      {
+        "rider_id": 6,
+        "depot_id": -1,
+        "R_route": 3.490719640860629e-07,
+        "p_crash": 3.490719031606915e-07
+      },
+      {
+        "rider_id": 7,
+        "depot_id": -1,
+        "R_route": 7.335627742504507e-07,
+        "p_crash": 7.335625051840822e-07
+      },
+      {
+        "rider_id": 8,
+        "depot_id": -1,
+        "R_route": 4.145303186314449e-07,
+        "p_crash": 4.145302326952205e-07
+      },
+      {
+        "rider_id": 9,
+        "depot_id": -1,
+        "R_route": 2.7822931919010245e-07,
+        "p_crash": 2.7822928050369455e-07
+      },
+      {
+        "rider_id": 10,
+        "depot_id": -1,
+        "R_route": 8.559514201274921e-07,
+        "p_crash": 8.559510538130866e-07
+      },
+      {
+        "rider_id": 11,
+        "depot_id": -1,
+        "R_route": 7.192235577672298e-07,
+        "p_crash": 7.192232991393155e-07
+      },
+      {
+        "rider_id": 12,
+        "depot_id": -1,
+        "R_route": 7.276305565412086e-07,
+        "p_crash": 7.276302917968991e-07
+      },
+      {
+        "rider_id": 13,
+        "depot_id": -1,
+        "R_route": 3.4914349364154247e-07,
+        "p_crash": 3.4914343272074433e-07
+      },
+      {
+        "rider_id": 14,
+        "depot_id": -1,
+        "R_route": 3.486593853376756e-07,
+        "p_crash": 3.4865932452277093e-07
+      },
+      {
+        "rider_id": 15,
+        "depot_id": -1,
+        "R_route": 8.072190552854479e-07,
+        "p_crash": 8.072187295260491e-07
+      },
+      {
+        "rider_id": 16,
+        "depot_id": -1,
+        "R_route": 3.5799220526349225e-07,
+        "p_crash": 3.5799214115339595e-07
+      },
+      {
+        "rider_id": 17,
+        "depot_id": -1,
+        "R_route": 1.064668671689181e-07,
+        "p_crash": 1.0646686154913709e-07
+      },
+      {
+        "rider_id": 18,
+        "depot_id": -1,
+        "R_route": 4.4610991340872655e-07,
+        "p_crash": 4.4610981386750126e-07
+      },
+      {
+        "rider_id": 19,
+        "depot_id": -1,
+        "R_route": 5.297310288547118e-07,
+        "p_crash": 5.297308885987562e-07
+      },
+      {
+        "rider_id": 20,
+        "depot_id": -2,
+        "R_route": 6.317308443690375e-07,
+        "p_crash": 6.317306447956028e-07
+      },
+      {
+        "rider_id": 21,
+        "depot_id": -2,
+        "R_route": 6.071548824986019e-07,
+        "p_crash": 6.071546981845088e-07
+      },
+      {
+        "rider_id": 22,
+        "depot_id": -2,
+        "R_route": 7.078209856732799e-07,
+        "p_crash": 7.078207351352006e-07
+      },
+      {
+        "rider_id": 23,
+        "depot_id": -2,
+        "R_route": 7.02522182811018e-07,
+        "p_crash": 7.025219360690116e-07
+      },
+      {
+        "rider_id": 24,
+        "depot_id": -2,
+        "R_route": 3.316819753300992e-08,
+        "p_crash": 3.316819696674855e-08
+      },
+      {
+        "rider_id": 25,
+        "depot_id": -2,
+        "R_route": 4.793204335239922e-08,
+        "p_crash": 4.793204222419689e-08
+      },
+      {
+        "rider_id": 26,
+        "depot_id": -2,
+        "R_route": 1.4562047811029323e-06,
+        "p_crash": 1.4562037208287748e-06
+      },
+      {
+        "rider_id": 27,
+        "depot_id": -2,
+        "R_route": 7.355275071572403e-07,
+        "p_crash": 7.35527236672695e-07
+      },
+      {
+        "rider_id": 28,
+        "depot_id": -2,
+        "R_route": 4.922116268166494e-07,
+        "p_crash": 4.92211505664919e-07
+      },
+      {
+        "rider_id": 29,
+        "depot_id": -2,
+        "R_route": 4.16929676421406e-07,
+        "p_crash": 4.169295895195546e-07
+      },
+      {
+        "rider_id": 30,
+        "depot_id": -2,
+        "R_route": 1.42546386586194e-07,
+        "p_crash": 1.4254637648036805e-07
+      },
+      {
+        "rider_id": 31,
+        "depot_id": -2,
+        "R_route": 1.0654571233426344e-06,
+        "p_crash": 1.0654565557599582e-06
+      },
+      {
+        "rider_id": 32,
+        "depot_id": -2,
+        "R_route": 6.104804741039244e-07,
+        "p_crash": 6.10480287766002e-07
+      },
+      {
+        "rider_id": 33,
+        "depot_id": -2,
+        "R_route": 2.0631927593446144e-07,
+        "p_crash": 2.0631925468084233e-07
+      },
+      {
+        "rider_id": 34,
+        "depot_id": -2,
+        "R_route": 6.659532971360891e-07,
+        "p_crash": 6.659530753516663e-07
+      },
+      {
+        "rider_id": 35,
+        "depot_id": -2,
+        "R_route": 4.7620432709046133e-07,
+        "p_crash": 4.7620421372851496e-07
+      },
+      {
+        "rider_id": 36,
+        "depot_id": -2,
+        "R_route": 1.1695939536625546e-06,
+        "p_crash": 1.1695932696786926e-06
+      },
+      {
+        "rider_id": 37,
+        "depot_id": -2,
+        "R_route": 5.212181939042871e-07,
+        "p_crash": 5.212180580471681e-07
+      },
+      {
+        "rider_id": 38,
+        "depot_id": -2,
+        "R_route": 3.0494327135640974e-07,
+        "p_crash": 3.049432248936057e-07
+      },
+      {
+        "rider_id": 39,
+        "depot_id": -2,
+        "R_route": 4.6817251176631414e-07,
+        "p_crash": 4.681724021793343e-07
+      },
+      {
+        "rider_id": 40,
+        "depot_id": -2,
+        "R_route": 6.016752370891682e-07,
+        "p_crash": 6.01675056111084e-07
+      },
+      {
+        "rider_id": 41,
+        "depot_id": -3,
+        "R_route": 2.4648164604443594e-07,
+        "p_crash": 2.4648161567331073e-07
+      },
+      {
+        "rider_id": 42,
+        "depot_id": -3,
+        "R_route": 7.48954812796116e-07,
+        "p_crash": 7.489545322814095e-07
+      },
+      {
+        "rider_id": 43,
+        "depot_id": -3,
+        "R_route": 6.424901167405167e-07,
+        "p_crash": 6.4248991038518e-07
+      },
+      {
+        "rider_id": 44,
+        "depot_id": -3,
+        "R_route": 9.230458657558743e-07,
+        "p_crash": 9.230454397490817e-07
+      },
+      {
+        "rider_id": 45,
+        "depot_id": -3,
+        "R_route": 8.393938848083265e-07,
+        "p_crash": 8.393935325701207e-07
+      },
+      {
+        "rider_id": 46,
+        "depot_id": -3,
+        "R_route": 1.1678454726728024e-06,
+        "p_crash": 1.1678447907614853e-06
+      },
+      {
+        "rider_id": 47,
+        "depot_id": -3,
+        "R_route": 1.0759245237585672e-06,
+        "p_crash": 1.0759239449376068e-06
+      },
+      {
+        "rider_id": 48,
+        "depot_id": -3,
+        "R_route": 2.663985636792448e-07,
+        "p_crash": 2.663985282369552e-07
+      },
+      {
+        "rider_id": 49,
+        "depot_id": -3,
+        "R_route": 1.1367900245741594e-07,
+        "p_crash": 1.136789959943485e-07
+      },
+      {
+        "rider_id": 50,
+        "depot_id": -3,
+        "R_route": 4.897181670435019e-07,
+        "p_crash": 4.897180471141738e-07
+      },
+      {
+        "rider_id": 51,
+        "depot_id": -3,
+        "R_route": 2.59853602641283e-07,
+        "p_crash": 2.598535688846937e-07
+      },
+      {
+        "rider_id": 52,
+        "depot_id": -3,
+        "R_route": 1.47756888093062e-07,
+        "p_crash": 1.4775687717794028e-07
+      },
+      {
+        "rider_id": 53,
+        "depot_id": -3,
+        "R_route": 6.839136316715052e-07,
+        "p_crash": 6.839133978031597e-07
+      },
+      {
+        "rider_id": 54,
+        "depot_id": -3,
+        "R_route": 6.085194377831333e-07,
+        "p_crash": 6.085192526539274e-07
+      },
+      {
+        "rider_id": 55,
+        "depot_id": -3,
+        "R_route": 8.996244017289182e-07,
+        "p_crash": 8.996239970748832e-07
+      },
+      {
+        "rider_id": 56,
+        "depot_id": -3,
+        "R_route": 4.4581687899707e-07,
+        "p_crash": 4.4581677960398025e-07
+      },
+      {
+        "rider_id": 57,
+        "depot_id": -3,
+        "R_route": 9.448785387942446e-07,
+        "p_crash": 9.448780924348199e-07
+      },
+      {
+        "rider_id": 58,
+        "depot_id": -3,
+        "R_route": 1.1678454726728024e-06,
+        "p_crash": 1.1678447907614853e-06
+      },
+      {
+        "rider_id": 59,
+        "depot_id": -3,
+        "R_route": 2.1996374555035394e-07,
+        "p_crash": 2.1996372134847064e-07
+      },
+      {
+        "rider_id": 60,
+        "depot_id": -3,
+        "R_route": 4.5494212321724727e-07,
+        "p_crash": 4.5494201972307025e-07
+      },
+      {
+        "rider_id": 61,
+        "depot_id": -3,
+        "R_route": 3.901184656083623e-07,
+        "p_crash": 3.90118389481664e-07
+      },
+      {
+        "rider_id": 62,
+        "depot_id": -3,
+        "R_route": 8.165612932844051e-07,
+        "p_crash": 8.165609598487222e-07
+      },
+      {
+        "rider_id": 63,
+        "depot_id": -3,
+        "R_route": 1.1848933951858145e-07,
+        "p_crash": 1.1848933245683924e-07
+      },
+      {
+        "rider_id": 64,
+        "depot_id": -3,
+        "R_route": 3.3912741289342796e-08,
+        "p_crash": 3.391274072672701e-08
+      },
+      {
+        "rider_id": 65,
+        "depot_id": -3,
+        "R_route": 5.909138035037301e-07,
+        "p_crash": 5.909136289172778e-07
+      },
+      {
+        "rider_id": 66,
+        "depot_id": -3,
+        "R_route": 1.1140812736162042e-06,
+        "p_crash": 1.1140806530640646e-06
+      },
+      {
+        "rider_id": 67,
+        "depot_id": -3,
+        "R_route": 1.164030163153488e-06,
+        "p_crash": 1.1640294856896105e-06
+      },
+      {
+        "rider_id": 68,
+        "depot_id": -3,
+        "R_route": 9.184592633496245e-07,
+        "p_crash": 9.184588415367401e-07
+      },
+      {
+        "rider_id": 69,
+        "depot_id": -4,
+        "R_route": 7.314229020274121e-07,
+        "p_crash": 7.314226345700447e-07
+      },
+      {
+        "rider_id": 70,
+        "depot_id": -4,
+        "R_route": 5.431463564006244e-07,
+        "p_crash": 5.431462088978378e-07
+      },
+      {
+        "rider_id": 71,
+        "depot_id": -4,
+        "R_route": 2.2285760036432888e-07,
+        "p_crash": 2.228575755047757e-07
+      },
+      {
+        "rider_id": 72,
+        "depot_id": -4,
+        "R_route": 2.135837808233632e-08,
+        "p_crash": 2.1358377844116205e-08
+      },
+      {
+        "rider_id": 73,
+        "depot_id": -4,
+        "R_route": 9.711994045084759e-08,
+        "p_crash": 9.711993576022593e-08
+      },
+      {
+        "rider_id": 74,
+        "depot_id": -4,
+        "R_route": 1.436187340378216e-07,
+        "p_crash": 1.436187236913966e-07
+      },
+      {
+        "rider_id": 75,
+        "depot_id": -4,
+        "R_route": 8.386043750541943e-08,
+        "p_crash": 8.386043404140509e-08
+      },
+      {
+        "rider_id": 76,
+        "depot_id": -5,
+        "R_route": 3.7789836197119755e-07,
+        "p_crash": 3.778982905489059e-07
+      },
+      {
+        "rider_id": 77,
+        "depot_id": -5,
+        "R_route": 3.8702207217691483e-07,
+        "p_crash": 3.870219973389766e-07
+      },
+      {
+        "rider_id": 78,
+        "depot_id": -5,
+        "R_route": 5.791675850415812e-07,
+        "p_crash": 5.791674173583061e-07
+      },
+      {
+        "rider_id": 79,
+        "depot_id": -5,
+        "R_route": 2.957174267080873e-07,
+        "p_crash": 2.957173830253623e-07
+      },
+      {
+        "rider_id": 80,
+        "depot_id": -5,
+        "R_route": 3.09065196308988e-07,
+        "p_crash": 3.090651485848639e-07
+      },
+      {
+        "rider_id": 81,
+        "depot_id": -5,
+        "R_route": 1.451669417978912e-07,
+        "p_crash": 1.4516693125354863e-07
+      },
+      {
+        "rider_id": 82,
+        "depot_id": -5,
+        "R_route": 3.1191208435360246e-07,
+        "p_crash": 3.119120357553129e-07
+      },
+      {
+        "rider_id": 83,
+        "depot_id": -5,
+        "R_route": 8.711458889119199e-07,
+        "p_crash": 8.711455095067322e-07
+      },
+      {
+        "rider_id": 84,
+        "depot_id": -5,
+        "R_route": 2.9939128320780405e-07,
+        "p_crash": 2.993912383564279e-07
+      },
+      {
+        "rider_id": 85,
+        "depot_id": -5,
+        "R_route": 3.0896190214919337e-07,
+        "p_crash": 3.089618544338535e-07
+      },
+      {
+        "rider_id": 86,
+        "depot_id": -5,
+        "R_route": 8.602742647518203e-07,
+        "p_crash": 8.602738946761335e-07
+      },
+      {
+        "rider_id": 87,
+        "depot_id": -5,
+        "R_route": 8.275022030407953e-07,
+        "p_crash": 8.275018607006857e-07
+      },
+      {
+        "rider_id": 88,
+        "depot_id": -5,
+        "R_route": 1.2754394978743613e-06,
+        "p_crash": 1.2754386845559296e-06
+      },
+      {
+        "rider_id": 89,
+        "depot_id": -5,
+        "R_route": 5.673258353487452e-07,
+        "p_crash": 5.673256744387345e-07
+      },
+      {
+        "rider_id": 90,
+        "depot_id": -5,
+        "R_route": 3.293471675839931e-07,
+        "p_crash": 3.2934711335919076e-07
+      },
+      {
+        "rider_id": 91,
+        "depot_id": -5,
+        "R_route": 6.86851770018438e-08,
+        "p_crash": 6.868517465896673e-08
+      },
+      {
+        "rider_id": 92,
+        "depot_id": -5,
+        "R_route": 8.314081307219909e-07,
+        "p_crash": 8.314077850624102e-07
+      },
+      {
+        "rider_id": 93,
+        "depot_id": -5,
+        "R_route": 2.8482172390786837e-07,
+        "p_crash": 2.848216833495343e-07
+      },
+      {
+        "rider_id": 94,
+        "depot_id": -5,
+        "R_route": 1.8696102024329425e-07,
+        "p_crash": 1.8696100279047556e-07
+      },
+      {
+        "rider_id": 95,
+        "depot_id": -5,
+        "R_route": 5.452505992649595e-07,
+        "p_crash": 5.452504505676359e-07
+      }
+    ],
+    "seed": null,
+    "mode": "analytic"
+  },
+  "behavioral_mc": {
+    "base_fleet_R": 5.0647373971122954e-05,
+    "k_c": 2.0,
+    "points": [
+      {
+        "alpha": 3.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.7532319229169275,
+        "fleet_expected_crashes": 0.37652726339475473,
+        "fleet_ci95": [
+          0.03106607647625109,
+          4.56355167805583
+        ],
+        "seed": 505
+      },
+      {
+        "alpha": 3.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.6024447113593823,
+        "fleet_expected_crashes": 0.4535246272592941,
+        "fleet_ci95": [
+          0.043716802509780134,
+          4.704894447290105
+        ],
+        "seed": 506
+      },
+      {
+        "alpha": 3.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.5029671513166697,
+        "fleet_expected_crashes": 0.5054358567543993,
+        "fleet_ci95": [
+          0.05323037748755378,
+          4.799202500383445
+        ],
+        "seed": 507
+      },
+      {
+        "alpha": 5.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.8313163126666662,
+        "fleet_expected_crashes": 0.33901944118863714,
+        "fleet_ci95": [
+          0.02557466497552497,
+          4.494028045514723
+        ],
+        "seed": 1505
+      },
+      {
+        "alpha": 5.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.7140686963501859,
+        "fleet_expected_crashes": 0.398941676919784,
+        "fleet_ci95": [
+          0.03456182043257437,
+          4.60488440237239
+        ],
+        "seed": 1506
+      },
+      {
+        "alpha": 5.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.6241034040033451,
+        "fleet_expected_crashes": 0.44491171239616767,
+        "fleet_ci95": [
+          0.042213173537242174,
+          4.6891723843993445
+        ],
+        "seed": 1507
+      },
+      {
+        "alpha": 8.0,
+        "beta": 1.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.8883551422287663,
+        "fleet_expected_crashes": 0.3093932385378695,
+        "fleet_ci95": [
+          0.021565225167338713,
+          4.438785554234329
+        ],
+        "seed": 2505
+      },
+      {
+        "alpha": 8.0,
+        "beta": 2.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.7981163819064105,
+        "fleet_expected_crashes": 0.35575109337532274,
+        "fleet_ci95": [
+          0.027967976376893695,
+          4.525097770670889
+        ],
+        "seed": 2506
+      },
+      {
+        "alpha": 8.0,
+        "beta": 3.0,
+        "n_riders_per_route": 50,
+        "n_trips": 480000,
+        "mean_compliance": 0.7288778058607511,
+        "fleet_expected_crashes": 0.3893279386727677,
+        "fleet_ci95": [
+          0.03304321463046091,
+          4.587175685563144
+        ],
+        "seed": 2507
+      }
+    ]
+  }
+}
