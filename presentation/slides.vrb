@@ -1,0 +1,54 @@
+\frametitle{Code Snapshot: Bellman--Ford Split with Hard-Constraint Sentinels}
+\begin{columns}[T]
+\column{0.58\textwidth}
+\begin{lstlisting}
+# src/savrptw/solvers/_common.py
+HARD_VIOLATION = 1e9
+
+for i in range(n):
+    cumulative_load = 0
+    for j in range(i + 1, n + 1):
+        cumulative_load += customers[j-1].demand
+        if cumulative_load > instance.Q:
+            break  # capacity prune (O(n^2))
+
+        rb = build_route(instance, depot,
+                         customers[i:j],
+                         penalty_weights=pw)
+        # Soft F1 + penalty mass
+        route_cost = rb.f1_contribution \
+                   + rb.violation_mass
+
+        # Hard-constraint sentinels
+        if rb.total_H > instance.H_cap_route:
+            route_cost += HARD_VIOLATION
+        if rb.total_R > instance.R_bar:
+            route_cost += HARD_VIOLATION
+        if rb.duration > instance.T_max:
+            route_cost += HARD_VIOLATION
+
+        if cost[i] + route_cost < cost[j]:
+            cost[j] = cost[i] + route_cost
+            pred[j] = i
+\end{lstlisting}
+\column{0.39\textwidth}
+  \vspace{4pt}
+  \textbf{Why this design?}
+  \begin{itemize}
+    \item Shared by GA, ALNS, and MILP evaluator
+    \item $F_1$ identical across all three --- no apples-to-pears bias
+    \item $10^9$ sentinel: BF only selects a violating arc when \textit{no feasible split exists}
+    \item $O(n^2)$ --- fast: 26 s at $N=200$
+  \end{itemize}
+  \vspace{6pt}
+  \textbf{Project layout:}\\[3pt]
+  {\footnotesize
+  \texttt{src/savrptw/}\\
+  \quad\texttt{solvers/} --- milp, ga, alns\\
+  \quad\texttt{instance/} --- generator, super\_arc\\
+  \quad\texttt{risk/} --- basm calibration\\
+  \quad\texttt{eval/} --- feasibility, objective\\
+  \texttt{conf/} --- Hydra YAML configs\\
+  \texttt{scripts/} --- run\_grid.py
+  }
+\end{columns}
