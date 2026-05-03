@@ -15,17 +15,23 @@
 \usecolortheme{whale}
 \useinnertheme{rounded}
 \setbeamertemplate{navigation symbols}{}
+% Clean three-part footline with solid colored bottom boundary
 \setbeamertemplate{footline}{%
-  \leavevmode\hbox{%
-    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,left,leftskip=1em]{author in head/foot}%
-      \usebeamerfont{author in head/foot}Pranav Bhadane
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1.5ex,
+        leftskip=6pt]{author in head/foot}%
+      \usebeamerfont{author in head/foot}Pranav Bhadane%
     \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
-      \usebeamerfont{title in head/foot}SA-VRPTW
+    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.5ex,dp=1.5ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}SA-VRPTW for Q-Commerce Delivery%
     \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right,rightskip=1em]{date in head/foot}%
-      \usebeamerfont{date in head/foot}\insertframenumber{}/\inserttotalframenumber
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1.5ex,
+        rightskip=6pt,right]{date in head/foot}%
+      \usebeamerfont{date in head/foot}IIT Kharagpur, 2026%
+      \hspace{8pt}\insertframenumber{}/\inserttotalframenumber\hspace{4pt}%
     \end{beamercolorbox}}%
+  \vskip0pt%
 }
 
 % Colors
@@ -175,7 +181,7 @@ Quick-Commerce Delivery in Indian Cities}
     $\varepsilon$-constraint ($\sum R_{ij}x_{ij}^k \leq \bar{R}$);
     per-route + fleet-wide residential caps $\bar{H}_k = 100$
   \item \textbf{BASM Calibration} --- reproducible public-source chain
-    (MoRTH 2022 + Mohan et al.\ 2017 + OSM proxy) without iRAD microdata;
+    (MoRTH 2022 + Mohan et al.\ 2017 + OSM proxy) using only public data;
     explicit $\pi_{ij}$ formula published
   \item \textbf{Unified Solver Contract} --- MILP, GA, ALNS all share
     identical $F_1$ evaluation and feasibility checker
@@ -274,7 +280,7 @@ Quick-Commerce Delivery in Indian Cities}
   \begin{itemize}
     \item MoRTH 2022 --- category-level fatality totals
     \item Mohan et al.\ 2017 --- arterial $>$ collector $>$ local
-    \item OSM proxy --- \textbf{no iRAD microdata needed}
+    \item OSM proxy --- \textbf{fully public, no restricted data needed}
   \end{itemize}
   \vspace{4pt}
   {\footnotesize Modelled annual events within $\pm25\%$ of city aggregate for all 5 cities.}
@@ -436,8 +442,9 @@ for i in range(n):
   Bengaluru & 113 \\
   Delhi     & 111 \\
   Mumbai    &  96 \\
-  Pune      &  39 \\
   Gurugram  &  38 \\
+  \midrule
+  Pune      &  39 (partial data) \\
   Hyderabad &   0 (excluded) \\
   \bottomrule
   \end{tabular}
@@ -520,10 +527,10 @@ Solver & $N=20$ & $N=50$ & $N=100$ & $N=200$ \\
 \end{columns}
 \vspace{4pt}
 \begin{itemize}
-  \item \textbf{Bengaluru} (113 stores) --- most stable; lowest $F_1$; recommended for sensitivity studies
-  \item \textbf{Gurugram \& Mumbai} --- elevated $F_1$ at $N\geq50$ due to fewer depot clusters
-  \item \textcolor{gacolor}{\textbf{GA $\leq$ ALNS}} in $F_1$ across all cities at $N=200$ --- consistent
-  \item \textbf{Pune} --- only $N=20$ in current run; insufficient to generalise
+  \item \textbf{Bengaluru} (113 stores) --- most stable; lowest $F_1$; recommended city for sensitivity studies
+  \item \textbf{Gurugram \& Mumbai} --- elevated $F_1$ at $N\geq50$ due to fewer depot clusters relative to demand
+  \item \textcolor{gacolor}{\textbf{GA}} consistently beats \textcolor{alnscolor}{\textbf{ALNS}} across all cities at $N=200$
+  \item \textbf{Delhi} shows widest seed variance at large $N$ --- diverse street-network geometry
 \end{itemize}
 \end{frame}
 
@@ -533,7 +540,7 @@ Solver & $N=20$ & $N=50$ & $N=100$ & $N=200$ \\
 \column{0.48\textwidth}
   \textbf{Honest Limitations}
   \begin{itemize}
-    \item BASM is a \textit{calibrated prior}, not a measurement --- no iRAD microdata
+    \item BASM is a \textit{calibrated prior}, not a direct measurement --- aggregate public data only
     \item Super-graph fixes paths: optimisation over customer
           \textbf{orderings}, not physical street choices
     \item MILP scales to $N\leq50$ only (CBC); commercial solver needed for larger
@@ -548,7 +555,7 @@ Solver & $N=20$ & $N=50$ & $N=100$ & $N=200$ \\
     \item \textbf{Real-time congestion} --- replace static BPR with live feeds
     \item \textbf{Stochastic demand} --- non-stationary order arrivals
     \item \textbf{Behavioural meta-analysis} --- multi-study compliance prior
-    \item \textbf{Direct crash microdata} --- upgrade BASM if iRAD access obtained
+    \item \textbf{City-level crash microdata} --- upgrade BASM with validated black-spot inventories if available
   \end{enumerate}
 \end{columns}
 \end{frame}
