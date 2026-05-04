@@ -307,40 +307,79 @@ Quick-Commerce Delivery in Indian Cities}
 
 % Slide 8: Solver Architecture
 \begin{frame}{Solver Architecture: Unified Evaluation Contract}
-\begin{center}
-\begin{tikzpicture}[node distance=0.4cm and 0.5cm,
-  solver/.style={draw=iitblue,fill=iitblue!10,rounded corners,
-                 text width=2.6cm,align=center,font=\scriptsize,inner sep=4pt},
-  contract/.style={draw=gacolor,fill=gacolor!8,rounded corners,
-                   text width=7.0cm,align=center,font=\scriptsize,inner sep=6pt},
-  inst/.style={draw=gray,fill=gray!10,rounded corners,
-               text width=2.5cm,align=center,font=\scriptsize,inner sep=4pt},
-  arr/.style={-Stealth,thick}]
-  \node[inst] (inst) {\textbf{Instance}\\typed dataclass\\depots, customers\\super-arcs\\$Q,T_{\max},\bar{R},\bar{H}_k$};
-  \node[solver,right=0.7cm of inst,yshift=1.3cm]  (milp) {\textbf{MILP}\\HiGHS/CBC\\PWL SOS2\\$N\leq50$};
-  \node[solver,right=0.7cm of inst]               (ga)   {\textbf{GA}\\Giant-tour\\BF split\\200 gen};
-  \node[solver,right=0.7cm of inst,yshift=-1.3cm] (alns) {\textbf{ALNS}\\4 destroy ops\\3 repair ops\\SA accept};
-  \node[contract,right=0.7cm of ga] (eval)
-    {\textbf{Shared Evaluation Contract}\\[3pt]
-     \texttt{eval.objective.breakdown()}\\identical $F_1$ for all solvers\\[2pt]
-     \texttt{eval.feasibility.validate()}\\strict constraint checker\\[3pt]
-     \textit{Zero constraint violations}\\\textit{across all 428 result rows}};
-  \draw[arr,iitblue] (inst) -- (milp.west);
-  \draw[arr,iitblue] (inst) -- (ga.west);
-  \draw[arr,iitblue] (inst) -- (alns.west);
-  \draw[arr,gacolor] (milp.east) -- (eval.west|-milp.east);
-  \draw[arr,gacolor] (ga.east)   -- (eval.west|-ga.east);
-  \draw[arr,gacolor] (alns.east) -- (eval.west|-alns.east);
-\end{tikzpicture}
-\end{center}
+
+\begin{columns}[c]
+
+% Left: Instance input box
+\column{0.20\textwidth}
+\begin{beamercolorbox}[rounded=true,shadow=false,
+    wd=\linewidth,sep=4pt]{block body}
+  \centering\scriptsize
+  \textbf{\textcolor{iitblue}{Instance}}\\[3pt]
+  Typed dataclass\\
+  Depots + Customers\\
+  Super-arcs $(T,R,H)$\\
+  $Q,\ T_{\max},\ \bar{R},\ \bar{H}_k$
+\end{beamercolorbox}
+
+% Arrow column
+\column{0.05\textwidth}
+\centering
+\Large$\Rightarrow$
+
+% Middle: three solvers stacked
+\column{0.24\textwidth}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt,
+    colsep*=2pt]{block title}
+  \centering\scriptsize\textbf{MILP}
+\end{beamercolorbox}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt]{block body}
+  \centering\scriptsize HiGHS/CBC solver\\
+  PWL SOS2 penalty\\
+  $N \leq 50$ instances
+\end{beamercolorbox}
 \vspace{4pt}
-\begin{columns}[T]
-\column{0.32\textwidth}
-  {\scriptsize\textbf{MILP}: exact benchmark; PWL outer-envelope for $e^{\beta\tau}-1$ via SOS2}
-\column{0.34\textwidth}
-  {\scriptsize\textbf{GA}: OX1 crossover; swap/insert/reverse mutation; BF split enforces hard caps}
-\column{0.32\textwidth}
-  {\scriptsize\textbf{ALNS}: Shaw/worst/random/risk-cluster destroy; greedy \& regret-2/3 repair}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt,
+    colsep*=2pt]{block title}
+  \centering\scriptsize\textbf{GA}
+\end{beamercolorbox}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt]{block body}
+  \centering\scriptsize Giant-tour chromosome\\
+  Bellman--Ford split\\
+  200 generations
+\end{beamercolorbox}
+\vspace{4pt}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt,
+    colsep*=2pt]{block title}
+  \centering\scriptsize\textbf{ALNS}
+\end{beamercolorbox}
+\begin{beamercolorbox}[rounded=true,wd=\linewidth,sep=3pt]{block body}
+  \centering\scriptsize 4 destroy operators\\
+  3 repair operators\\
+  SA acceptance
+\end{beamercolorbox}
+
+% Arrow column
+\column{0.05\textwidth}
+\centering
+\Large$\Rightarrow$
+
+% Right: shared contract
+\column{0.44\textwidth}
+\begin{block}{Shared Evaluation Contract}
+  \scriptsize
+  \textbf{\texttt{eval.objective.breakdown()}}\\
+  Computes identical $F_1$ for all three solvers ---
+  no apples-to-pears bias\\[5pt]
+  \textbf{\texttt{eval.feasibility.validate()}}\\
+  Strict checker: capacity, $T_{\max}$, $\bar{R}$, $\bar{H}_k$\\[5pt]
+  \textcolor{gacolor}{\textbf{Result: 428 feasible rows, 0 violations}}
+\end{block}
+\vspace{4pt}
+{\scriptsize\textit{Every solver sees the same Instance, reports through
+the same $F_1$ code, and is judged by the same validator.
+This makes GA vs.\ ALNS comparisons apples-to-apples.}}
+
 \end{columns}
 \end{frame}
 
